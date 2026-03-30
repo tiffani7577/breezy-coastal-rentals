@@ -17,7 +17,7 @@ import {
 
 const HERO_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/hero-beach_99596afc.jpg";
 const BEACH_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/canaveral-coast-v2-BncqoUn3dE4qSpBSMm5UR6.webp";
-const GOLF_CART_SUNSET_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/balcony-aerial-v2-9vRBRcp4HTqrMz5BbATMjb.webp";
+const GOLF_CART_SUNSET_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/balcony-view-corrected-v3-JN5XiYkfRMGLHk2mkWED5A.webp";
 const GOLF_CART_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/rocket-beach-v2-dQqBWCDustcwfk2NjKWDjD.webp";
 const PATHWAY_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/peacock-beach-v2-oFnvRDfks9XVPJbpXCtwWP.webp";
 
@@ -414,18 +414,6 @@ export default function Home() {
                   alt="Luxury golf cart on the beach at sunset"
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
-                <div
-                  className="absolute inset-0"
-                  style={{ background: "linear-gradient(180deg, transparent 50%, rgba(10,28,60,0.7) 100%)" }}
-                />
-                <div className="absolute bottom-4 left-4 right-4">
-                  <p className="text-white font-semibold text-sm" style={{ fontFamily: "'Playfair Display', serif" }}>
-                    The View From Your Balcony
-                  </p>
-                  <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "12px" }}>
-                    8720 Seashell Ln · Cape Canaveral, FL · Watch Breezy head out
-                  </p>
-                </div>
               </div>
 
               {/* Golf cart beach photo */}
@@ -438,35 +426,19 @@ export default function Home() {
                   alt="Golf cart at the beach"
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
-                <div
-                  className="absolute inset-0"
-                  style={{ background: "linear-gradient(180deg, transparent 50%, rgba(10,28,60,0.7) 100%)" }}
-                />
-                <div className="absolute bottom-4 left-4 right-4">
-                  <p className="text-white font-semibold text-sm" style={{ fontFamily: "'Playfair Display', serif" }}>
-                    The Launch You'll Never Forget
-                  </p>
-                  <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "12px" }}>
-                    Peacock Beach · 2-min ride · Space Coast, FL
-                  </p>
-                </div>
               </div>
             </div>
 
-            {/* Cart specs row */}
-            <div className="grid grid-cols-3 gap-4 mt-6">
+            {/* Elegant cart specs pill */}
+            <div className="flex items-center justify-center gap-6 mt-6 flex-wrap">
               {[
-                { label: "Seats", value: "6 Guests" },
-                { label: "Type", value: "Electric" },
-                { label: "Range", value: "Full Day" },
-              ].map(({ label, value }) => (
-                <div
-                  key={label}
-                  className="rounded-xl p-4 text-center"
-                  style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.1)" }}
-                >
-                  <p className="text-white font-bold text-lg">{value}</p>
-                  <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "11px", marginTop: "2px" }}>{label}</p>
+                { icon: "👥", text: "Seats up to 6 guests" },
+                { icon: "⚡", text: "Electric · full-day range" },
+              ].map(({ icon, text }) => (
+                <div key={text} className="flex items-center gap-2 px-5 py-2.5 rounded-full"
+                  style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)" }}>
+                  <span style={{ fontSize: "16px" }}>{icon}</span>
+                  <span style={{ color: "rgba(255,255,255,0.75)", fontSize: "13px", fontWeight: 500, letterSpacing: "0.02em" }}>{text}</span>
                 </div>
               ))}
             </div>
@@ -493,12 +465,6 @@ export default function Home() {
               className="absolute inset-0"
               style={{ background: "linear-gradient(180deg, transparent 55%, rgba(10,28,60,0.65) 100%)" }}
             />
-            <div className="absolute bottom-3 left-3 right-3">
-              <p className="text-white font-semibold text-xs" style={{ fontFamily: "'Playfair Display', serif" }}>
-                Peacock Beach at Sunset
-              </p>
-              <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "10px" }}>End of the street · 2-min cart ride</p>
-            </div>
           </div>
           {/* Canaveral seashore */}
           <div className="rounded-2xl overflow-hidden aspect-[4/3] relative group">
@@ -511,12 +477,7 @@ export default function Home() {
               className="absolute inset-0"
               style={{ background: "linear-gradient(180deg, transparent 55%, rgba(10,28,60,0.65) 100%)" }}
             />
-            <div className="absolute bottom-3 left-3 right-3">
-              <p className="text-white font-semibold text-xs" style={{ fontFamily: "'Playfair Display', serif" }}>
-                Canaveral National Seashore
-              </p>
-              <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "10px" }}>Miles of untouched coastline</p>
-            </div>
+
           </div>
         </div>
       </section>

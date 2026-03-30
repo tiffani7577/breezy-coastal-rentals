@@ -72,10 +72,15 @@
 - [x] Email notification to guest when admin sends a message
 
 ## New Features (Round 3)
-- [ ] Quick "Message Guest" button on booking list card (inline compose without tapping into detail)
-- [ ] Cart image upload in Admin Settings (upload from phone camera, stores to S3)
-- [ ] Pre-rental safety inspection checklist per booking (battery, steering, brakes, signal lights, brake lights, tires, body, cleanliness)
-- [ ] Inspection checklist DB table (inspection_checklists: booking_id, items JSON, completed_by, completed_at)
-- [ ] Inspection checklist tRPC procedures (save, get)
-- [ ] Inspection checklist UI in booking detail (admin checks off items, timestamps saved)
+- [x] Quick "Message Guest" button on booking list card (inline compose without tapping into detail)
+- [x] Cart image upload in Admin Settings (upload from phone camera, stores to S3)
+- [x] Pre-rental safety inspection checklist per booking (battery, steering, brakes, signal lights, brake lights, tires, body, cleanliness)
+- [x] Inspection checklist DB table (inspection_checklists: booking_id, items JSON, completed_by, completed_at)
+- [x] Inspection checklist tRPC procedures (save, get)
+- [x] Inspection checklist UI in booking detail (admin checks off items, timestamps saved)
 - [ ] End-to-end test: full booking flow with test card 4242 4242 4242 4242
+
+## New Features (Round 4)
+- [x] Regenerate left top card photo: correct property layout — view from inside upper balcony/deck looking down at pool and flag lot driveway, green cart small in background heading out, no screen enclosure visible, tall royal palms, tropical foliage, accurate two-story white house with orange roof
+- [x] Remove text overlays (title + subtitle captions) from all four photo cards
+- [x] Integrate "6 passengers" info elegantly elsewhere — remove the three stat boxes (6 Guests / Electric / Full Day) and replace with a single clean line or badge
