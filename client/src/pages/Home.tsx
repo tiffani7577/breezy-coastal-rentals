@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
 import {
@@ -17,7 +18,7 @@ import {
 
 const HERO_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/hero-beach_99596afc.jpg";
 const BEACH_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/canaveral-coast-v2-BncqoUn3dE4qSpBSMm5UR6.webp";
-const GOLF_CART_SUNSET_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/balcony-view-v4-Gfogr8zzxsNdMMZxKMBvtn.webp";
+const GOLF_CART_SUNSET_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/balcony-view-v5-MeRsZ96H2Hgba4gLBGKxHY.webp";
 const GOLF_CART_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/rocket-beach-v2-dQqBWCDustcwfk2NjKWDjD.webp";
 const PATHWAY_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/peacock-beach-v2-oFnvRDfks9XVPJbpXCtwWP.webp";
 
@@ -192,6 +193,128 @@ function AnimatedWave({ flip = false }: { flip?: boolean }) {
         />
       </svg>
     </div>
+  );
+}
+
+function SafetySection() {
+  const [activeTab, setActiveTab] = React.useState(0);
+
+  const tabs = [
+    {
+      icon: "🚗",
+      label: "How to Operate",
+      items: [
+        { title: "Starting the Cart", body: "Turn the key to ON. The cart is electric — no engine noise is normal. Check that the gear selector is in NEUTRAL before starting." },
+        { title: "Forward & Reverse", body: "Push the direction lever forward for DRIVE, pull back for REVERSE. Always come to a complete stop before switching directions." },
+        { title: "Speed & Throttle", body: "Press the accelerator pedal gently to move. The cart has a governed top speed of approximately 20 mph. Do not force the pedal on inclines." },
+        { title: "Braking", body: "Release the accelerator to slow down — regenerative braking engages automatically. Press the brake pedal firmly for a full stop. The parking brake lever is on the floor between the seats." },
+        { title: "Lights & Signals", body: "Headlights: toggle switch on the dash. Turn signals: left-hand stalk. Horn: center of the steering wheel. Always use signals when turning on public roads." },
+        { title: "Charging", body: "Plug the charging cable (stored under the seat) into the rear port. A full charge takes 6–8 hours. Do not run the battery below 20% — return the cart with at least 30% charge remaining." },
+      ],
+    },
+    {
+      icon: "⚠️",
+      label: "Safety Rules",
+      items: [
+        { title: "Licensed Drivers Only", body: "Only the approved driver on the rental agreement may operate the cart. A valid driver's license must be in your possession at all times while driving." },
+        { title: "Passenger Limit", body: "Maximum 6 passengers. Do not exceed the number of available seats. No passengers may ride on the roof, hood, or hang off the sides." },
+        { title: "Seatbelts", body: "All passengers must be seated with seatbelts fastened before the cart moves. Children must be secured in an appropriate child restraint." },
+        { title: "No Alcohol", body: "Operating the cart under the influence of alcohol or drugs is strictly prohibited and is a criminal offense under Florida law." },
+        { title: "No Phones While Driving", body: "Handheld phone use while operating the cart is illegal in Florida. Pull over safely before using your phone." },
+        { title: "Approved Roads Only", body: "The cart is approved for roads with a posted speed limit of 35 mph or less. Do not take the cart onto US-1, A1A, or any highway." },
+        { title: "No Beach Driving", body: "Driving on the beach sand is not permitted. Park in designated areas and walk to the shoreline." },
+        { title: "Weather", body: "Do not operate the cart in heavy rain, lightning, or severe weather. Pull over and wait for conditions to improve." },
+      ],
+    },
+    {
+      icon: "⚖️",
+      label: "Local Laws",
+      items: [
+        { title: "Florida Golf Cart Law", body: "Under Florida Statute §316.212, golf carts may only be operated on public roads with a posted speed limit of 30 mph or less, during daylight hours, unless the cart is equipped with proper lighting." },
+        { title: "Required Equipment", body: "This cart is equipped with headlights, brake lights, turn signals, a rearview mirror, and a windshield — meeting Florida's low-speed vehicle requirements for road use." },
+        { title: "Driver's License Required", body: "A valid driver's license is required to operate this cart on public roads in Cape Canaveral, FL. Unlicensed operation is a traffic violation." },
+        { title: "Right-of-Way", body: "Golf carts must yield to all standard motor vehicles. Treat all intersections as you would in a car — obey all stop signs, traffic lights, and road markings." },
+        { title: "Parking", body: "Park only in designated areas. Do not block driveways, fire hydrants, or ADA-accessible spaces. Parking on the beach is prohibited." },
+        { title: "Liability", body: "The renter assumes full responsibility for any traffic violations, fines, or citations incurred during the rental period. The owner is not responsible for operator error." },
+      ],
+    },
+    {
+      icon: "🚨",
+      label: "Emergencies",
+      items: [
+        { title: "Breakdown or Flat", body: "Pull safely off the road, turn on hazard lights, and call or text us immediately at the number in your booking confirmation. Do not attempt repairs yourself." },
+        { title: "Accident or Collision", body: "Stop immediately. Check for injuries and call 911 if needed. Do not move the cart. Contact us right away and do not admit fault to any third party." },
+        { title: "Lost or Stolen", body: "Call 911 immediately, then notify us. File a police report and provide us with the report number. Never leave the cart unattended with the key in the ignition." },
+        { title: "Medical Emergency", body: "Call 911 immediately. Cape Canaveral Hospital is at 701 W Cocoa Beach Causeway, Cocoa Beach, FL — approximately 10 minutes by car." },
+        { title: "Emergency Contact", body: "Our emergency line is available during your rental period. The number is in your booking confirmation email and on your booking status page." },
+      ],
+    },
+    {
+      icon: "🔧",
+      label: "Maintenance",
+      items: [
+        { title: "Pre-Ride Inspection", body: "Before each use, do a quick check: tires inflated, no visible damage, lights working, battery above 30%. Report any issues to us before driving." },
+        { title: "Battery Care", body: "This cart uses a lithium-ion battery pack. Do not run it to 0%. Charge after each use if possible. Do not leave it plugged in for more than 12 hours continuously." },
+        { title: "Tire Pressure", body: "Recommended tire pressure is 22 PSI. Low pressure affects handling and range. If a tire looks flat, do not drive — contact us immediately." },
+        { title: "Cleaning", body: "Please return the cart in the same condition it was received. Wipe down seats and surfaces if wet or sandy. Do not use a pressure washer on the cart." },
+        { title: "Damage Reporting", body: "Any new damage — even minor scratches — must be reported to us at the end of your rental. Unreported damage discovered after return may be charged to the card on file." },
+        { title: "Manufacturer Schedule", body: "This cart follows the manufacturer's recommended maintenance schedule: brake inspections, steering checks, battery health checks, and signal/light verification before each rental period." },
+      ],
+    },
+  ];
+
+  const active = tabs[activeTab];
+
+  return (
+    <section className="py-20 px-4" style={{ background: "oklch(0.10 0.05 240)" }}>
+      <div className="max-w-3xl mx-auto">
+        <div className="text-center mb-12">
+          <p className="text-sm font-semibold tracking-widest uppercase mb-3" style={{ color: "oklch(0.72 0.12 215)" }}>
+            Know Before You Go
+          </p>
+          <h2 className="text-white" style={{ fontSize: "clamp(1.6rem, 5vw, 2.2rem)", fontFamily: "'Playfair Display', serif" }}>
+            Safety &amp; Operations Guide
+          </h2>
+          <p className="mt-3 text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>
+            Everything you need to know to enjoy Breezy safely and confidently.
+          </p>
+        </div>
+
+        {/* Tab bar */}
+        <div className="flex overflow-x-auto gap-2 pb-2 mb-8" style={{ scrollbarWidth: "none" }}>
+          {tabs.map((tab, i) => (
+            <button
+              key={tab.label}
+              onClick={() => setActiveTab(i)}
+              className="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium transition-all"
+              style={{
+                background: activeTab === i ? "oklch(0.48 0.18 232)" : "rgba(255,255,255,0.07)",
+                color: activeTab === i ? "white" : "rgba(255,255,255,0.55)",
+                border: activeTab === i ? "none" : "1px solid rgba(255,255,255,0.1)",
+                cursor: "pointer",
+              }}
+            >
+              <span>{tab.icon}</span>
+              <span>{tab.label}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* Content cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {active.items.map(({ title, body }) => (
+            <div
+              key={title}
+              className="rounded-2xl p-5"
+              style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
+            >
+              <p className="font-semibold text-sm mb-2" style={{ color: "white" }}>{title}</p>
+              <p className="text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.60)" }}>{body}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -608,6 +731,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* ── Safety & Operations ─────────────────────────────────── */}
+      <SafetySection />
 
       {/* ── Footer ────────────────────────────────────────────────── */}
       <footer className="py-10 px-4 text-center" style={{ background: "oklch(0.08 0.04 240)" }}>

@@ -78,10 +78,17 @@
 - [x] Inspection checklist DB table (inspection_checklists: booking_id, items JSON, completed_by, completed_at)
 - [x] Inspection checklist tRPC procedures (save, get)
 - [x] Inspection checklist UI in booking detail (admin checks off items, timestamps saved)
-- [ ] End-to-end test: full booking flow with test card 4242 4242 4242 4242
+- [x] End-to-end test: full booking flow with test card 4242 4242 4242 4242
 
 ## New Features (Round 4)
 - [x] Regenerate left top card photo: correct property layout — view from inside upper balcony/deck looking down at pool and flag lot driveway, green cart small in background heading out, no screen enclosure visible, tall royal palms, tropical foliage, accurate two-story white house with orange roof
 - [x] Remove text overlays (title + subtitle captions) from all four photo cards
 - [x] Integrate "6 passengers" info elegantly elsewhere — remove the three stat boxes (6 Guests / Electric / Full Day) and replace with a single clean line or badge
 - [x] Regenerate balcony view v4: second-floor balcony white railing looking down at freeform pool + hot tub spa, cream/white stucco house walls visible at sides, no screen cage, tropical palms and red ti plants, flag lot driveway in background with small green cart heading out, golden hour warm light
+
+## New Features (Round 5)
+- [x] Add Safety & Operations section to landing page with 5 tabs: How to Operate, Safety Rules, Local Laws (Cape Canaveral), Emergency Procedures, Maintenance Notes
+- [x] Each tab has icon, title, and detailed content cards
+- [x] Section uses dark navy background matching rest of page, premium accordion/tab UI
+- [ ] Also add safety instructions to the post-booking confirmation email and booking status page
+- [x] Regenerate balcony view v5: correct spatial layout — pool/hot tub on RIGHT side below balcony, lush green lawn and red ti plants in CENTER, narrow flag lot driveway with royal palms lining both sides and seagrape/wooden fence on FAR LEFT, small green cart heading away down the left driveway
