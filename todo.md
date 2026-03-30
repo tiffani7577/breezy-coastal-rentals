@@ -42,3 +42,12 @@
 - [x] Terms of Service and Privacy Policy pages
 - [x] Vitest unit tests (14 tests passing)
 - [x] Final checkpoint + delivery
+
+## Bug Fixes
+- [ ] Fix guestName validation error (too_small) — booking form Step 2 not submitting correctly
+
+## Enhancements
+- [x] Add animated ocean wave SVG/CSS animation to hero bottom edge
+- [x] Add golf cart video section below hero (autoplay, muted, looping)
+- [x] Add golf cart + beach pathway image card replacing one of the lower beach photos
+- [x] Source best available golf cart / Peacock Beach pathway images
