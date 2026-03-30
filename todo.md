@@ -55,3 +55,4 @@
 - [x] Fix calendar empty space on right side (DayPicker not filling container width)
 - [x] Replace Pexels iframe with cinemagraph-style animated SVG coastal scene
 - [x] Replace cartoon SVG cinemagraph with AI-generated luxury golf cart sunset beach photo
+- [x] Generate AI hero image: green ICON golf cart on gravel driveway, rocket launch in sky, tropical palms, excited group

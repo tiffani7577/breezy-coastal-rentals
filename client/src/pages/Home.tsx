@@ -17,7 +17,7 @@ import {
 
 const HERO_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/hero-beach_99596afc.jpg";
 const BEACH_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/beach-seashore_ead00462.jpg";
-const GOLF_CART_SUNSET_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/golf-cart-beach-hero-5hUiUQtnBqpaQ639vadeNF.webp";
+const GOLF_CART_SUNSET_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/cape-canaveral-golf-cart-hero-DWqpTx4gMJFkr3iNfsg5kb.webp";
 const GOLF_CART_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/golf-cart-beach_db9b806a.jpg";
 const PATHWAY_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/beach-pathway_db9cb33c.jpg";
 
@@ -420,10 +420,10 @@ export default function Home() {
                 />
                 <div className="absolute bottom-4 left-4 right-4">
                   <p className="text-white font-semibold text-sm" style={{ fontFamily: "'Playfair Display', serif" }}>
-                    Your Cart Awaits
+                    The Launch You’ll Never Forget
                   </p>
                   <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "12px" }}>
-                    Ready at the property · Cape Canaveral, FL
+                    8720 Seashell Ln · Cape Canaveral, FL · Space Coast
                   </p>
                 </div>
               </div>
@@ -456,7 +456,7 @@ export default function Home() {
             {/* Cart specs row */}
             <div className="grid grid-cols-3 gap-4 mt-6">
               {[
-                { label: "Seats", value: "4 Guests" },
+                { label: "Seats", value: "6 Guests" },
                 { label: "Type", value: "Electric" },
                 { label: "Range", value: "Full Day" },
               ].map(({ label, value }) => (
