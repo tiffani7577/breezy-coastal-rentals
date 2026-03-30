@@ -448,7 +448,9 @@ export default function Booking() {
                 className="w-full"
                 styles={{
                   root: { width: "100%", maxWidth: "100%" },
+                  months: { width: "100%" },
                   month: { width: "100%" },
+                  month_grid: { width: "100%" },
                   table: { width: "100%" },
                 }}
               />

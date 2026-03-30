@@ -20,6 +20,143 @@ const BEACH_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUD
 const GOLF_CART_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/golf-cart-beach_db9b806a.jpg";
 const PATHWAY_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/beach-pathway_db9cb33c.jpg";
 
+// Cinemagraph-style animated coastal scene
+function CoastalCinemagraph() {
+  return (
+    <div className="w-full h-full relative overflow-hidden" style={{ background: "linear-gradient(180deg, #87ceeb 0%, #5ba3d9 35%, #2a7ab5 60%, #1a5c8a 100%)" }}>
+      <style>{`
+        @keyframes cloudDrift { 0%{transform:translateX(-5%)} 50%{transform:translateX(5%)} 100%{transform:translateX(-5%)} }
+        @keyframes cloudDrift2 { 0%{transform:translateX(3%)} 50%{transform:translateX(-4%)} 100%{transform:translateX(3%)} }
+        @keyframes palmSway { 0%,100%{transform:rotate(-2deg)} 50%{transform:rotate(2deg)} }
+        @keyframes palmSway2 { 0%,100%{transform:rotate(1deg)} 50%{transform:rotate(-2.5deg)} }
+        @keyframes waveShift1 { 0%{transform:translate(0,230px)} 50%{transform:translate(-20px,226px)} 100%{transform:translate(0,230px)} }
+        @keyframes waveShift2 { 0%{transform:translate(0,222px)} 50%{transform:translate(15px,218px)} 100%{transform:translate(0,222px)} }
+        @keyframes foamShimmer { 0%,100%{opacity:0.5} 50%{opacity:0.85} }
+        @keyframes cartFloat { 0%,100%{transform:translateY(0px)} 50%{transform:translateY(-3px)} }
+        @keyframes sunGlow { 0%,100%{opacity:0.85} 50%{opacity:1} }
+        @keyframes sparkle { 0%,100%{opacity:0.3;transform:scale(0.8)} 50%{opacity:1;transform:scale(1.2)} }
+      `}</style>
+
+      {/* Sky gradient */}
+      <svg viewBox="0 0 720 400" className="w-full h-full" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+        {/* Sky */}
+        <defs>
+          <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#87ceeb" />
+            <stop offset="60%" stopColor="#b8e0f7" />
+            <stop offset="100%" stopColor="#d4eef9" />
+          </linearGradient>
+          <linearGradient id="oceanGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#1a7fc1" />
+            <stop offset="100%" stopColor="#0d4f7a" />
+          </linearGradient>
+          <linearGradient id="sandGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#f5e6c8" />
+            <stop offset="100%" stopColor="#e8d5a3" />
+          </linearGradient>
+          <radialGradient id="sunGrad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#fff9c4" stopOpacity="1" />
+            <stop offset="60%" stopColor="#ffe082" stopOpacity="0.8" />
+            <stop offset="100%" stopColor="#ffb300" stopOpacity="0" />
+          </radialGradient>
+          <filter id="blur2"><feGaussianBlur stdDeviation="2" /></filter>
+          <filter id="blur4"><feGaussianBlur stdDeviation="4" /></filter>
+        </defs>
+
+        {/* Sky bg */}
+        <rect width="720" height="400" fill="url(#skyGrad)" />
+
+        {/* Sun glow */}
+        <circle cx="580" cy="80" r="55" fill="url(#sunGrad)" filter="url(#blur4)" style={{animation:"sunGlow 4s ease-in-out infinite"}} />
+        <circle cx="580" cy="80" r="22" fill="#fff9e6" style={{animation:"sunGlow 4s ease-in-out infinite"}} />
+
+        {/* Cloud 1 */}
+        <g style={{animation:"cloudDrift 12s ease-in-out infinite", transformOrigin:"200px 70px"}}>
+          <ellipse cx="180" cy="72" rx="55" ry="18" fill="white" opacity="0.85" filter="url(#blur2)" />
+          <ellipse cx="210" cy="65" rx="35" ry="14" fill="white" opacity="0.9" filter="url(#blur2)" />
+          <ellipse cx="155" cy="68" rx="28" ry="12" fill="white" opacity="0.8" filter="url(#blur2)" />
+        </g>
+        {/* Cloud 2 */}
+        <g style={{animation:"cloudDrift2 18s ease-in-out infinite", transformOrigin:"450px 55px"}}>
+          <ellipse cx="430" cy="55" rx="45" ry="15" fill="white" opacity="0.7" filter="url(#blur2)" />
+          <ellipse cx="460" cy="48" rx="28" ry="12" fill="white" opacity="0.75" filter="url(#blur2)" />
+        </g>
+
+        {/* Ocean */}
+        <rect x="0" y="240" width="720" height="160" fill="url(#oceanGrad)" />
+
+        {/* Ocean sparkles */}
+        {[{x:120,y:270,d:2},{x:280,y:260,d:3},{x:420,y:275,d:2.5},{x:560,y:265,d:2},{x:650,y:280,d:1.5}].map((s,i)=>(
+          <circle key={i} cx={s.x} cy={s.y} r={s.d} fill="white" style={{animation:`sparkle ${2+i*0.7}s ease-in-out infinite`, animationDelay:`${i*0.4}s`}} />
+        ))}
+
+        {/* Wave 1 */}
+        <path fill="#3a9bd5" opacity="0.6" style={{animation:"waveShift1 5s ease-in-out infinite"}}
+          d="M-20,20 C80,5 160,35 240,20 C320,5 400,35 480,20 C560,5 640,35 760,20 L760,60 L-20,60 Z"
+          transform="translate(0,230)" />
+        {/* Wave 2 */}
+        <path fill="#5bb8e8" opacity="0.45" style={{animation:"waveShift2 7s ease-in-out infinite"}}
+          d="M-15,25 C90,10 180,40 270,25 C360,10 450,40 540,25 C630,10 700,35 740,25 L740,60 L-15,60 Z"
+          transform="translate(0,222)" />
+        {/* Foam */}
+        <path fill="white" opacity="0.5" style={{animation:"foamShimmer 3s ease-in-out infinite"}}
+          d="M0,28 C60,22 120,32 180,28 C240,22 300,32 360,28 C420,22 480,32 540,28 C600,22 660,30 720,28 L720,32 L0,32 Z"
+          transform="translate(0,228)" />
+
+        {/* Sand */}
+        <path fill="url(#sandGrad)" d="M0,300 Q180,285 360,292 Q540,300 720,288 L720,400 L0,400 Z" />
+
+        {/* Palm tree left */}
+        <g transform="translate(60,160)">
+          <rect x="-5" y="0" width="10" height="130" rx="5" fill="#8B6914" />
+          {/* Fronds */}
+          <g style={{animation:"palmSway 4s ease-in-out infinite", transformOrigin:"0px 0px"}}>
+            <path d="M0,0 Q-60,-30 -90,-10" stroke="#2d7a2d" strokeWidth="6" fill="none" strokeLinecap="round" />
+            <path d="M0,0 Q-50,-55 -30,-75" stroke="#2d7a2d" strokeWidth="5" fill="none" strokeLinecap="round" />
+            <path d="M0,0 Q10,-65 30,-70" stroke="#3a8f3a" strokeWidth="5" fill="none" strokeLinecap="round" />
+            <path d="M0,0 Q55,-45 70,-20" stroke="#3a8f3a" strokeWidth="5" fill="none" strokeLinecap="round" />
+            <path d="M0,0 Q40,-20 65,5" stroke="#2d7a2d" strokeWidth="4" fill="none" strokeLinecap="round" />
+          </g>
+        </g>
+
+        {/* Palm tree right */}
+        <g transform="translate(660,180)">
+          <rect x="-5" y="0" width="9" height="110" rx="4" fill="#7a5c10" />
+          <g style={{animation:"palmSway2 5s ease-in-out infinite", transformOrigin:"0px 0px"}}>
+            <path d="M0,0 Q-55,-25 -80,-5" stroke="#2d7a2d" strokeWidth="5" fill="none" strokeLinecap="round" />
+            <path d="M0,0 Q-40,-50 -20,-68" stroke="#3a8f3a" strokeWidth="5" fill="none" strokeLinecap="round" />
+            <path d="M0,0 Q15,-60 35,-62" stroke="#2d7a2d" strokeWidth="4" fill="none" strokeLinecap="round" />
+            <path d="M0,0 Q50,-35 60,-12" stroke="#3a8f3a" strokeWidth="5" fill="none" strokeLinecap="round" />
+          </g>
+        </g>
+
+        {/* Golf cart on sand */}
+        <g transform="translate(300,295)" style={{animation:"cartFloat 4s ease-in-out infinite"}}>
+          {/* Cart body */}
+          <rect x="-45" y="-28" width="90" height="28" rx="6" fill="white" />
+          <rect x="-40" y="-38" width="80" height="14" rx="4" fill="#e8f4fd" />
+          {/* Roof */}
+          <rect x="-42" y="-52" width="84" height="16" rx="4" fill="#1a5c8a" />
+          {/* Windshield */}
+          <rect x="-30" y="-38" width="35" height="14" rx="2" fill="#b8e0f7" opacity="0.7" />
+          {/* Wheels */}
+          <circle cx="-28" cy="0" r="10" fill="#333" />
+          <circle cx="-28" cy="0" r="5" fill="#888" />
+          <circle cx="28" cy="0" r="10" fill="#333" />
+          <circle cx="28" cy="0" r="5" fill="#888" />
+          {/* Stripe */}
+          <rect x="-45" y="-16" width="90" height="4" rx="2" fill="#1a5c8a" opacity="0.4" />
+        </g>
+
+        {/* Caption overlay */}
+        <rect x="0" y="340" width="720" height="60" fill="rgba(10,28,60,0.55)" />
+        <text x="36" y="368" fontFamily="Georgia, serif" fontSize="15" fill="white" fontWeight="600">Your cart, ready at the property</text>
+        <text x="36" y="388" fontFamily="Arial, sans-serif" fontSize="11" fill="rgba(255,255,255,0.7)">Cape Canaveral, FL · Peacock Beach · 2-min ride</text>
+      </svg>
+    </div>
+  );
+}
+
 // Animated wave SVG component
 function AnimatedWave({ flip = false }: { flip?: boolean }) {
   return (
@@ -266,23 +403,12 @@ export default function Home() {
 
             {/* Video + Image side by side on desktop, stacked on mobile */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {/* Pexels embed video — golf cart at beach */}
+              {/* Cinemagraph-style animated coastal scene */}
               <div
                 className="rounded-2xl overflow-hidden relative"
                 style={{ aspectRatio: "16/10", boxShadow: "0 20px 60px -10px rgba(0,0,0,0.5)" }}
               >
-                <iframe
-                  src="https://www.pexels.com/video/3571264/embed/"
-                  className="w-full h-full"
-                  style={{ border: "none" }}
-                  allow="autoplay; fullscreen"
-                  title="Golf cart at beach"
-                />
-                {/* Fallback image if iframe blocked */}
-                <div
-                  className="absolute inset-0 -z-10 bg-cover bg-center"
-                  style={{ backgroundImage: `url(${GOLF_CART_IMG})` }}
-                />
+                <CoastalCinemagraph />
               </div>
 
               {/* Golf cart beach photo */}

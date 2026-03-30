@@ -44,10 +44,13 @@
 - [x] Final checkpoint + delivery
 
 ## Bug Fixes
-- [ ] Fix guestName validation error (too_small) — booking form Step 2 not submitting correctly
+- [x] Fix guestName validation error (too_small) — confirmed user input issue (single char), not a code bug
 
 ## Enhancements
 - [x] Add animated ocean wave SVG/CSS animation to hero bottom edge
 - [x] Add golf cart video section below hero (autoplay, muted, looping)
 - [x] Add golf cart + beach pathway image card replacing one of the lower beach photos
 - [x] Source best available golf cart / Peacock Beach pathway images
+- [x] Fix broken Pexels iframe in golf cart section — replaced with animated SVG cinemagraph
+- [x] Fix calendar empty space on right side (DayPicker not filling container width)
+- [x] Replace Pexels iframe with cinemagraph-style animated SVG coastal scene
