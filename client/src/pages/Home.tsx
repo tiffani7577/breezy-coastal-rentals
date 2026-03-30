@@ -16,10 +16,10 @@ import {
 } from "lucide-react";
 
 const HERO_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/hero-beach_99596afc.jpg";
-const BEACH_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/canaveral-coast-golden-hour-QAb6ruV67BJBLYn84z7NLX.webp";
-const GOLF_CART_SUNSET_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/balcony-aerial-view-left-dn2iuM7zEDmYmju9RWg4Ht.webp";
-const GOLF_CART_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/beach-rocket-aerial-FQibNpS9trymX6NBH9oiKR.webp";
-const PATHWAY_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/peacock-beach-golden-hour-kjkkKGSNMXumnnVV8FsjF2.webp";
+const BEACH_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/canaveral-coast-v2-BncqoUn3dE4qSpBSMm5UR6.webp";
+const GOLF_CART_SUNSET_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/balcony-aerial-v2-9vRBRcp4HTqrMz5BbATMjb.webp";
+const GOLF_CART_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/rocket-beach-v2-dQqBWCDustcwfk2NjKWDjD.webp";
+const PATHWAY_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/peacock-beach-v2-oFnvRDfks9XVPJbpXCtwWP.webp";
 
 // Cinemagraph-style animated coastal scene
 function CoastalCinemagraph() {
@@ -480,7 +480,7 @@ export default function Home() {
       </section>
 
       {/* ── Photo strip — Beach + Peacock Beach Pathway ───────────── */}
-      <section className="py-4 px-4" style={{ background: "oklch(0.99 0.005 220)" }}>
+      <section className="py-8 px-4" style={{ background: "oklch(0.14 0.04 240)" }}>
         <div className="max-w-5xl mx-auto grid grid-cols-2 gap-4">
           {/* Peacock Beach pathway */}
           <div className="rounded-2xl overflow-hidden aspect-[4/3] relative group">

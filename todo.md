@@ -62,3 +62,4 @@
 - [x] Generate left card image: aerial bird's-eye view from balcony looking down at property — lush tropical landscaping, white gravel cul-de-sac, red ti plants, royal palms, green ICON golf cart small in background heading toward manatee mailbox, no visible faces, warm golden-hour tropical luxury feel
 - [x] Generate bottom-left photo: Peacock Beach access path at golden hour dusk — warm amber light, palm silhouettes, soft Atlantic waves, no people, cinematic luxury travel photography matching dark navy section aesthetic
 - [x] Generate bottom-right photo: Canaveral coastline at golden hour — dramatic warm sky, ocean glowing amber, lush coastal vegetation silhouettes, cinematic luxury travel photography matching dark navy section aesthetic
+- [x] Regenerate all 4 landing page photos with stunning magazine-quality cinematic imagery and unify photo strip section to dark navy background
