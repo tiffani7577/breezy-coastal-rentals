@@ -144,3 +144,27 @@ export const bookingMessages = mysqlTable("booking_messages", {
 
 export type BookingMessage = typeof bookingMessages.$inferSelect;
 export type InsertBookingMessage = typeof bookingMessages.$inferInsert;
+
+// ─── Pre-Rental Safety Inspection Checklists ────────────────────────────────────────────────────────────────────
+export const inspectionChecklists = mysqlTable("inspection_checklists", {
+  id: int("id").autoincrement().primaryKey(),
+  bookingId: int("bookingId").notNull().unique(), // one checklist per booking
+  completedBy: varchar("completedBy", { length: 128 }).notNull(),
+  // Individual checklist items (true = passed)
+  batteryCharged: boolean("batteryCharged").notNull().default(false),
+  tiresInflated: boolean("tiresInflated").notNull().default(false),
+  brakesWorking: boolean("brakesWorking").notNull().default(false),
+  steeringWorking: boolean("steeringWorking").notNull().default(false),
+  signalLightsWorking: boolean("signalLightsWorking").notNull().default(false),
+  brakeLightsWorking: boolean("brakeLightsWorking").notNull().default(false),
+  headlightsWorking: boolean("headlightsWorking").notNull().default(false),
+  bodyFrameOk: boolean("bodyFrameOk").notNull().default(false),
+  seatbeltsOk: boolean("seatbeltsOk").notNull().default(false),
+  cleanAndReady: boolean("cleanAndReady").notNull().default(false),
+  notes: text("notes"),
+  completedAt: timestamp("completedAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type InspectionChecklist = typeof inspectionChecklists.$inferSelect;
+export type InsertInspectionChecklist = typeof inspectionChecklists.$inferInsert;

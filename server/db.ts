@@ -5,9 +5,11 @@ import {
   bookingMessages,
   bookings,
   documents,
+  inspectionChecklists,
   InsertBooking,
   InsertBookingMessage,
   InsertDocument,
+  InsertInspectionChecklist,
   InsertUser,
   InsertWaiverSignature,
   pricing,
@@ -289,4 +291,34 @@ export async function getUnreadCountForAdmin() {
     counts[row.bookingId] = (counts[row.bookingId] ?? 0) + 1;
   }
   return counts;
+}
+
+// ─── Inspection Checklists ────────────────────────────────────────────────────────────────────────────────────────
+export async function getInspectionByBookingId(bookingId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db
+    .select()
+    .from(inspectionChecklists)
+    .where(eq(inspectionChecklists.bookingId, bookingId))
+    .limit(1);
+  return result[0] ?? null;
+}
+
+export async function upsertInspection(data: InsertInspectionChecklist) {
+  const db = await getDb();
+  if (!db) throw new Error("DB unavailable");
+  const existing = await db
+    .select()
+    .from(inspectionChecklists)
+    .where(eq(inspectionChecklists.bookingId, data.bookingId))
+    .limit(1);
+  if (existing.length > 0) {
+    await db
+      .update(inspectionChecklists)
+      .set({ ...data })
+      .where(eq(inspectionChecklists.bookingId, data.bookingId));
+  } else {
+    await db.insert(inspectionChecklists).values(data);
+  }
 }

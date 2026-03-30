@@ -33,6 +33,8 @@ import {
   CheckCircle2,
   XCircle,
   Eye,
+  Camera,
+  ClipboardCheck,
 } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -49,6 +51,136 @@ const STATUS_CONFIG: Record<string, { label: string; emoji: string; color: strin
 };
 
 type AdminView = "list" | "detail" | "calendar" | "settings";
+
+// ─── Quick Message Modal ────────────────────────────────────────────────────────────────────
+function QuickMessageModal({ bookingId, guestName, onClose }: { bookingId: number; guestName: string; onClose: () => void }) {
+  const [msg, setMsg] = useState("");
+  const QUICK_MESSAGES = [
+    "Cart is ready for you! 😊",
+    "Your booking has been approved!",
+    "Please re-upload your documents.",
+    "Do you have any questions before your rental?",
+  ];
+  const sendMsg = trpc.admin.sendMessage.useMutation({
+    onSuccess: () => { toast.success("Message sent!"); onClose(); },
+    onError: () => toast.error("Could not send. Please try again."),
+  });
+  return (
+    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center" style={{ background: "rgba(0,0,0,0.5)" }} onClick={onClose}>
+      <div className="w-full max-w-md rounded-t-3xl sm:rounded-3xl p-6 space-y-4" style={{ background: "white" }} onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="font-bold text-gray-900" style={{ fontSize: "18px" }}>Quick Message</p>
+            <p className="text-gray-500" style={{ fontSize: "14px" }}>to {guestName}</p>
+          </div>
+          <button onClick={onClose} className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: "#f1f5f9" }}>
+            <X className="w-5 h-5 text-gray-500" />
+          </button>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {QUICK_MESSAGES.map(q => (
+            <button key={q} onClick={() => setMsg(q)}
+              className="px-3 py-2 rounded-xl font-medium text-left"
+              style={{ background: msg === q ? "#dbeafe" : "#f1f5f9", color: msg === q ? "#1e40af" : "#374151", fontSize: "13px", border: msg === q ? "1px solid #93c5fd" : "1px solid transparent" }}>
+              {q}
+            </button>
+          ))}
+        </div>
+        <Textarea
+          placeholder="Or type a custom message…"
+          value={msg}
+          onChange={e => setMsg(e.target.value)}
+          className="rounded-xl resize-none"
+          style={{ fontSize: "15px" }}
+          rows={3}
+        />
+        <Button
+          onClick={() => sendMsg.mutate({ bookingId, content: msg.trim() })}
+          disabled={!msg.trim() || sendMsg.isPending}
+          className="w-full h-14 rounded-xl font-bold text-white"
+          style={{ background: "#0284c7", border: "none", fontSize: "16px" }}
+        >
+          {sendMsg.isPending ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <Send className="w-5 h-5 mr-2" />}
+          Send Message
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Inspection Checklist Component ────────────────────────────────────────────────────────────────────
+const INSPECTION_ITEMS = [
+  { key: "batteryCharged",      label: "Battery fully charged",         icon: "🔋" },
+  { key: "tiresInflated",       label: "Tires properly inflated",        icon: "🛞" },
+  { key: "brakesWorking",       label: "Brakes working correctly",       icon: "🛑" },
+  { key: "steeringWorking",     label: "Steering smooth & responsive",   icon: "🔄" },
+  { key: "signalLightsWorking", label: "Signal lights working",          icon: "🔆" },
+  { key: "brakeLightsWorking",  label: "Brake lights working",           icon: "🔴" },
+  { key: "headlightsWorking",   label: "Headlights working",             icon: "💡" },
+  { key: "bodyFrameOk",         label: "Body & frame — no damage",       icon: "🏎️" },
+  { key: "seatbeltsOk",         label: "Seatbelts in good condition",    icon: "🪢" },
+  { key: "cleanAndReady",       label: "Cart clean and ready for guest", icon: "✨" },
+] as const;
+type InspectionKey = typeof INSPECTION_ITEMS[number]["key"];
+
+function InspectionChecklist({ bookingId }: { bookingId: number }) {
+  const defaultState = Object.fromEntries(INSPECTION_ITEMS.map(i => [i.key, false])) as Record<InspectionKey, boolean>;
+  const [items, setItems] = useState<Record<InspectionKey, boolean>>(defaultState);
+  const [notes, setNotes] = useState("");
+  const [saved, setSaved] = useState(false);
+  const { data: existing } = trpc.admin.getInspection.useQuery({ bookingId });
+  const save = trpc.admin.saveInspection.useMutation({
+    onSuccess: () => { setSaved(true); toast.success("Inspection saved! ✅"); },
+    onError: () => toast.error("Could not save. Please try again."),
+  });
+  useEffect(() => {
+    if (existing) {
+      const loaded = {} as Record<InspectionKey, boolean>;
+      INSPECTION_ITEMS.forEach(i => { loaded[i.key] = !!(existing as any)[i.key]; });
+      setItems(loaded);
+      setNotes(existing.notes ?? "");
+      setSaved(true);
+    }
+  }, [existing]);
+  const allPassed = INSPECTION_ITEMS.every(i => items[i.key]);
+  const passedCount = INSPECTION_ITEMS.filter(i => items[i.key]).length;
+  return (
+    <div className="space-y-3">
+      <div className="rounded-2xl p-4" style={{ background: allPassed ? "#f0fdf4" : "#fef9ee", border: `1px solid ${allPassed ? "#86efac" : "#fde68a"}` }}>
+        <p className="font-bold mb-2" style={{ fontSize: "15px", color: allPassed ? "#166534" : "#92400e" }}>
+          {allPassed ? "✅ All checks passed — cart is ready!" : `${passedCount} of ${INSPECTION_ITEMS.length} checks completed`}
+        </p>
+        <div className="h-3 rounded-full overflow-hidden" style={{ background: "#e5e7eb" }}>
+          <div className="h-full rounded-full transition-all" style={{ width: `${(passedCount / INSPECTION_ITEMS.length) * 100}%`, background: allPassed ? "#16a34a" : "#f59e0b" }} />
+        </div>
+      </div>
+      <div className="rounded-2xl overflow-hidden" style={{ border: "1px solid #e5e7eb", background: "white" }}>
+        {INSPECTION_ITEMS.map(({ key, label, icon }, i) => (
+          <button key={key} onClick={() => { setItems(prev => ({ ...prev, [key]: !prev[key] })); setSaved(false); }}
+            className="w-full flex items-center gap-4 px-5 py-4 text-left transition-colors"
+            style={{ borderBottom: i < INSPECTION_ITEMS.length - 1 ? "1px solid #f1f5f9" : "none", background: items[key] ? "#f0fdf4" : "white" }}>
+            <span style={{ fontSize: "22px" }}>{icon}</span>
+            <p className="flex-1 font-semibold" style={{ fontSize: "16px", color: items[key] ? "#166534" : "#374151" }}>{label}</p>
+            <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: items[key] ? "#16a34a" : "#e5e7eb" }}>
+              {items[key] && <Check className="w-4 h-4 text-white" />}
+            </div>
+          </button>
+        ))}
+      </div>
+      <div>
+        <Label className="font-bold text-gray-700 mb-2 block" style={{ fontSize: "15px" }}>Notes (optional)</Label>
+        <Textarea placeholder="Any issues or observations…" value={notes} onChange={e => { setNotes(e.target.value); setSaved(false); }}
+          className="rounded-xl" style={{ fontSize: "15px" }} rows={3} />
+      </div>
+      <Button onClick={() => save.mutate({ bookingId, ...items, notes: notes || undefined })} disabled={save.isPending}
+        className="w-full h-14 rounded-xl font-bold text-white"
+        style={{ background: allPassed ? "#16a34a" : "#0284c7", border: "none", fontSize: "17px" }}>
+        {save.isPending ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <ClipboardCheck className="w-5 h-5 mr-2" />}
+        {saved ? "Update Inspection Record" : "Save Inspection"}
+      </Button>
+    </div>
+  );
+}
 
 // ─── Message Thread Component ─────────────────────────────────────────────────
 function MessageThread({ bookingId, guestName }: { bookingId: number; guestName: string }) {
@@ -147,7 +279,7 @@ function MessageThread({ bookingId, guestName }: { bookingId: number; guestName:
 
 // ─── Booking Detail View ──────────────────────────────────────────────────────
 function BookingDetail({ bookingId, onBack }: { bookingId: number; onBack: () => void }) {
-  const [activeTab, setActiveTab] = useState<"info" | "messages" | "docs">("info");
+  const [activeTab, setActiveTab] = useState<"info" | "messages" | "docs" | "inspection">("info");
   const [isUpdating, setIsUpdating] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
   const [showRejectInput, setShowRejectInput] = useState(false);
@@ -306,6 +438,7 @@ function BookingDetail({ bookingId, onBack }: { bookingId: number; onBack: () =>
           { id: "info" as const, label: "Guest Info", icon: User },
           { id: "messages" as const, label: `Messages${unreadCount > 0 ? ` (${unreadCount} new)` : ""}`, icon: MessageCircle },
           { id: "docs" as const, label: "Documents", icon: FileText },
+          { id: "inspection" as const, label: "Inspection", icon: ClipboardCheck },
         ].map(({ id, label, icon: Icon }) => (
           <button
             key={id}
@@ -375,6 +508,11 @@ function BookingDetail({ bookingId, onBack }: { bookingId: number; onBack: () =>
         </div>
       )}
 
+      {/* Tab: Inspection */}
+      {activeTab === "inspection" && (
+        <InspectionChecklist bookingId={bookingId} />
+      )}
+
       {/* Tab: Documents */}
       {activeTab === "docs" && (
         <div className="space-y-3">
@@ -437,6 +575,28 @@ export default function Admin() {
   const [cartName, setCartName] = useState("");
   const [cartDesc, setCartDesc] = useState("");
   const [isSavingSettings, setIsSavingSettings] = useState(false);
+  const [quickMsg, setQuickMsg] = useState<{ bookingId: number; guestName: string } | null>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const cartImageInputRef = useRef<HTMLInputElement>(null);
+  const uploadCartImage = trpc.admin.uploadCartImage.useMutation({
+    onSuccess: () => { toast.success("Cart photo updated!"); refetchPricing(); },
+    onError: () => toast.error("Could not upload photo. Please try again."),
+  });
+  const handleCartImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) { toast.error("Photo must be under 10MB"); return; }
+    setIsUploadingImage(true);
+    try {
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const base64 = (reader.result as string).split(",")[1];
+        await uploadCartImage.mutateAsync({ fileName: file.name, mimeType: file.type, fileBase64: base64 });
+        setIsUploadingImage(false);
+      };
+      reader.readAsDataURL(file);
+    } catch { setIsUploadingImage(false); }
+  };
 
   const { data: bookingsList, refetch: refetchBookings } = trpc.admin.getAllBookings.useQuery();
   const { data: unreadCounts } = trpc.admin.getUnreadCounts.useQuery();
@@ -537,6 +697,7 @@ export default function Admin() {
 
   return (
     <div className="min-h-screen" style={{ background: "#f8fafc" }}>
+      {quickMsg && <QuickMessageModal bookingId={quickMsg.bookingId} guestName={quickMsg.guestName} onClose={() => setQuickMsg(null)} />}
       {/* Top navigation bar */}
       <div
         className="sticky top-0 z-50 flex items-center justify-between px-5 py-4"
@@ -696,7 +857,14 @@ export default function Admin() {
                               {unread} new
                             </span>
                           )}
-                          <span style={{ fontSize: "14px", color: "#9ca3af" }}>Tap to open →</span>
+                          <button
+                            onClick={e => { e.stopPropagation(); setQuickMsg({ bookingId: b.id, guestName: b.guestName }); }}
+                            className="flex items-center gap-1.5 px-3 py-2 rounded-xl font-semibold"
+                            style={{ background: "#0284c7", color: "white", fontSize: "13px" }}
+                          >
+                            <Send className="w-3.5 h-3.5" />
+                            Message
+                          </button>
                         </div>
                       </div>
                     </button>
@@ -831,6 +999,22 @@ export default function Admin() {
                     className="h-12 rounded-xl"
                     style={{ fontSize: "16px" }}
                   />
+                </div>
+                <div>
+                  <Label className="font-bold text-gray-700 mb-2 block" style={{ fontSize: "15px" }}>Cart Photo</Label>
+                  <input ref={cartImageInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleCartImageChange} />
+                  {pricingData?.cartImageUrl && (
+                    <img src={pricingData.cartImageUrl} alt="Cart" className="w-full rounded-xl mb-3 object-cover" style={{ maxHeight: "180px" }} />
+                  )}
+                  <button
+                    onClick={() => cartImageInputRef.current?.click()}
+                    disabled={isUploadingImage}
+                    className="w-full h-14 rounded-xl font-bold flex items-center justify-center gap-2"
+                    style={{ background: "#f0f9ff", border: "2px dashed #7dd3fc", color: "#0284c7", fontSize: "16px" }}
+                  >
+                    {isUploadingImage ? <Loader2 className="w-5 h-5 animate-spin" /> : <Camera className="w-5 h-5" />}
+                    {isUploadingImage ? "Uploading…" : pricingData?.cartImageUrl ? "Replace Cart Photo" : "Upload Cart Photo"}
+                  </button>
                 </div>
                 <div>
                   <Label className="font-bold text-gray-700 mb-2 block" style={{ fontSize: "15px" }}>Cart Description</Label>

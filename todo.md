@@ -70,3 +70,12 @@
 - [x] Add guest-side message inbox so guests can see and reply to admin messages
 - [x] Email notification to admin when guest sends a message
 - [x] Email notification to guest when admin sends a message
+
+## New Features (Round 3)
+- [ ] Quick "Message Guest" button on booking list card (inline compose without tapping into detail)
+- [ ] Cart image upload in Admin Settings (upload from phone camera, stores to S3)
+- [ ] Pre-rental safety inspection checklist per booking (battery, steering, brakes, signal lights, brake lights, tires, body, cleanliness)
+- [ ] Inspection checklist DB table (inspection_checklists: booking_id, items JSON, completed_by, completed_at)
+- [ ] Inspection checklist tRPC procedures (save, get)
+- [ ] Inspection checklist UI in booking detail (admin checks off items, timestamps saved)
+- [ ] End-to-end test: full booking flow with test card 4242 4242 4242 4242

@@ -1,0 +1,20 @@
+CREATE TABLE `inspection_checklists` (
+	`id` int AUTO_INCREMENT NOT NULL,
+	`bookingId` int NOT NULL,
+	`completedBy` varchar(128) NOT NULL,
+	`batteryCharged` boolean NOT NULL DEFAULT false,
+	`tiresInflated` boolean NOT NULL DEFAULT false,
+	`brakesWorking` boolean NOT NULL DEFAULT false,
+	`steeringWorking` boolean NOT NULL DEFAULT false,
+	`signalLightsWorking` boolean NOT NULL DEFAULT false,
+	`brakeLightsWorking` boolean NOT NULL DEFAULT false,
+	`headlightsWorking` boolean NOT NULL DEFAULT false,
+	`bodyFrameOk` boolean NOT NULL DEFAULT false,
+	`seatbeltsOk` boolean NOT NULL DEFAULT false,
+	`cleanAndReady` boolean NOT NULL DEFAULT false,
+	`notes` text,
+	`completedAt` timestamp NOT NULL DEFAULT (now()),
+	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `inspection_checklists_id` PRIMARY KEY(`id`),
+	CONSTRAINT `inspection_checklists_bookingId_unique` UNIQUE(`bookingId`)
+);

@@ -14,6 +14,7 @@ import {
   getBookingById,
   getBookingByRef,
   getDocumentsByBookingId,
+  getInspectionByBookingId,
   getMessagesByBookingId,
   getPricing,
   getUnreadCountForAdmin,
@@ -24,6 +25,7 @@ import {
   updateBookingStripe,
   updateDocumentStatus,
   updatePricing,
+  upsertInspection,
 } from "./db";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
@@ -369,6 +371,52 @@ export const appRouter = router({
     getUnreadCounts: adminProcedure.query(async () => {
       return getUnreadCountForAdmin();
     }),
+
+    // ─ Inspection Checklist ───────────────────────────────────────────────────────────────────
+    getInspection: adminProcedure
+      .input(z.object({ bookingId: z.number() }))
+      .query(async ({ input }) => {
+        return getInspectionByBookingId(input.bookingId);
+      }),
+
+    saveInspection: adminProcedure
+      .input(z.object({
+        bookingId: z.number(),
+        batteryCharged: z.boolean(),
+        tiresInflated: z.boolean(),
+        brakesWorking: z.boolean(),
+        steeringWorking: z.boolean(),
+        signalLightsWorking: z.boolean(),
+        brakeLightsWorking: z.boolean(),
+        headlightsWorking: z.boolean(),
+        bodyFrameOk: z.boolean(),
+        seatbeltsOk: z.boolean(),
+        cleanAndReady: z.boolean(),
+        notes: z.string().max(1000).optional(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        await upsertInspection({
+          ...input,
+          completedBy: ctx.user.name ?? "Admin",
+          completedAt: new Date(),
+        });
+        return { success: true };
+      }),
+
+    // ─ Cart Image Upload ────────────────────────────────────────────────────────────────────
+    uploadCartImage: adminProcedure
+      .input(z.object({
+        fileName: z.string(),
+        mimeType: z.string(),
+        fileBase64: z.string(),
+      }))
+      .mutation(async ({ input }) => {
+        const buffer = Buffer.from(input.fileBase64, "base64");
+        const key = `cart-images/${Date.now()}-${input.fileName}`;
+        const { url } = await storagePut(key, buffer, input.mimeType);
+        await updatePricing({ cartImageUrl: url });
+        return { url };
+      }),
   }),
 
   // ─── Guest Messaging (public, by booking ref) ──────────────────────────────────
