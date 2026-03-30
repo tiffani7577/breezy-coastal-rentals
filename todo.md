@@ -59,3 +59,4 @@
 - [x] Generate Image 1: Night balcony scene — family silhouettes watching SpaceX rocket launch over pool with twinkle lights, green golf cart visible on gravel driveway below
 - [x] Generate Image 2: Aerial beach scene — green ICON golf cart parked at beach, group watching rocket arc still in sky, Cape Canaveral coast
 - [x] Generate stylized panoramic: oversized cartoon-ish green ICON golf cart tilted on two wheels on gravel driveway, manatee mailbox, red ti plants, palm trees, pool/balcony house, beach in distance, night rocket arc
+- [x] Generate left card image: aerial bird's-eye view from balcony looking down at property — lush tropical landscaping, white gravel cul-de-sac, red ti plants, royal palms, green ICON golf cart small in background heading toward manatee mailbox, no visible faces, warm golden-hour tropical luxury feel
