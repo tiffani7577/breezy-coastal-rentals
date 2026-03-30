@@ -17,6 +17,7 @@ import {
 
 const HERO_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/hero-beach_99596afc.jpg";
 const BEACH_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/beach-seashore_ead00462.jpg";
+const GOLF_CART_SUNSET_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/golf-cart-beach-hero-5hUiUQtnBqpaQ639vadeNF.webp";
 const GOLF_CART_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/golf-cart-beach_db9b806a.jpg";
 const PATHWAY_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/beach-pathway_db9cb33c.jpg";
 
@@ -403,12 +404,28 @@ export default function Home() {
 
             {/* Video + Image side by side on desktop, stacked on mobile */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {/* Cinemagraph-style animated coastal scene */}
+              {/* AI-generated golf cart sunset photo */}
               <div
-                className="rounded-2xl overflow-hidden relative"
+                className="rounded-2xl overflow-hidden relative group"
                 style={{ aspectRatio: "16/10", boxShadow: "0 20px 60px -10px rgba(0,0,0,0.5)" }}
               >
-                <CoastalCinemagraph />
+                <img
+                  src={GOLF_CART_SUNSET_IMG}
+                  alt="Luxury golf cart on the beach at sunset"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div
+                  className="absolute inset-0"
+                  style={{ background: "linear-gradient(180deg, transparent 50%, rgba(10,28,60,0.7) 100%)" }}
+                />
+                <div className="absolute bottom-4 left-4 right-4">
+                  <p className="text-white font-semibold text-sm" style={{ fontFamily: "'Playfair Display', serif" }}>
+                    Your Cart Awaits
+                  </p>
+                  <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "12px" }}>
+                    Ready at the property · Cape Canaveral, FL
+                  </p>
+                </div>
               </div>
 
               {/* Golf cart beach photo */}

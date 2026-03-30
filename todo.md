@@ -54,3 +54,4 @@
 - [x] Fix broken Pexels iframe in golf cart section — replaced with animated SVG cinemagraph
 - [x] Fix calendar empty space on right side (DayPicker not filling container width)
 - [x] Replace Pexels iframe with cinemagraph-style animated SVG coastal scene
+- [x] Replace cartoon SVG cinemagraph with AI-generated luxury golf cart sunset beach photo
