@@ -17,7 +17,7 @@ import {
 
 const HERO_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/hero-beach_99596afc.jpg";
 const BEACH_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/canaveral-coast-v2-BncqoUn3dE4qSpBSMm5UR6.webp";
-const GOLF_CART_SUNSET_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/balcony-view-corrected-v3-JN5XiYkfRMGLHk2mkWED5A.webp";
+const GOLF_CART_SUNSET_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/balcony-view-v4-Gfogr8zzxsNdMMZxKMBvtn.webp";
 const GOLF_CART_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/rocket-beach-v2-dQqBWCDustcwfk2NjKWDjD.webp";
 const PATHWAY_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/peacock-beach-v2-oFnvRDfks9XVPJbpXCtwWP.webp";
 

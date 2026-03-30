@@ -84,3 +84,4 @@
 - [x] Regenerate left top card photo: correct property layout — view from inside upper balcony/deck looking down at pool and flag lot driveway, green cart small in background heading out, no screen enclosure visible, tall royal palms, tropical foliage, accurate two-story white house with orange roof
 - [x] Remove text overlays (title + subtitle captions) from all four photo cards
 - [x] Integrate "6 passengers" info elegantly elsewhere — remove the three stat boxes (6 Guests / Electric / Full Day) and replace with a single clean line or badge
+- [x] Regenerate balcony view v4: second-floor balcony white railing looking down at freeform pool + hot tub spa, cream/white stucco house walls visible at sides, no screen cage, tropical palms and red ti plants, flag lot driveway in background with small green cart heading out, golden hour warm light
