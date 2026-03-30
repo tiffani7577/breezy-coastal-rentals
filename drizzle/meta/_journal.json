@@ -15,6 +15,13 @@
       "when": 1774830046185,
       "tag": "0001_amusing_joseph",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1774853218248,
+      "tag": "0002_heavy_corsair",
+      "breakpoints": true
     }
   ]
 }

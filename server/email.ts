@@ -24,7 +24,9 @@ type EmailPayload =
   | { type: "guest_confirmation"; booking: Booking }
   | { type: "guest_approved"; booking: Booking }
   | { type: "guest_rejected"; booking: Booking; reason?: string }
-  | { type: "admin_new_booking"; booking: Booking };
+  | { type: "admin_new_booking"; booking: Booking }
+  | { type: "message_from_admin"; booking: Booking; messageContent: string }
+  | { type: "message_from_guest"; booking: Booking; messageContent: string };
 
 export async function sendEmail(payload: EmailPayload) {
   const resend = getResend();
@@ -144,6 +146,38 @@ export async function sendEmail(payload: EmailPayload) {
           <tr><td style="font-size:13px;color:#64748b;font-family:sans-serif;">Phone</td><td style="font-size:13px;color:#1e293b;text-align:right;font-family:sans-serif;">${booking.guestPhone}</td></tr>
         </table>
         <a href="${APP_URL}/admin" style="display:inline-block;background:#0284c7;color:#fff;text-decoration:none;padding:14px 28px;border-radius:10px;font-weight:600;font-size:15px;font-family:sans-serif;">Review in Dashboard →</a>`
+      ),
+    });
+  } else if (type === "message_from_admin") {
+    const msg = (payload as any).messageContent as string;
+    await resend.emails.send({
+      from: FROM,
+      to: booking.guestEmail,
+      subject: `Message from Breezy — Ref #${booking.bookingRef}`,
+      html: wrapHtml(
+        "You have a message from Breezy",
+        `<p style="font-size:16px;margin:0 0 8px;font-family:sans-serif;">Hi ${booking.guestName},</p>
+        <p style="font-size:14px;color:#64748b;margin:0 0 16px;font-family:sans-serif;">You received a message about your golf cart rental:</p>
+        <div style="background:#f0f9ff;border-left:4px solid #0284c7;border-radius:8px;padding:16px 20px;margin:0 0 20px;">
+          <p style="margin:0;font-size:15px;color:#1e293b;line-height:1.6;font-family:sans-serif;">${msg}</p>
+        </div>
+        <a href="${APP_URL}/booking/status?ref=${booking.bookingRef}" style="display:inline-block;background:#0284c7;color:#fff;text-decoration:none;padding:14px 28px;border-radius:10px;font-weight:600;font-size:15px;font-family:sans-serif;">Reply in Your Booking →</a>`
+      ),
+    });
+  } else if (type === "message_from_guest") {
+    const msg = (payload as any).messageContent as string;
+    await resend.emails.send({
+      from: FROM,
+      to: ADMIN_EMAIL,
+      subject: `Message from ${booking.guestName} — Ref #${booking.bookingRef}`,
+      html: wrapHtml(
+        `Message from ${booking.guestName}`,
+        `<p style="font-size:14px;color:#64748b;margin:0 0 16px;font-family:sans-serif;">A guest sent you a message about their booking:</p>
+        <div style="background:#f0f9ff;border-left:4px solid #0284c7;border-radius:8px;padding:16px 20px;margin:0 0 20px;">
+          <p style="margin:0;font-size:15px;color:#1e293b;line-height:1.6;font-family:sans-serif;">${msg}</p>
+        </div>
+        ${bookingCard}
+        <a href="${APP_URL}/admin" style="display:inline-block;background:#0284c7;color:#fff;text-decoration:none;padding:14px 28px;border-radius:10px;font-weight:600;font-size:15px;font-family:sans-serif;">Reply in Dashboard →</a>`
       ),
     });
   }

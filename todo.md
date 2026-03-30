@@ -63,3 +63,10 @@
 - [x] Generate bottom-left photo: Peacock Beach access path at golden hour dusk — warm amber light, palm silhouettes, soft Atlantic waves, no people, cinematic luxury travel photography matching dark navy section aesthetic
 - [x] Generate bottom-right photo: Canaveral coastline at golden hour — dramatic warm sky, ocean glowing amber, lush coastal vegetation silhouettes, cinematic luxury travel photography matching dark navy section aesthetic
 - [x] Regenerate all 4 landing page photos with stunning magazine-quality cinematic imagery and unify photo strip section to dark navy background
+- [x] Redesign admin dashboard to be senior-friendly: big cards, plain English, large text, no jargon
+- [x] Add messages table to DB schema (booking_id, sender_role, content, timestamp, read)
+- [x] Add tRPC procedures: sendMessage, listMessages, markMessagesRead
+- [x] Build per-booking detail page with Airbnb-style message thread (admin ↔ guest)
+- [x] Add guest-side message inbox so guests can see and reply to admin messages
+- [x] Email notification to admin when guest sends a message
+- [x] Email notification to guest when admin sends a message

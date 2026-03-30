@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
   Waves,
@@ -18,8 +19,12 @@ import {
   AlertCircle,
   Search,
   ChevronLeft,
+  MessageCircle,
+  Send,
+  Loader2,
 } from "lucide-react";
 import { format } from "date-fns";
+import { toast } from "sonner";
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
   pending_payment: { label: "Pending Payment", color: "oklch(0.55 0.14 60)", bg: "oklch(0.96 0.04 80)", icon: Clock },
@@ -37,6 +42,110 @@ const DOC_STATUS_CONFIG: Record<string, { label: string; color: string; bg: stri
   needs_update: { label: "Needs Update", color: "oklch(0.55 0.22 25)", bg: "oklch(0.96 0.04 25)" },
   approved: { label: "Approved", color: "oklch(0.45 0.15 175)", bg: "oklch(0.95 0.04 175)" },
 };
+
+// ─── Guest Message Thread Component ────────────────────────────────────────────────────────
+function GuestMessageThread({ bookingRef, guestName }: { bookingRef: string; guestName: string }) {
+  const [newMsg, setNewMsg] = useState("");
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  const { data, refetch } = trpc.messages.getByRef.useQuery({ ref: bookingRef });
+  const sendMsg = trpc.messages.sendByRef.useMutation({
+    onSuccess: () => {
+      setNewMsg("");
+      refetch();
+    },
+    onError: () => toast.error("Could not send message. Please try again."),
+  });
+
+  const messages = data?.messages ?? [];
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages.length]);
+
+  const handleSend = () => {
+    if (!newMsg.trim()) return;
+    sendMsg.mutate({ ref: bookingRef, content: newMsg.trim() });
+  };
+
+  return (
+    <div
+      className="rounded-2xl overflow-hidden"
+      style={{ border: "1px solid #bae6fd", background: "white" }}
+    >
+      {/* Header */}
+      <div className="px-5 py-4 flex items-center gap-3" style={{ background: "#0284c7" }}>
+        <MessageCircle className="w-5 h-5 text-white" />
+        <div>
+          <p className="font-bold text-white" style={{ fontSize: "16px" }}>Message Breezy</p>
+          <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.8)" }}>Ask a question or let us know anything</p>
+        </div>
+      </div>
+
+      {/* Messages */}
+      <div
+        className="p-4 space-y-3 overflow-y-auto"
+        style={{ maxHeight: "320px", background: "#f0f9ff" }}
+      >
+        {messages.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-8 text-center">
+            <MessageCircle className="w-9 h-9 mb-3" style={{ color: "#93c5fd" }} />
+            <p className="font-semibold text-gray-600" style={{ fontSize: "15px" }}>No messages yet</p>
+            <p className="text-gray-400 mt-1" style={{ fontSize: "13px" }}>Send us a message below — we'll reply as soon as possible</p>
+          </div>
+        ) : (
+          messages.map((msg) => {
+            const isAdmin = msg.senderRole === "admin";
+            return (
+              <div key={msg.id} className={`flex ${isAdmin ? "justify-start" : "justify-end"}`}>
+                <div
+                  className="rounded-2xl px-4 py-3"
+                  style={{
+                    maxWidth: "82%",
+                    background: isAdmin ? "white" : "#0284c7",
+                    color: isAdmin ? "#1e293b" : "white",
+                    border: isAdmin ? "1px solid #e2e8f0" : "none",
+                    boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
+                  }}
+                >
+                  {isAdmin && (
+                    <p style={{ fontSize: "11px", fontWeight: 700, color: "#0284c7", marginBottom: "4px", textTransform: "uppercase", letterSpacing: "0.05em" }}>Breezy</p>
+                  )}
+                  <p style={{ fontSize: "15px", lineHeight: "1.5", margin: 0 }}>{msg.content}</p>
+                  <p style={{ fontSize: "11px", marginTop: "4px", opacity: 0.65, textAlign: isAdmin ? "left" : "right" }}>
+                    {format(new Date(msg.createdAt), "MMM d, h:mm a")}
+                  </p>
+                </div>
+              </div>
+            );
+          })
+        )}
+        <div ref={bottomRef} />
+      </div>
+
+      {/* Input */}
+      <div className="p-4 border-t flex gap-3 items-end" style={{ borderColor: "#e5e7eb" }}>
+        <Textarea
+          placeholder="Type a message to Breezy…"
+          value={newMsg}
+          onChange={(e) => setNewMsg(e.target.value)}
+          onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
+          className="flex-1 rounded-xl resize-none"
+          style={{ fontSize: "15px", minHeight: "48px", maxHeight: "100px" }}
+          rows={2}
+        />
+        <Button
+          onClick={handleSend}
+          disabled={!newMsg.trim() || sendMsg.isPending}
+          className="h-12 w-12 rounded-xl flex-shrink-0 flex items-center justify-center"
+          style={{ background: "#0284c7", color: "white", border: "none" }}
+        >
+          {sendMsg.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+        </Button>
+      </div>
+    </div>
+  );
+}
 
 export default function BookingStatus() {
   const params = new URLSearchParams(window.location.search);
@@ -116,6 +225,9 @@ export default function BookingStatus() {
 
         {booking && statusCfg && docCfg && (
           <div className="space-y-4">
+
+            {/* ── Message Thread ── */}
+            <GuestMessageThread bookingRef={activeRef} guestName={booking.guestName} />
             {/* Status card */}
             <div
               className="rounded-2xl overflow-hidden"

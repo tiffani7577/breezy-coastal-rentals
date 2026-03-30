@@ -6,6 +6,7 @@ import {
   addBlockedDate,
   createBooking,
   createDocument,
+  createMessage,
   createWaiverSignature,
   getAllBookings,
   getApprovedBookingDates,
@@ -13,8 +14,11 @@ import {
   getBookingById,
   getBookingByRef,
   getDocumentsByBookingId,
+  getMessagesByBookingId,
   getPricing,
+  getUnreadCountForAdmin,
   getWaiverByBookingId,
+  markMessagesRead,
   removeBlockedDate,
   updateBookingStatus,
   updateBookingStripe,
@@ -326,6 +330,77 @@ export const appRouter = router({
       .input(z.object({ bookingId: z.number(), status: z.enum(["pending", "received", "needs_update", "approved"]) }))
       .mutation(async ({ input }) => {
         await updateDocumentStatus(input.bookingId, input.status);
+        return { success: true };
+      }),
+
+    getBookingDetailWithMessages: adminProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input, ctx }) => {
+        const booking = await getBookingById(input.id);
+        if (!booking) throw new TRPCError({ code: "NOT_FOUND" });
+        const docs = await getDocumentsByBookingId(booking.id);
+        const waiver = await getWaiverByBookingId(booking.id);
+        const messages = await getMessagesByBookingId(booking.id);
+        // Mark guest messages as read since admin is viewing
+        await markMessagesRead(booking.id, "admin");
+        return { booking, documents: docs, waiver, messages };
+      }),
+
+    sendMessage: adminProcedure
+      .input(z.object({ bookingId: z.number(), content: z.string().min(1).max(2000) }))
+      .mutation(async ({ input, ctx }) => {
+        const booking = await getBookingById(input.bookingId);
+        if (!booking) throw new TRPCError({ code: "NOT_FOUND" });
+        await createMessage({
+          bookingId: input.bookingId,
+          senderRole: "admin",
+          senderName: ctx.user.name ?? "Breezy Admin",
+          content: input.content,
+        });
+        // Email the guest
+        await sendEmail({
+          type: "message_from_admin",
+          booking,
+          messageContent: input.content,
+        }).catch(console.error);
+        return { success: true };
+      }),
+
+    getUnreadCounts: adminProcedure.query(async () => {
+      return getUnreadCountForAdmin();
+    }),
+  }),
+
+  // ─── Guest Messaging (public, by booking ref) ──────────────────────────────────
+  messages: router({
+    getByRef: publicProcedure
+      .input(z.object({ ref: z.string() }))
+      .query(async ({ input }) => {
+        const booking = await getBookingByRef(input.ref);
+        if (!booking) throw new TRPCError({ code: "NOT_FOUND" });
+        const messages = await getMessagesByBookingId(booking.id);
+        // Mark admin messages as read since guest is viewing
+        await markMessagesRead(booking.id, "guest");
+        return { messages, guestName: booking.guestName };
+      }),
+
+    sendByRef: publicProcedure
+      .input(z.object({ ref: z.string(), content: z.string().min(1).max(2000) }))
+      .mutation(async ({ input }) => {
+        const booking = await getBookingByRef(input.ref);
+        if (!booking) throw new TRPCError({ code: "NOT_FOUND" });
+        await createMessage({
+          bookingId: booking.id,
+          senderRole: "guest",
+          senderName: booking.guestName,
+          content: input.content,
+        });
+        // Notify admin
+        await sendEmail({
+          type: "message_from_guest",
+          booking,
+          messageContent: input.content,
+        }).catch(console.error);
         return { success: true };
       }),
   }),

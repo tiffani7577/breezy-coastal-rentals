@@ -1,10 +1,12 @@
-import { and, eq, gte, lte, ne, or } from "drizzle-orm";
+import { and, desc, eq, gt, gte, lte, ne, or } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import {
   availabilityBlocks,
+  bookingMessages,
   bookings,
   documents,
   InsertBooking,
+  InsertBookingMessage,
   InsertDocument,
   InsertUser,
   InsertWaiverSignature,
@@ -238,4 +240,53 @@ export async function getWaiverByBookingId(bookingId: number) {
     .where(eq(waiverSignatures.bookingId, bookingId))
     .limit(1);
   return result[0] ?? null;
+}
+
+// ─── Booking Messages ────────────────────────────────────────────────────────
+export async function createMessage(data: InsertBookingMessage) {
+  const db = await getDb();
+  if (!db) throw new Error("DB unavailable");
+  await db.insert(bookingMessages).values(data);
+}
+
+export async function getMessagesByBookingId(bookingId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db
+    .select()
+    .from(bookingMessages)
+    .where(eq(bookingMessages.bookingId, bookingId))
+    .orderBy(bookingMessages.createdAt);
+}
+
+export async function markMessagesRead(bookingId: number, readerRole: "admin" | "guest") {
+  // Mark messages sent by the OTHER role as read (i.e. admin reading guest messages, or vice versa)
+  const senderRole = readerRole === "admin" ? "guest" : "admin";
+  const db = await getDb();
+  if (!db) return;
+  await db
+    .update(bookingMessages)
+    .set({ isRead: true })
+    .where(
+      and(
+        eq(bookingMessages.bookingId, bookingId),
+        eq(bookingMessages.senderRole, senderRole),
+        eq(bookingMessages.isRead, false)
+      )
+    );
+}
+
+export async function getUnreadCountForAdmin() {
+  // Returns map of bookingId -> unread count (messages from guests not yet read by admin)
+  const db = await getDb();
+  if (!db) return {};
+  const rows = await db
+    .select()
+    .from(bookingMessages)
+    .where(and(eq(bookingMessages.senderRole, "guest"), eq(bookingMessages.isRead, false)));
+  const counts: Record<number, number> = {};
+  for (const row of rows) {
+    counts[row.bookingId] = (counts[row.bookingId] ?? 0) + 1;
+  }
+  return counts;
 }

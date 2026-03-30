@@ -130,3 +130,17 @@ export const waiverSignatures = mysqlTable("waiver_signatures", {
 
 export type WaiverSignature = typeof waiverSignatures.$inferSelect;
 export type InsertWaiverSignature = typeof waiverSignatures.$inferInsert;
+
+// ─── Booking Messages ────────────────────────────────────────────────────────
+export const bookingMessages = mysqlTable("booking_messages", {
+  id: int("id").autoincrement().primaryKey(),
+  bookingId: int("bookingId").notNull(),
+  senderRole: mysqlEnum("senderRole", ["admin", "guest"]).notNull(),
+  senderName: varchar("senderName", { length: 128 }).notNull(),
+  content: text("content").notNull(),
+  isRead: boolean("isRead").notNull().default(false),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type BookingMessage = typeof bookingMessages.$inferSelect;
+export type InsertBookingMessage = typeof bookingMessages.$inferInsert;
