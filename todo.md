@@ -56,3 +56,5 @@
 - [x] Replace Pexels iframe with cinemagraph-style animated SVG coastal scene
 - [x] Replace cartoon SVG cinemagraph with AI-generated luxury golf cart sunset beach photo
 - [x] Generate AI hero image: green ICON golf cart on gravel driveway, rocket launch in sky, tropical palms, excited group
+- [x] Generate Image 1: Night balcony scene — family silhouettes watching SpaceX rocket launch over pool with twinkle lights, green golf cart visible on gravel driveway below
+- [x] Generate Image 2: Aerial beach scene — green ICON golf cart parked at beach, group watching rocket arc still in sky, Cape Canaveral coast

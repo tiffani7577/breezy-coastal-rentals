@@ -17,8 +17,8 @@ import {
 
 const HERO_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/hero-beach_99596afc.jpg";
 const BEACH_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/beach-seashore_ead00462.jpg";
-const GOLF_CART_SUNSET_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/cape-canaveral-golf-cart-hero-DWqpTx4gMJFkr3iNfsg5kb.webp";
-const GOLF_CART_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/golf-cart-beach_db9b806a.jpg";
+const GOLF_CART_SUNSET_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/balcony-rocket-night-kdy48bJAKLNVAW3KYp8UPX.webp";
+const GOLF_CART_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/beach-rocket-aerial-FQibNpS9trymX6NBH9oiKR.webp";
 const PATHWAY_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/beach-pathway_db9cb33c.jpg";
 
 // Cinemagraph-style animated coastal scene
@@ -420,10 +420,10 @@ export default function Home() {
                 />
                 <div className="absolute bottom-4 left-4 right-4">
                   <p className="text-white font-semibold text-sm" style={{ fontFamily: "'Playfair Display', serif" }}>
-                    The Launch You’ll Never Forget
+                    Watch From the Balcony
                   </p>
                   <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "12px" }}>
-                    8720 Seashell Ln · Cape Canaveral, FL · Space Coast
+                    8720 Seashell Ln · Cape Canaveral, FL · Front row seats to history
                   </p>
                 </div>
               </div>
@@ -444,10 +444,10 @@ export default function Home() {
                 />
                 <div className="absolute bottom-4 left-4 right-4">
                   <p className="text-white font-semibold text-sm" style={{ fontFamily: "'Playfair Display', serif" }}>
-                    4-Seat Electric Golf Cart
+                    The Launch You'll Never Forget
                   </p>
                   <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "12px" }}>
-                    Included with every rental · Cape Canaveral, FL
+                    Peacock Beach · 2-min ride · Space Coast, FL
                   </p>
                 </div>
               </div>
