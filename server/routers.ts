@@ -1,28 +1,334 @@
 import { COOKIE_NAME } from "@shared/const";
+import { TRPCError } from "@trpc/server";
+import { nanoid } from "nanoid";
+import { z } from "zod";
+import {
+  addBlockedDate,
+  createBooking,
+  createDocument,
+  createWaiverSignature,
+  getAllBookings,
+  getApprovedBookingDates,
+  getBlockedDates,
+  getBookingById,
+  getBookingByRef,
+  getDocumentsByBookingId,
+  getPricing,
+  getWaiverByBookingId,
+  removeBlockedDate,
+  updateBookingStatus,
+  updateBookingStripe,
+  updateDocumentStatus,
+  updatePricing,
+} from "./db";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
-import { publicProcedure, router } from "./_core/trpc";
+import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
+import { storagePut } from "./storage";
+import { sendEmail } from "./email";
+import Stripe from "stripe";
+import { ENV } from "./_core/env";
 
+// ─── Admin guard ─────────────────────────────────────────────────────────────
+const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
+  if (ctx.user.role !== "admin") {
+    throw new TRPCError({ code: "FORBIDDEN", message: "Admin access required" });
+  }
+  return next({ ctx });
+});
+
+// ─── Stripe client ────────────────────────────────────────────────────────────
+function getStripe() {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Stripe not configured" });
+  return new Stripe(key, { apiVersion: "2026-03-25.dahlia" });
+}
+
+// ─── App Router ───────────────────────────────────────────────────────────────
 export const appRouter = router({
-    // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
   system: systemRouter,
+
   auth: router({
-    me: publicProcedure.query(opts => opts.ctx.user),
+    me: publicProcedure.query((opts) => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
-      return {
-        success: true,
-      } as const;
+      return { success: true } as const;
     }),
   }),
 
-  // TODO: add feature routers here, e.g.
-  // todo: router({
-  //   list: protectedProcedure.query(({ ctx }) =>
-  //     db.getUserTodos(ctx.user.id)
-  //   ),
-  // }),
+  // ─── Pricing ───────────────────────────────────────────────────────────────
+  pricing: router({
+    get: publicProcedure.query(async () => {
+      return getPricing();
+    }),
+    update: adminProcedure
+      .input(
+        z.object({
+          dailyRate: z.string().optional(),
+          deliveryFee: z.string().optional(),
+          cartName: z.string().optional(),
+          cartDescription: z.string().optional(),
+          cartImageUrl: z.string().optional(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        await updatePricing(input);
+        return { success: true };
+      }),
+  }),
+
+  // ─── Availability ──────────────────────────────────────────────────────────
+  availability: router({
+    getBlockedDates: publicProcedure.query(async () => {
+      const blocks = await getBlockedDates();
+      const approved = await getApprovedBookingDates();
+      return { blocks, approvedRanges: approved };
+    }),
+    addBlock: adminProcedure
+      .input(z.object({ date: z.string(), reason: z.string().optional() }))
+      .mutation(async ({ input }) => {
+        await addBlockedDate(input.date, input.reason);
+        return { success: true };
+      }),
+    removeBlock: adminProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await removeBlockedDate(input.id);
+        return { success: true };
+      }),
+  }),
+
+  // ─── Bookings ──────────────────────────────────────────────────────────────
+  bookings: router({
+    create: publicProcedure
+      .input(
+        z.object({
+          guestName: z.string().min(2),
+          guestEmail: z.string().email(),
+          guestPhone: z.string().min(10),
+          airbnbBookingName: z.string().min(2),
+          startDate: z.string(),
+          endDate: z.string(),
+          totalDays: z.number().min(1),
+          dailyRate: z.string(),
+          deliveryFee: z.string(),
+          totalAmount: z.string(),
+          waiverLegalName: z.string().min(2),
+          waiverAgreed: z.boolean(),
+          waiverIp: z.string().optional(),
+          waiverUserAgent: z.string().optional(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const bookingRef = nanoid(10).toUpperCase();
+        const booking = await createBooking({
+          bookingRef,
+          guestName: input.guestName,
+          guestEmail: input.guestEmail,
+          guestPhone: input.guestPhone,
+          airbnbBookingName: input.airbnbBookingName,
+          startDate: new Date(input.startDate + "T12:00:00Z") as any,
+          endDate: new Date(input.endDate + "T12:00:00Z") as any,
+          totalDays: input.totalDays,
+          dailyRate: input.dailyRate,
+          deliveryFee: input.deliveryFee,
+          totalAmount: input.totalAmount,
+          bookingStatus: "pending_payment",
+          documentStatus: "pending",
+        });
+
+        // Save waiver signature
+        await createWaiverSignature({
+          bookingId: booking!.id,
+          legalName: input.waiverLegalName,
+          agreedToTerms: input.waiverAgreed,
+          ipAddress: input.waiverIp,
+          userAgent: input.waiverUserAgent,
+        });
+
+        return { bookingRef, bookingId: booking!.id };
+      }),
+
+    getByRef: publicProcedure
+      .input(z.object({ ref: z.string() }))
+      .query(async ({ input }) => {
+        const booking = await getBookingByRef(input.ref);
+        if (!booking) throw new TRPCError({ code: "NOT_FOUND" });
+        const docs = await getDocumentsByBookingId(booking.id);
+        const waiver = await getWaiverByBookingId(booking.id);
+        return { booking, documents: docs, waiver };
+      }),
+
+    createCheckout: publicProcedure
+      .input(
+        z.object({
+          bookingRef: z.string(),
+          origin: z.string(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const booking = await getBookingByRef(input.bookingRef);
+        if (!booking) throw new TRPCError({ code: "NOT_FOUND" });
+
+        const stripe = getStripe();
+        const session = await stripe.checkout.sessions.create({
+          payment_method_types: ["card"],
+          mode: "payment",
+          line_items: [
+            {
+              price_data: {
+                currency: "usd",
+                product_data: {
+                  name: `Breezy Golf Cart Rental`,
+                  description: `${booking.totalDays} day${booking.totalDays > 1 ? "s" : ""} — ${booking.startDate} to ${booking.endDate}`,
+                },
+                unit_amount: Math.round(parseFloat(booking.totalAmount) * 100),
+              },
+              quantity: 1,
+            },
+          ],
+          metadata: { bookingRef: input.bookingRef },
+          success_url: `${input.origin}/booking/confirmation?ref=${input.bookingRef}&session_id={CHECKOUT_SESSION_ID}`,
+          cancel_url: `${input.origin}/booking?step=5&ref=${input.bookingRef}`,
+        });
+
+        return { url: session.url, sessionId: session.id };
+      }),
+
+    confirmPayment: publicProcedure
+      .input(z.object({ bookingRef: z.string(), sessionId: z.string() }))
+      .mutation(async ({ input }) => {
+        const booking = await getBookingByRef(input.bookingRef);
+        if (!booking) throw new TRPCError({ code: "NOT_FOUND" });
+
+        if (booking.bookingStatus === "pending_payment") {
+          const stripe = getStripe();
+          const session = await stripe.checkout.sessions.retrieve(input.sessionId);
+          if (session.payment_status === "paid") {
+            await updateBookingStripe(
+              input.bookingRef,
+              input.sessionId,
+              session.payment_intent as string
+            );
+            // Send emails
+            const updatedBooking = await getBookingByRef(input.bookingRef);
+            if (updatedBooking) {
+              await sendEmail({
+                type: "guest_confirmation",
+                booking: updatedBooking,
+              }).catch(console.error);
+              await sendEmail({
+                type: "admin_new_booking",
+                booking: updatedBooking,
+              }).catch(console.error);
+            }
+          }
+        }
+        const updated = await getBookingByRef(input.bookingRef);
+        return { booking: updated };
+      }),
+  }),
+
+  // ─── Documents ─────────────────────────────────────────────────────────────
+  documents: router({
+    upload: publicProcedure
+      .input(
+        z.object({
+          bookingId: z.number(),
+          documentType: z.enum(["drivers_license", "proof_of_insurance"]),
+          fileName: z.string(),
+          mimeType: z.string(),
+          fileSize: z.number(),
+          fileBase64: z.string(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const maxSize = 10 * 1024 * 1024;
+        if (input.fileSize > maxSize) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "File too large (max 10MB)" });
+        }
+
+        const allowed = ["image/jpeg", "image/png", "application/pdf"];
+        if (!allowed.includes(input.mimeType)) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Invalid file type" });
+        }
+
+        const buffer = Buffer.from(input.fileBase64, "base64");
+        const ext = input.fileName.split(".").pop() ?? "bin";
+        const fileKey = `documents/${input.bookingId}/${input.documentType}-${nanoid(8)}.${ext}`;
+
+        const { url } = await storagePut(fileKey, buffer, input.mimeType);
+
+        await createDocument({
+          bookingId: input.bookingId,
+          documentType: input.documentType,
+          fileKey,
+          fileUrl: url,
+          fileName: input.fileName,
+          mimeType: input.mimeType,
+          fileSize: input.fileSize,
+        });
+
+        // Update document status to received
+        await updateDocumentStatus(input.bookingId, "received");
+
+        return { url, fileKey };
+      }),
+  }),
+
+  // ─── Admin ─────────────────────────────────────────────────────────────────
+  admin: router({
+    getAllBookings: adminProcedure.query(async () => {
+      return getAllBookings();
+    }),
+
+    getBookingDetail: adminProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        const booking = await getBookingById(input.id);
+        if (!booking) throw new TRPCError({ code: "NOT_FOUND" });
+        const docs = await getDocumentsByBookingId(booking.id);
+        const waiver = await getWaiverByBookingId(booking.id);
+        return { booking, documents: docs, waiver };
+      }),
+
+    updateBookingStatus: adminProcedure
+      .input(
+        z.object({
+          id: z.number(),
+          status: z.enum(["submitted", "under_review", "approved", "rejected", "completed", "cancelled"]),
+          adminNotes: z.string().optional(),
+          rejectionReason: z.string().optional(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        await updateBookingStatus(input.id, input.status, {
+          adminNotes: input.adminNotes,
+          rejectionReason: input.rejectionReason,
+        });
+        const booking = await getBookingById(input.id);
+        if (booking) {
+          if (input.status === "approved") {
+            await sendEmail({ type: "guest_approved", booking }).catch(console.error);
+          } else if (input.status === "rejected") {
+            await sendEmail({
+              type: "guest_rejected",
+              booking,
+              reason: input.rejectionReason,
+            }).catch(console.error);
+          }
+        }
+        return { success: true };
+      }),
+
+    updateDocumentStatus: adminProcedure
+      .input(z.object({ bookingId: z.number(), status: z.enum(["pending", "received", "needs_update", "approved"]) }))
+      .mutation(async ({ input }) => {
+        await updateDocumentStatus(input.bookingId, input.status);
+        return { success: true };
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

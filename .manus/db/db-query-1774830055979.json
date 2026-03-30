@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO pricing (dailyRate, deliveryFee, cartName, cartDescription, cartImageUrl) VALUES ('89.00', '0.00', 'Breezy Golf Cart', 'A premium 4-seat electric golf cart perfect for exploring the area, beach access, and stress-free local travel.', NULL) ON DUPLICATE KEY UPDATE id=id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3hrDKttrnG1MDSM.root --database 7hUDh8nJHPTxQ2ComhxGSN --execute INSERT INTO pricing (dailyRate, deliveryFee, cartName, cartDescription, cartImageUrl) VALUES ('89.00', '0.00', 'Breezy Golf Cart', 'A premium 4-seat electric golf cart perfect for exploring the area, beach access, and stress-free local travel.', NULL) ON DUPLICATE KEY UPDATE id=id;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 112
+}
