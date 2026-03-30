@@ -16,10 +16,10 @@ import {
 } from "lucide-react";
 
 const HERO_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/hero-beach_99596afc.jpg";
-const BEACH_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/beach-seashore_ead00462.jpg";
+const BEACH_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/canaveral-coast-golden-hour-QAb6ruV67BJBLYn84z7NLX.webp";
 const GOLF_CART_SUNSET_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/balcony-aerial-view-left-dn2iuM7zEDmYmju9RWg4Ht.webp";
 const GOLF_CART_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/beach-rocket-aerial-FQibNpS9trymX6NBH9oiKR.webp";
-const PATHWAY_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/beach-pathway_db9cb33c.jpg";
+const PATHWAY_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/peacock-beach-golden-hour-kjkkKGSNMXumnnVV8FsjF2.webp";
 
 // Cinemagraph-style animated coastal scene
 function CoastalCinemagraph() {
@@ -495,9 +495,9 @@ export default function Home() {
             />
             <div className="absolute bottom-3 left-3 right-3">
               <p className="text-white font-semibold text-xs" style={{ fontFamily: "'Playfair Display', serif" }}>
-                Peacock Beach Access
+                Peacock Beach at Sunset
               </p>
-              <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "10px" }}>End of the street · 2-min ride</p>
+              <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "10px" }}>End of the street · 2-min cart ride</p>
             </div>
           </div>
           {/* Canaveral seashore */}
@@ -515,7 +515,7 @@ export default function Home() {
               <p className="text-white font-semibold text-xs" style={{ fontFamily: "'Playfair Display', serif" }}>
                 Canaveral National Seashore
               </p>
-              <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "10px" }}>Miles of pristine coastline</p>
+              <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "10px" }}>Miles of untouched coastline</p>
             </div>
           </div>
         </div>
