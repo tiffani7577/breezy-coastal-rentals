@@ -450,8 +450,10 @@ export default function Booking() {
                   root: { width: "100%", maxWidth: "100%" },
                   months: { width: "100%" },
                   month: { width: "100%" },
-                  month_grid: { width: "100%" },
-                  table: { width: "100%" },
+                  month_grid: { width: "100%", tableLayout: "fixed", borderCollapse: "collapse" },
+                  head_cell: { width: "14.2857%", textAlign: "center" },
+                  cell: { width: "14.2857%", textAlign: "center" },
+                  day: { width: "100%", margin: "0 auto" },
                 }}
               />
             </div>
