@@ -494,7 +494,7 @@ export default function Booking() {
                 Your Details
               </h1>
               <p className="text-muted-foreground text-sm mt-1">
-                We'll use this to confirm your Airbnb booking.
+                We'll use this to confirm your stay at Seashell Lane.
               </p>
             </div>
 
@@ -532,16 +532,16 @@ export default function Booking() {
                 />
               </div>
               <div>
-                <Label className="text-sm font-semibold text-foreground mb-1.5 block">Airbnb Booking Name</Label>
+                <Label className="text-sm font-semibold text-foreground mb-1.5 block">Name on Your Seashell Lane Booking</Label>
                 <Input
-                  placeholder="Name on your Airbnb reservation"
+                  placeholder="Name used to book your stay at Seashell Lane"
                   value={airbnbName}
                   onChange={(e) => setAirbnbName(e.target.value)}
                   className="h-12 rounded-xl text-base"
                   style={{ border: "1px solid oklch(0.88 0.015 220)" }}
                 />
                 <p className="text-xs text-muted-foreground mt-1.5">
-                  This helps us verify your Airbnb stay.
+                  This helps us confirm you're a current guest at the property.
                 </p>
               </div>
             </div>

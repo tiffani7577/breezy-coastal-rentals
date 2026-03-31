@@ -102,3 +102,9 @@
 
 ## Bug Fixes (Round 3)
 - [x] Fix nested button error in Admin.tsx (button inside button on booking card)
+
+## Round 7 Changes
+- [x] Update booking form "Airbnb booking name" label to something like "Name that booked your stay at Seashell Lane"
+- [x] Save/preserve current aerial beach hero image (already CDN hosted, just document the URL)
+- [x] Generate new golf cart + coastal ocean hero image (cart near beach access, not on sand)
+- [x] Replace hero background image with new golf cart coastal image

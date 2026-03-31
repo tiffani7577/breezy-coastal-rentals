@@ -16,7 +16,8 @@ import {
   Zap,
 } from "lucide-react";
 
-const HERO_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/hero-beach_99596afc.jpg";
+const HERO_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/hero-golf-cart-coastal-YnSgWZ86h2oPdxryNpgyG8.webp";
+// Original aerial beach (saved): https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/hero-beach_99596afc.jpg
 const BEACH_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/canaveral-coast-v2-BncqoUn3dE4qSpBSMm5UR6.webp";
 const GOLF_CART_SUNSET_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/balcony-view-v5-MeRsZ96H2Hgba4gLBGKxHY.webp";
 const GOLF_CART_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/rocket-beach-v2-dQqBWCDustcwfk2NjKWDjD.webp";
