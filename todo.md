@@ -95,3 +95,10 @@
 
 ## Bug Fixes (Round 2)
 - [x] Fix uneven calendar grid in booking date picker — ensure 7 equal-width columns, last row aligns correctly
+
+## Copy Updates (Round 6)
+- [x] Update hero headline/subheadline to say "for Seashell Lane guests" — exclusive feel
+- [x] Rewrite benefits section to sell the cart: fun factor, parking relief, easy exploration
+
+## Bug Fixes (Round 3)
+- [x] Fix nested button error in Admin.tsx (button inside button on booking card)

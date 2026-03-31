@@ -376,20 +376,19 @@ export default function Home() {
             className="mb-6 text-xs tracking-widest uppercase font-semibold"
             style={{ background: "rgba(255,255,255,0.18)", color: "white", border: "1px solid rgba(255,255,255,0.3)", backdropFilter: "blur(8px)" }}
           >
-            Cape Canaveral, Florida
+              Cape Canaveral, Florida
           </Badge>
           <h1
             className="text-white mb-5 leading-tight"
             style={{ fontSize: "clamp(2.4rem, 7vw, 4rem)", fontFamily: "'Playfair Display', serif", fontWeight: 700, textShadow: "0 2px 20px rgba(0,0,0,0.3)" }}
           >
-            Enhance Your Stay<br />with a Private Golf Cart
+            The Easiest Way to<br />Explore Cape Canaveral
           </h1>
           <p
             className="mb-10 leading-relaxed"
             style={{ fontSize: "clamp(1rem, 3vw, 1.2rem)", color: "rgba(255,255,255,0.88)", textShadow: "0 1px 8px rgba(0,0,0,0.2)" }}
           >
-            Make your stay breezy with effortless local travel.<br />
-            The beach is just a short ride away.
+            Exclusively for guests at Seashell Lane — your private golf cart is waiting at the property, charged and ready to go.
           </p>
 
           {/* CTA */}
@@ -448,35 +447,35 @@ export default function Home() {
       <section className="py-20 px-4" style={{ background: "oklch(0.99 0.005 220)" }}>
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-14">
-            <p className="text-primary text-sm font-semibold tracking-widest uppercase mb-3">Why Breezy</p>
+              <p className="text-primary text-sm font-semibold tracking-widest uppercase mb-3">Why Add Breezy to Your Stay</p>
             <h2 className="text-foreground" style={{ fontSize: "clamp(1.8rem, 5vw, 2.6rem)", fontFamily: "'Playfair Display', serif" }}>
-              Your Beach, Your Way
+              More Fun. Zero Hassle.
             </h2>
             <p className="text-muted-foreground mt-3 max-w-md mx-auto leading-relaxed">
-              Skip the parking stress. Our private golf cart puts Cape Canaveral's best spots at your fingertips.
+              Parking near the beach in Cape Canaveral is a nightmare. A golf cart changes everything — it's faster, cheaper, and way more fun than driving your car every time you want to go out.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
               {
-                icon: Waves,
-                title: "Easy Beach Access",
-                desc: "Ride straight to the sand. The beach is right at the back of the neighborhood — no car needed.",
+                icon: Star,
+                title: "It's Just More Fun",
+                desc: "Cruising to the beach in a golf cart beats sitting in traffic every single time. Wind in your hair, no stress, pure vacation mode.",
                 color: "oklch(0.93 0.06 215)",
                 iconColor: "oklch(0.48 0.18 232)",
               },
               {
                 icon: ParkingCircleOff,
-                title: "No Parking Stress",
-                desc: "Forget circling for spots. Park the golf cart anywhere and enjoy your day without the hassle.",
+                title: "Skip the Parking Nightmare",
+                desc: "Beach parking in Cape Canaveral fills up fast — especially on weekends. The golf cart parks anywhere in seconds. No circling, no fees, no frustration.",
                 color: "oklch(0.95 0.04 175)",
                 iconColor: "oklch(0.45 0.15 175)",
               },
               {
                 icon: MapPin,
-                title: "Explore Effortlessly",
-                desc: "Discover local restaurants, shops, and hidden gems around Cape Canaveral at your own pace.",
+                title: "Explore the Whole Area",
+                desc: "Peacock Beach is a 2-minute ride. Restaurants, shops, and the waterfront are all within easy cart distance. See more, spend less time in the car.",
                 color: "oklch(0.96 0.04 80)",
                 iconColor: "oklch(0.55 0.14 60)",
               },
@@ -687,7 +686,7 @@ export default function Home() {
               </Button>
             </Link>
             <p className="text-xs text-muted-foreground mt-3">
-              Exclusively for Airbnb guests · Cape Canaveral, FL
+              Exclusively for Seashell Lane guests · Cape Canaveral, FL
             </p>
           </div>
         </div>
@@ -746,7 +745,7 @@ export default function Home() {
           </span>
         </div>
         <p className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>
-          Cape Canaveral, Florida · Golf Cart Rental for Airbnb Guests
+          Cape Canaveral, Florida · Private Golf Cart for Seashell Lane Guests
         </p>
         <div className="flex items-center justify-center gap-6 mt-4">
           <Link href="/terms" className="text-xs hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.4)" }}>

@@ -821,10 +821,13 @@ export default function Admin() {
                   const cfg = STATUS_CONFIG[b.bookingStatus] ?? STATUS_CONFIG.submitted;
                   const unread = (unreadCounts ?? {})[b.id] ?? 0;
                   return (
-                    <button
+                    <div
                       key={b.id}
+                      role="button"
+                      tabIndex={0}
                       onClick={() => setSelectedBookingId(b.id)}
-                      className="w-full text-left rounded-2xl p-5 transition-all"
+                      onKeyDown={e => e.key === 'Enter' && setSelectedBookingId(b.id)}
+                      className="w-full text-left rounded-2xl p-5 transition-all cursor-pointer"
                       style={{
                         background: "white",
                         border: `1px solid ${b.bookingStatus === "submitted" ? "#93c5fd" : "#e5e7eb"}`,
@@ -867,7 +870,7 @@ export default function Admin() {
                           </button>
                         </div>
                       </div>
-                    </button>
+                    </div>
                   );
                 })
               )}
