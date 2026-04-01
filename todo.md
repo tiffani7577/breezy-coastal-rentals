@@ -125,3 +125,6 @@
 
 ## Round 10 Changes
 - [x] Enhance availability calendar: stay date range input (check-in/check-out), highlight range on calendar, show availability summary for selected window, CTA to book those dates
+
+## Round 11 Changes
+- [x] Upload luxury cart photo to CDN and set as inventory card image in vehicle selection step
