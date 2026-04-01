@@ -19,6 +19,9 @@ import {
   AlertCircle,
   Camera,
   Loader2,
+  Car,
+  Users,
+  Zap,
 } from "lucide-react";
 import { Link } from "wouter";
 import { DayPicker } from "react-day-picker";
@@ -28,10 +31,11 @@ import { toast } from "sonner";
 
 const STEPS = [
   { id: 1, label: "Dates", icon: Calendar },
-  { id: 2, label: "Details", icon: User },
-  { id: 3, label: "Documents", icon: Upload },
-  { id: 4, label: "Waiver", icon: FileText },
-  { id: 5, label: "Payment", icon: CreditCard },
+  { id: 2, label: "Vehicle", icon: Car },
+  { id: 3, label: "Details", icon: User },
+  { id: 4, label: "Documents", icon: Upload },
+  { id: 5, label: "Waiver", icon: FileText },
+  { id: 6, label: "Payment", icon: CreditCard },
 ];
 
 const WAIVER_TEXT = `GOLF CART RENTAL LIABILITY WAIVER & RELEASE AGREEMENT
@@ -86,7 +90,7 @@ export default function Booking() {
   const [guestName, setGuestName] = useState("");
   const [guestEmail, setGuestEmail] = useState("");
   const [guestPhone, setGuestPhone] = useState("");
-  const [airbnbName, setAirbnbName] = useState("");
+  const [airbnbName] = useState(""); // kept for schema compat, not shown to user
 
   // Step 3
   const [licenseFile, setLicenseFile] = useState<UploadedFile>(null);
@@ -108,7 +112,7 @@ export default function Booking() {
   const uploadDoc = trpc.documents.upload.useMutation();
   const createCheckout = trpc.bookings.createCheckout.useMutation();
 
-  const dailyRate = parseFloat(pricingData?.dailyRate ?? "89");
+  const dailyRate = parseFloat(pricingData?.dailyRate ?? "170");
   const deliveryFee = parseFloat(pricingData?.deliveryFee ?? "0");
   const totalDays =
     dateRange.from && dateRange.to
@@ -175,7 +179,10 @@ export default function Booking() {
       }
       setStep(2);
     } else if (step === 2) {
-      if (!guestName.trim() || !guestEmail.trim() || !guestPhone.trim() || !airbnbName.trim()) {
+      // Vehicle selection — cart is auto-selected, just advance
+      setStep(3);
+    } else if (step === 3) {
+      if (!guestName.trim() || !guestEmail.trim() || !guestPhone.trim()) {
         toast.error("Please fill in all fields.");
         return;
       }
@@ -187,14 +194,14 @@ export default function Booking() {
         toast.error("Please enter a valid US phone number.");
         return;
       }
-      setStep(3);
-    } else if (step === 3) {
+      setStep(4);
+    } else if (step === 4) {
       if (!licenseFile || !insuranceFile) {
         toast.error("Please upload both your driver's license and proof of insurance.");
         return;
       }
-      setStep(4);
-    } else if (step === 4) {
+      setStep(5);
+    } else if (step === 5) {
       if (!waiverName.trim()) {
         toast.error("Please type your full legal name to sign the waiver.");
         return;
@@ -203,8 +210,8 @@ export default function Booking() {
         toast.error("Please agree to the terms to continue.");
         return;
       }
-      setStep(5);
-    } else if (step === 5) {
+      setStep(6);
+    } else if (step === 6) {
       await handleSubmit();
     }
   };
@@ -277,12 +284,14 @@ export default function Booking() {
     file,
     inputRef,
     onChange,
+    imageOnly = false,
   }: {
     label: string;
     hint: string;
     file: UploadedFile;
     inputRef: React.RefObject<HTMLInputElement | null>;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    imageOnly?: boolean;
   }) => (
     <div
       className="rounded-2xl overflow-hidden"
@@ -335,14 +344,14 @@ export default function Booking() {
             </div>
             <div className="text-center">
               <p className="text-sm font-semibold text-foreground">Tap to upload</p>
-              <p className="text-xs text-muted-foreground mt-0.5">JPG, PNG, or PDF · Max 10MB</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{imageOnly ? "JPG or PNG · Max 10MB" : "JPG, PNG, or PDF · Max 10MB"}</p>
             </div>
           </button>
         )}
         <input
           ref={inputRef as any}
           type="file"
-          accept="image/*,application/pdf"
+          accept={imageOnly ? "image/*" : "image/*,application/pdf"}
           capture="environment"
           className="hidden"
           onChange={onChange}
@@ -486,15 +495,66 @@ export default function Booking() {
           </div>
         )}
 
-        {/* ── Step 2: Guest Details ─────────────────────────────── */}
+        {/* ── Step 2: Vehicle Selection ─────────────────────────── */}
         {step === 2 && (
+          <div>
+            <div className="mb-6">
+              <h1 className="text-2xl font-bold text-foreground" style={{ fontFamily: "'Playfair Display', serif" }}>
+                Choose Your Vehicle
+              </h1>
+              <p className="text-muted-foreground text-sm mt-1">
+                {totalDays} day{totalDays !== 1 ? "s" : ""} · {dateRange.from && dateRange.to ? `${format(dateRange.from, "MMM d")} – ${format(dateRange.to, "MMM d, yyyy")}` : ""}
+              </p>
+            </div>
+            {/* Cart inventory card */}
+            <div
+              className="rounded-2xl overflow-hidden cursor-pointer"
+              style={{ border: "2px solid oklch(0.48 0.18 232)", boxShadow: "0 0 0 4px oklch(0.93 0.04 215)", background: "white" }}
+            >
+              <div className="relative" style={{ height: "200px", background: "oklch(0.93 0.04 215)" }}>
+                {pricingData?.cartImageUrl ? (
+                  <img src={pricingData.cartImageUrl} alt="Golf Cart" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <Car className="w-16 h-16" style={{ color: "oklch(0.48 0.18 232)" }} />
+                  </div>
+                )}
+                <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full font-bold text-xs" style={{ background: "#dcfce7", color: "#166534" }}>✓ Available</div>
+              </div>
+              <div className="p-5">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <h2 className="font-bold text-foreground" style={{ fontSize: "20px", fontFamily: "'Playfair Display', serif" }}>{pricingData?.cartName ?? "Breezy Golf Cart"}</h2>
+                    <p className="text-muted-foreground text-sm mt-0.5">{pricingData?.cartDescription ?? "6-passenger electric golf cart"}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold" style={{ fontSize: "22px", color: "oklch(0.48 0.18 232)" }}>${dailyRate}<span className="text-sm font-normal text-muted-foreground">/day</span></p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
+                  <span className="flex items-center gap-1.5"><Users className="w-4 h-4" /> 6 passengers</span>
+                  <span className="flex items-center gap-1.5"><Zap className="w-4 h-4" /> Electric</span>
+                  <span className="flex items-center gap-1.5"><Check className="w-4 h-4" /> Street legal</span>
+                </div>
+                <div className="rounded-xl p-3 flex items-center gap-2" style={{ background: "oklch(0.93 0.04 215)" }}>
+                  <Check className="w-4 h-4 text-primary flex-shrink-0" />
+                  <p className="text-sm font-semibold text-primary">Selected for your stay</p>
+                </div>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground text-center mt-4">Total: <strong>${totalAmount.toFixed(2)}</strong> for {totalDays} day{totalDays !== 1 ? "s" : ""}</p>
+          </div>
+        )}
+
+        {/* ── Step 3: Guest Details ─────────────────────────────── */}
+        {step === 3 && (
           <div>
             <div className="mb-6">
               <h1 className="text-2xl font-bold text-foreground" style={{ fontFamily: "'Playfair Display', serif" }}>
                 Your Details
               </h1>
               <p className="text-muted-foreground text-sm mt-1">
-                We'll use this to confirm your stay at Seashell Lane.
+                We'll use this to send your confirmation and keep you updated.
               </p>
             </div>
 
@@ -531,25 +591,13 @@ export default function Booking() {
                   style={{ border: "1px solid oklch(0.88 0.015 220)" }}
                 />
               </div>
-              <div>
-                <Label className="text-sm font-semibold text-foreground mb-1.5 block">Name on Your Seashell Lane Booking</Label>
-                <Input
-                  placeholder="Name used to book your stay at Seashell Lane"
-                  value={airbnbName}
-                  onChange={(e) => setAirbnbName(e.target.value)}
-                  className="h-12 rounded-xl text-base"
-                  style={{ border: "1px solid oklch(0.88 0.015 220)" }}
-                />
-                <p className="text-xs text-muted-foreground mt-1.5">
-                  This helps us confirm you're a current guest at the property.
-                </p>
-              </div>
+
             </div>
           </div>
         )}
 
-        {/* ── Step 3: Documents ─────────────────────────────────── */}
-        {step === 3 && (
+        {/* ── Step 4: Documents ─────────────────────────────────── */}
+        {step === 4 && (
           <div>
             <div className="mb-6">
               <h1 className="text-2xl font-bold text-foreground" style={{ fontFamily: "'Playfair Display', serif" }}>
@@ -569,11 +617,12 @@ export default function Booking() {
                 onChange={(e) => handleFileUpload(e, setLicenseFile)}
               />
               <FileUploadCard
-                label="Proof of Insurance"
-                hint="Auto insurance card or policy document"
+                label="Insurance Card Photo"
+                hint="Take a photo of your insurance card — front side"
                 file={insuranceFile}
                 inputRef={insuranceRef}
                 onChange={(e) => handleFileUpload(e, setInsuranceFile)}
+                imageOnly
               />
             </div>
 
@@ -589,8 +638,8 @@ export default function Booking() {
           </div>
         )}
 
-        {/* ── Step 4: Waiver ────────────────────────────────────── */}
-        {step === 4 && (
+        {/* ── Step 5: Waiver ────────────────────────────────────── */}
+        {step === 5 && (
           <div>
             <div className="mb-6">
               <h1 className="text-2xl font-bold text-foreground" style={{ fontFamily: "'Playfair Display', serif" }}>
@@ -651,8 +700,8 @@ export default function Booking() {
           </div>
         )}
 
-        {/* ── Step 5: Review + Payment ──────────────────────────── */}
-        {step === 5 && (
+        {/* ── Step 6: Review + Payment ──────────────────────────── */}
+        {step === 6 && (
           <div>
             <div className="mb-6">
               <h1 className="text-2xl font-bold text-foreground" style={{ fontFamily: "'Playfair Display', serif" }}>

@@ -29,7 +29,7 @@ export type InsertUser = typeof users.$inferInsert;
 // ─── Pricing ────────────────────────────────────────────────────────────────
 export const pricing = mysqlTable("pricing", {
   id: int("id").autoincrement().primaryKey(),
-  dailyRate: decimal("dailyRate", { precision: 10, scale: 2 }).notNull().default("89.00"),
+  dailyRate: decimal("dailyRate", { precision: 10, scale: 2 }).notNull().default("170.00"),
   deliveryFee: decimal("deliveryFee", { precision: 10, scale: 2 }).notNull().default("0.00"),
   cartName: varchar("cartName", { length: 128 }).notNull().default("Breezy Golf Cart"),
   cartDescription: text("cartDescription"),
@@ -57,7 +57,7 @@ export const bookings = mysqlTable("bookings", {
   guestName: varchar("guestName", { length: 128 }).notNull(),
   guestEmail: varchar("guestEmail", { length: 320 }).notNull(),
   guestPhone: varchar("guestPhone", { length: 32 }).notNull(),
-  airbnbBookingName: varchar("airbnbBookingName", { length: 128 }).notNull(),
+  airbnbBookingName: varchar("airbnbBookingName", { length: 128 }),
   // Dates
   startDate: date("startDate").notNull(),
   endDate: date("endDate").notNull(),

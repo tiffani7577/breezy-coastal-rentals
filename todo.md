@@ -108,3 +108,12 @@
 - [x] Save/preserve current aerial beach hero image (already CDN hosted, just document the URL)
 - [x] Generate new golf cart + coastal ocean hero image (cart near beach access, not on sand)
 - [x] Replace hero background image with new golf cart coastal image
+
+## Round 8 Changes
+- [x] Remove "Name on Your Seashell Lane Booking" field from booking form entirely
+- [x] Make landing page copy generic (not Seashell Lane exclusive) so it works for any guest
+- [x] Raise base price to $170/night (was $150)
+- [x] Add Stripe promo/discount code support so Seashell Lane guests get a special code
+- [x] Simplify insurance upload to photo/image only — remove any text input fields for insurance
+- [x] Add vehicle selection step after date picking showing inventory (1 cart card)
+- [x] Update admin settings to reflect $170 base price

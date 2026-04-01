@@ -194,6 +194,7 @@ export const appRouter = router({
               quantity: 1,
             },
           ],
+          allow_promotion_codes: true,
           metadata: { bookingRef: input.bookingRef },
           success_url: `${input.origin}/booking/confirmation?ref=${input.bookingRef}&session_id={CHECKOUT_SESSION_ID}`,
           cancel_url: `${input.origin}/booking?step=5&ref=${input.bookingRef}`,

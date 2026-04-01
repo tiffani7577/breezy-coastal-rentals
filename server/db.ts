@@ -95,7 +95,7 @@ export async function updatePricing(data: {
   const existing = await db.select().from(pricing).limit(1);
   if (existing.length === 0) {
     await db.insert(pricing).values({
-      dailyRate: data.dailyRate ?? "89.00",
+      dailyRate: data.dailyRate ?? "170.00",
       deliveryFee: data.deliveryFee ?? "0.00",
       cartName: data.cartName ?? "Breezy Golf Cart",
       cartDescription: data.cartDescription ?? null,
