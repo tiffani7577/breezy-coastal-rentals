@@ -10,6 +10,7 @@ import BookingConfirmation from "./pages/BookingConfirmation";
 import BookingStatus from "./pages/BookingStatus";
 import Admin from "./pages/Admin";
 import { TermsPage, PrivacyPage } from "./pages/Legal";
+import Availability from "./pages/Availability";
 
 function Router() {
   return (
@@ -19,6 +20,7 @@ function Router() {
       <Route path="/booking/confirmation" component={BookingConfirmation} />
       <Route path="/booking/status" component={BookingStatus} />
       <Route path="/admin" component={Admin} />
+      <Route path="/availability" component={Availability} />
       <Route path="/terms" component={TermsPage} />
       <Route path="/privacy" component={PrivacyPage} />
       <Route path="/404" component={NotFound} />

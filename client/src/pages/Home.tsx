@@ -197,6 +197,108 @@ function AnimatedWave({ flip = false }: { flip?: boolean }) {
   );
 }
 
+function FAQSection() {
+  const [openIndex, setOpenIndex] = React.useState<number | null>(null);
+
+  const faqs = [
+    {
+      q: "Who can rent the golf cart?",
+      a: "Anyone with a valid driver's license and proof of insurance is welcome to rent. You must be 18 or older. The cart is available to local visitors, vacation rental guests, and anyone staying in the Cape Canaveral area.",
+    },
+    {
+      q: "Do I need insurance to rent?",
+      a: "Yes. You'll need to upload a photo of your current auto insurance card during the booking process. This is required before your booking can be approved.",
+    },
+    {
+      q: "How does the booking process work?",
+      a: "Select your dates, provide your details, upload your driver's license and insurance card, sign the digital waiver, and pay. Your booking is then reviewed by our team — you'll receive an email once it's approved.",
+    },
+    {
+      q: "Is payment collected upfront?",
+      a: "Yes, full payment is collected at the time of booking via Stripe. If your booking is not approved for any reason, a manual refund will be issued through Stripe.",
+    },
+    {
+      q: "What is the daily rate?",
+      a: "The base rate is $170/day. A delivery or setup fee may apply depending on your location. The full pricing breakdown is shown before you pay.",
+    },
+    {
+      q: "Can I ride the golf cart on the beach?",
+      a: "No — Cape Canaveral beaches do not permit golf cart or vehicle access on the sand. The cart is street-legal and perfect for roads, beach access paths, and local exploration.",
+    },
+    {
+      q: "Where will the cart be delivered?",
+      a: "The cart is delivered to your address and waiting for you, charged and ready to go. Pickup and drop-off logistics are confirmed after your booking is approved.",
+    },
+    {
+      q: "What happens if I need to cancel?",
+      a: "Cancellations are handled on a case-by-case basis. Contact us as soon as possible and we'll work with you. Refunds are processed manually through Stripe.",
+    },
+    {
+      q: "Do you offer a discount code?",
+      a: "Yes! If you received a promo code, you can enter it directly on the Stripe checkout page before completing payment.",
+    },
+    {
+      q: "Is the cart safe for families?",
+      a: "Absolutely. The cart seats 6 passengers and is designed for comfortable, low-speed local travel. Children must be seated and supervised at all times. Please review the safety guidelines on this page before your rental.",
+    },
+  ];
+
+  return (
+    <section className="py-20 px-4" style={{ background: "oklch(0.99 0.005 220)" }}>
+      <div className="max-w-2xl mx-auto">
+        <div className="text-center mb-12">
+          <p className="text-sm font-semibold tracking-widest uppercase mb-3" style={{ color: "oklch(0.48 0.18 232)" }}>
+            Got Questions?
+          </p>
+          <h2
+            className="text-foreground"
+            style={{ fontSize: "clamp(1.6rem, 5vw, 2.2rem)", fontFamily: "'Playfair Display', serif" }}
+          >
+            Frequently Asked Questions
+          </h2>
+        </div>
+
+        <div className="space-y-3">
+          {faqs.map((faq, i) => (
+            <div
+              key={i}
+              className="rounded-2xl overflow-hidden"
+              style={{
+                border: "1px solid oklch(0.90 0.015 220)",
+                background: openIndex === i ? "white" : "oklch(0.98 0.005 220)",
+                boxShadow: openIndex === i ? "0 4px 20px -4px rgba(0,0,0,0.08)" : "none",
+                transition: "all 0.2s ease",
+              }}
+            >
+              <button
+                className="w-full text-left px-6 py-5 flex items-center justify-between gap-4"
+                onClick={() => setOpenIndex(openIndex === i ? null : i)}
+              >
+                <span className="font-semibold text-foreground text-sm leading-snug">{faq.q}</span>
+                <span
+                  className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-transform"
+                  style={{
+                    background: openIndex === i ? "oklch(0.48 0.18 232)" : "oklch(0.93 0.04 215)",
+                    color: openIndex === i ? "white" : "oklch(0.48 0.18 232)",
+                    transform: openIndex === i ? "rotate(45deg)" : "none",
+                  }}
+                >
+                  +
+                </span>
+              </button>
+              {openIndex === i && (
+                <div className="px-6 pb-5">
+                  <p className="text-sm text-muted-foreground leading-relaxed">{faq.a}</p>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function SafetySection() {
   const [activeTab, setActiveTab] = React.useState(0);
 
@@ -343,15 +445,27 @@ export default function Home() {
               Breezy
             </span>
           </div>
-          <Link href="/booking">
-            <Button
-              size="sm"
-              className="shadow-lg"
-              style={{ background: "rgba(255,255,255,0.92)", color: "var(--primary)", backdropFilter: "blur(16px)", border: "1px solid rgba(255,255,255,0.6)", fontWeight: 600 }}
-            >
-              Reserve Now
-            </Button>
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link href="/availability">
+              <Button
+                size="sm"
+                variant="ghost"
+                className="shadow-sm hidden sm:flex"
+                style={{ background: "rgba(255,255,255,0.75)", color: "var(--primary)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.5)", fontWeight: 600 }}
+              >
+                Check Availability
+              </Button>
+            </Link>
+            <Link href="/booking">
+              <Button
+                size="sm"
+                className="shadow-lg"
+                style={{ background: "rgba(255,255,255,0.92)", color: "var(--primary)", backdropFilter: "blur(16px)", border: "1px solid rgba(255,255,255,0.6)", fontWeight: 600 }}
+              >
+                Reserve Now
+              </Button>
+            </Link>
+          </div>
         </div>
       </nav>
 
@@ -734,6 +848,9 @@ export default function Home() {
 
       {/* ── Safety & Operations ─────────────────────────────────── */}
       <SafetySection />
+
+      {/* ── FAQ ────────────────────────────────────────────────────── */}
+      <FAQSection />
 
       {/* ── Footer ────────────────────────────────────────────────── */}
       <footer className="py-10 px-4 text-center" style={{ background: "oklch(0.08 0.04 240)" }}>

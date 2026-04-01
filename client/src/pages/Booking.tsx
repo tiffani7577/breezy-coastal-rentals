@@ -379,9 +379,14 @@ export default function Booking() {
               Breezy
             </span>
           </div>
-          <span className="text-xs text-muted-foreground font-medium">
-            Step {step} of {STEPS.length}
-          </span>
+          <div className="flex items-center gap-3">
+            <Link href="/availability">
+              <span className="text-xs font-medium hidden sm:block" style={{ color: "oklch(0.48 0.18 232)" }}>Check Availability</span>
+            </Link>
+            <span className="text-xs text-muted-foreground font-medium">
+              Step {step} of {STEPS.length}
+            </span>
+          </div>
         </div>
 
         {/* Progress bar */}

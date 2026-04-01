@@ -117,3 +117,8 @@
 - [x] Simplify insurance upload to photo/image only — remove any text input fields for insurance
 - [x] Add vehicle selection step after date picking showing inventory (1 cart card)
 - [x] Update admin settings to reflect $170 base price
+
+## Round 9 Changes
+- [x] Add /availability page with public calendar showing booked/blocked/available dates
+- [x] Add nav link to availability calendar from landing page and booking flow
+- [x] Add FAQ section to landing page (accordion style, coastal premium design)
