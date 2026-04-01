@@ -122,3 +122,6 @@
 - [x] Add /availability page with public calendar showing booked/blocked/available dates
 - [x] Add nav link to availability calendar from landing page and booking flow
 - [x] Add FAQ section to landing page (accordion style, coastal premium design)
+
+## Round 10 Changes
+- [x] Enhance availability calendar: stay date range input (check-in/check-out), highlight range on calendar, show availability summary for selected window, CTA to book those dates
