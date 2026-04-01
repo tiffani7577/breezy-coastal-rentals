@@ -90,7 +90,7 @@
 - [x] Add Safety & Operations section to landing page with 5 tabs: How to Operate, Safety Rules, Local Laws (Cape Canaveral), Emergency Procedures, Maintenance Notes
 - [x] Each tab has icon, title, and detailed content cards
 - [x] Section uses dark navy background matching rest of page, premium accordion/tab UI
-- [ ] Also add safety instructions to the post-booking confirmation email and booking status page
+- [x] Also add safety instructions to the post-booking confirmation email and booking status page
 - [x] Regenerate balcony view v5: correct spatial layout — pool/hot tub on RIGHT side below balcony, lush green lawn and red ti plants in CENTER, narrow flag lot driveway with royal palms lining both sides and seagrape/wooden fence on FAR LEFT, small green cart heading away down the left driveway
 
 ## Bug Fixes (Round 2)

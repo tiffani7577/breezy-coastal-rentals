@@ -389,7 +389,7 @@ export default function Home() {
             className="mb-10 leading-relaxed"
             style={{ fontSize: "clamp(1rem, 3vw, 1.2rem)", color: "rgba(255,255,255,0.88)", textShadow: "0 1px 8px rgba(0,0,0,0.2)" }}
           >
-            Exclusively for guests at Seashell Lane — your private golf cart is waiting at the property, charged and ready to go.
+            Your private golf cart is waiting — charged, ready, and delivered right to your door.
           </p>
 
           {/* CTA */}
@@ -687,7 +687,7 @@ export default function Home() {
               </Button>
             </Link>
             <p className="text-xs text-muted-foreground mt-3">
-              Exclusively for Seashell Lane guests · Cape Canaveral, FL
+              Available for local guests · Cape Canaveral, FL
             </p>
           </div>
         </div>
@@ -746,7 +746,7 @@ export default function Home() {
           </span>
         </div>
         <p className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>
-          Cape Canaveral, Florida · Private Golf Cart for Seashell Lane Guests
+          Cape Canaveral, Florida · Private Golf Cart Rental
         </p>
         <div className="flex items-center justify-center gap-6 mt-4">
           <Link href="/terms" className="text-xs hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.4)" }}>
