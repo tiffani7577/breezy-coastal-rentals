@@ -138,3 +138,7 @@
 - [x] Replace landing page scenery/beach photos with lifestyle cart photos
 - [x] Remove misleading cart-on-beach image from hero
 - [x] Add CSV/Excel export of all bookings to admin dashboard for accounting
+
+## Round 13 Changes
+- [x] Generate new hero image: golf cart as the star, no beach sand, coastal street/driveway setting
+- [x] Update Home.tsx hero image URL with new image
