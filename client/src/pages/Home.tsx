@@ -19,9 +19,10 @@ import {
 const HERO_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/hero-golf-cart-coastal-YnSgWZ86h2oPdxryNpgyG8.webp";
 // Original aerial beach (saved): https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/hero-beach_99596afc.jpg
 const BEACH_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/canaveral-coast-v2-BncqoUn3dE4qSpBSMm5UR6.webp";
-const GOLF_CART_SUNSET_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/balcony-view-v5-MeRsZ96H2Hgba4gLBGKxHY.webp";
-const GOLF_CART_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/rocket-beach-v2-dQqBWCDustcwfk2NjKWDjD.webp";
 const PATHWAY_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/peacock-beach-v2-oFnvRDfks9XVPJbpXCtwWP.webp";
+const LIFESTYLE_FAMILY = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/lifestyle-family-cart-cDv5eUToTmXadSgKubPizH.webp";
+const LIFESTYLE_GIRLS = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/lifestyle-girls-trip-cart-VRqpYxcrwAXpxxaoCVmbGB.webp";
+const LIFESTYLE_SUNSET = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/lifestyle-sunset-cart-534yNishhjohtUif7DYkRm.webp";
 
 // Cinemagraph-style animated coastal scene
 function CoastalCinemagraph() {
@@ -503,7 +504,7 @@ export default function Home() {
             className="mb-10 leading-relaxed"
             style={{ fontSize: "clamp(1rem, 3vw, 1.2rem)", color: "rgba(255,255,255,0.88)", textShadow: "0 1px 8px rgba(0,0,0,0.2)" }}
           >
-            Your private golf cart is waiting — charged, ready, and delivered right to your door.
+            Your private golf cart is already there — charged, ready, and waiting for you.
           </p>
 
           {/* CTA */}
@@ -635,35 +636,23 @@ export default function Home() {
                 Meet Your Golf Cart
               </h2>
               <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "15px", maxWidth: "420px", margin: "0 auto", lineHeight: 1.6 }}>
-                A premium 4-seat electric cart, ready and waiting at the property. Your ticket to effortless coastal living.
+                A premium 6-seat electric cart, ready and waiting at the property. Your ticket to effortless coastal living.
               </p>
             </div>
 
-            {/* Video + Image side by side on desktop, stacked on mobile */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {/* AI-generated golf cart sunset photo */}
-              <div
-                className="rounded-2xl overflow-hidden relative group"
-                style={{ aspectRatio: "16/10", boxShadow: "0 20px 60px -10px rgba(0,0,0,0.5)" }}
-              >
-                <img
-                  src={GOLF_CART_SUNSET_IMG}
-                  alt="Luxury golf cart on the beach at sunset"
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-              </div>
-
-              {/* Golf cart beach photo */}
-              <div
-                className="rounded-2xl overflow-hidden relative group"
-                style={{ aspectRatio: "16/10", boxShadow: "0 20px 60px -10px rgba(0,0,0,0.5)" }}
-              >
-                <img
-                  src={GOLF_CART_IMG}
-                  alt="Golf cart at the beach"
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-              </div>
+            {/* Lifestyle photo grid — 3 images */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              {[
+                { src: LIFESTYLE_FAMILY, alt: "Family heading to the beach in a golf cart", label: "Family Fun" },
+                { src: LIFESTYLE_GIRLS, alt: "Girls trip on a golf cart by the ocean", label: "Girls Trip" },
+                { src: LIFESTYLE_SUNSET, alt: "Couple watching sunset from a golf cart" , label: "Sunset Rides" },
+              ].map(({ src, alt, label }) => (
+                <div key={label} className="rounded-2xl overflow-hidden relative group" style={{ aspectRatio: "4/3", boxShadow: "0 20px 60px -10px rgba(0,0,0,0.5)" }}>
+                  <img src={src} alt={alt} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                  <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, transparent 55%, rgba(10,28,60,0.7) 100%)" }} />
+                  <span className="absolute bottom-3 left-4 text-white text-xs font-semibold tracking-wide" style={{ textShadow: "0 1px 6px rgba(0,0,0,0.5)" }}>{label}</span>
+                </div>
+              ))}
             </div>
 
             {/* Elegant cart specs pill */}
@@ -688,33 +677,22 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── Photo strip — Beach + Peacock Beach Pathway ───────────── */}
+      {/* ── Lifestyle photo strip ───────────────────────────── */}
       <section className="py-8 px-4" style={{ background: "oklch(0.14 0.04 240)" }}>
-        <div className="max-w-5xl mx-auto grid grid-cols-2 gap-4">
-          {/* Peacock Beach pathway */}
-          <div className="rounded-2xl overflow-hidden aspect-[4/3] relative group">
-            <img
-              src={PATHWAY_IMG}
-              alt="Peacock Beach pathway, Cape Canaveral"
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-            />
-            <div
-              className="absolute inset-0"
-              style={{ background: "linear-gradient(180deg, transparent 55%, rgba(10,28,60,0.65) 100%)" }}
-            />
-          </div>
-          {/* Canaveral seashore */}
-          <div className="rounded-2xl overflow-hidden aspect-[4/3] relative group">
-            <img
-              src={BEACH_IMG}
-              alt="Canaveral National Seashore"
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-            />
-            <div
-              className="absolute inset-0"
-              style={{ background: "linear-gradient(180deg, transparent 55%, rgba(10,28,60,0.65) 100%)" }}
-            />
-
+        <div className="max-w-5xl mx-auto">
+          <p className="text-center text-xs font-semibold tracking-widest uppercase mb-5" style={{ color: "oklch(0.72 0.12 215)" }}>Real Guests. Real Fun.</p>
+          <div className="grid grid-cols-3 gap-4">
+            {[
+              { src: LIFESTYLE_FAMILY, alt: "Family loading up for the beach", caption: "Family Beach Day" },
+              { src: LIFESTYLE_GIRLS, alt: "Girls trip vibes", caption: "Girls Trip" },
+              { src: LIFESTYLE_SUNSET, alt: "Sunset cruise", caption: "Golden Hour" },
+            ].map(({ src, alt, caption }) => (
+              <div key={caption} className="rounded-2xl overflow-hidden aspect-[4/3] relative group">
+                <img src={src} alt={alt} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, transparent 50%, rgba(10,28,60,0.75) 100%)" }} />
+                <span className="absolute bottom-3 left-3 text-white text-xs font-semibold" style={{ textShadow: "0 1px 4px rgba(0,0,0,0.6)" }}>{caption}</span>
+              </div>
+            ))}
           </div>
         </div>
       </section>

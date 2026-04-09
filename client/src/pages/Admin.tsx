@@ -770,13 +770,52 @@ export default function Admin() {
               <h1 style={{ fontSize: "26px", fontWeight: 800, color: "#0f172a", fontFamily: "'Playfair Display', serif" }}>
                 Your Bookings
               </h1>
-              <button
-                onClick={() => refetchBookings()}
-                className="p-2 rounded-xl"
-                style={{ background: "#dbeafe", color: "#0284c7" }}
-              >
-                <RefreshCw className="w-5 h-5" />
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    const rows = (bookingsList ?? []);
+                    if (!rows.length) return;
+                    const headers = ["Ref","Guest Name","Email","Phone","Start Date","End Date","Days","Total Paid","Status","Doc Status","Created At"];
+                    const escape = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+                    const csv = [
+                      headers.join(","),
+                      ...rows.map(b => [
+                        escape(b.bookingRef),
+                        escape(b.guestName),
+                        escape(b.guestEmail),
+                        escape(b.guestPhone),
+                        escape(b.startDate),
+                        escape(b.endDate),
+                        escape(b.totalDays),
+                        escape(b.totalAmount ? `$${Number(b.totalAmount).toFixed(2)}` : ""),
+                        escape(b.bookingStatus),
+                        escape(b.documentStatus),
+                        escape(b.createdAt ? new Date(b.createdAt).toLocaleDateString() : ""),
+                      ].join(","))
+                    ].join("\n");
+                    const blob = new Blob([csv], { type: "text/csv" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = `breezy-bookings-${new Date().toISOString().split("T")[0]}.csv`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                  }}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl font-semibold text-sm"
+                  style={{ background: "#dcfce7", color: "#15803d" }}
+                  title="Export all bookings as CSV"
+                >
+                  <Download className="w-4 h-4" />
+                  Export CSV
+                </button>
+                <button
+                  onClick={() => refetchBookings()}
+                  className="p-2 rounded-xl"
+                  style={{ background: "#dbeafe", color: "#0284c7" }}
+                >
+                  <RefreshCw className="w-5 h-5" />
+                </button>
+              </div>
             </div>
 
             {/* Summary chips */}

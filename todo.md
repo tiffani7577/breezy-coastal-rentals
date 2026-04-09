@@ -128,3 +128,13 @@
 
 ## Round 11 Changes
 - [x] Upload luxury cart photo to CDN and set as inventory card image in vehicle selection step
+
+## Round 12 Changes
+- [x] Fix checkout crash: remove airbnbBookingName min-length validation from backend router
+- [x] Fix insurance upload: ensure both driver's license AND insurance card upload fields appear in document step
+- [x] Update hero copy: "already there and waiting" not "delivered right to your door"
+- [x] Change "4 seat" to "6 seat" everywhere on the site
+- [x] Generate lifestyle photos: people laughing in cart, family beach trip, girls trip, sunset coastal
+- [x] Replace landing page scenery/beach photos with lifestyle cart photos
+- [x] Remove misleading cart-on-beach image from hero
+- [x] Add CSV/Excel export of all bookings to admin dashboard for accounting
