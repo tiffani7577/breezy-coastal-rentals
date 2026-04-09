@@ -677,26 +677,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── Lifestyle photo strip ───────────────────────────── */}
-      <section className="py-8 px-4" style={{ background: "oklch(0.14 0.04 240)" }}>
-        <div className="max-w-5xl mx-auto">
-          <p className="text-center text-xs font-semibold tracking-widest uppercase mb-5" style={{ color: "oklch(0.72 0.12 215)" }}>Real Guests. Real Fun.</p>
-          <div className="grid grid-cols-3 gap-4">
-            {[
-              { src: LIFESTYLE_FAMILY, alt: "Family loading up for the beach", caption: "Family Beach Day" },
-              { src: LIFESTYLE_GIRLS, alt: "Girls trip vibes", caption: "Girls Trip" },
-              { src: LIFESTYLE_SUNSET, alt: "Sunset cruise", caption: "Golden Hour" },
-            ].map(({ src, alt, caption }) => (
-              <div key={caption} className="rounded-2xl overflow-hidden aspect-[4/3] relative group">
-                <img src={src} alt={alt} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, transparent 50%, rgba(10,28,60,0.75) 100%)" }} />
-                <span className="absolute bottom-3 left-3 text-white text-xs font-semibold" style={{ textShadow: "0 1px 4px rgba(0,0,0,0.6)" }}>{caption}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ── What you need ─────────────────────────────────────────── */}
       <section className="py-20 px-4" style={{ background: "oklch(0.99 0.005 220)" }}>
         <div className="max-w-lg mx-auto">

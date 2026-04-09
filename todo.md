@@ -142,3 +142,6 @@
 ## Round 13 Changes
 - [x] Generate new hero image: golf cart as the star, no beach sand, coastal street/driveway setting
 - [x] Update Home.tsx hero image URL with new image
+
+## Round 14 Bug Fixes
+- [x] Remove duplicate lifestyle photo strip — same 3 photos showing twice on landing page
