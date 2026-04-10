@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 const LOGO_URL =
-  "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/breezy-logo_b618d519.jpeg";
+  "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/breezy-logo-transparent_f177cea4.png";
 
 // Ping the health endpoint to detect when the server is ready
 async function pingServer(): Promise<boolean> {

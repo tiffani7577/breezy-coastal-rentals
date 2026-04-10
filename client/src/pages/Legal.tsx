@@ -16,7 +16,7 @@ function LegalLayout({ title, children }: { title: string; children: React.React
             </button>
           </Link>
           <div className="flex items-center gap-2">
-            <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/breezy-logo_3fae44dd.jpeg" alt="Breezy" className="h-7 w-7 rounded-full object-cover" />
+            <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/breezy-logo-transparent_f177cea4.png" alt="Breezy" className="h-7 w-7 object-contain" />
             <span style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "16px" }}>{title}</span>
           </div>
         </div>

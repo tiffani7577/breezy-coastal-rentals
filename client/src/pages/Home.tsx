@@ -23,7 +23,7 @@ const PATHWAY_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7h
 const LIFESTYLE_FAMILY = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/lifestyle-family-cart-cDv5eUToTmXadSgKubPizH.webp";
 const LIFESTYLE_GIRLS = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/lifestyle-girls-trip-cart-VRqpYxcrwAXpxxaoCVmbGB.webp";
 const LIFESTYLE_SUNSET = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/lifestyle-sunset-cart-534yNishhjohtUif7DYkRm.webp";
-const LOGO_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/breezy-logo_b618d519.jpeg";
+const LOGO_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/breezy-logo-transparent_f177cea4.png";
 const LIFESTYLE_SENIORS = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/lifestyle-seniors-cart-PLnkACK6CsPZBmy83yJ8Jh.webp";
 
 // Cinemagraph-style animated coastal scene
@@ -440,7 +440,7 @@ export default function Home() {
               border: "1px solid rgba(255,255,255,0.6)",
             }}
           >
-            <img src={LOGO_URL} alt="Breezy Coastal Rentals" className="h-9 w-9 rounded-full object-cover" style={{ border: "2px solid rgba(255,255,255,0.6)" }} />
+            <img src={LOGO_URL} alt="Breezy Coastal Rentals" className="h-9 w-9 object-contain" />
             <span
               style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "17px" }}
               className="text-foreground hidden sm:inline"
@@ -816,7 +816,7 @@ export default function Home() {
       {/* ── Footer ────────────────────────────────────────────────── */}
       <footer className="py-10 px-4 text-center" style={{ background: "oklch(0.08 0.04 240)" }}>
         <div className="flex items-center justify-center gap-3 mb-3">
-          <img src={LOGO_URL} alt="Breezy Coastal Rentals" className="h-12 w-12 rounded-full object-cover" style={{ border: "2px solid rgba(255,255,255,0.25)" }} />
+          <img src={LOGO_URL} alt="Breezy Coastal Rentals" className="h-12 w-12 object-contain" />
           <span
             style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "20px", color: "white" }}
           >

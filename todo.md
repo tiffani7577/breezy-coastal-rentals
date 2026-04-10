@@ -156,3 +156,7 @@
 ## Round 16 Changes
 - [x] Add branded splash loading screen with animated wave + logo for cold-start delay handling
 - [x] Add auto-retry logic so the app retries the server connection instead of showing a blank error
+
+## Round 17 Changes
+- [x] Remove white background from logo PNG — make it transparent so only the circular badge shows
+- [x] Upload transparent logo to CDN and update all logo references (nav, footer, splash, favicon)
