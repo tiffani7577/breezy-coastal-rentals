@@ -152,3 +152,7 @@
 - [x] SKIPPED: Keep copy exclusive to vacation rental guests (not opening to general public)
 - [x] Regenerate one lifestyle photo with older guests (silver hair, 50s-60s couple) — added as 4th photo in 2x2 grid
 - [x] Confirmed Stripe is in TEST mode (sk_test_... prefix) — no real money moves until live keys added
+
+## Round 16 Changes
+- [x] Add branded splash loading screen with animated wave + logo for cold-start delay handling
+- [x] Add auto-retry logic so the app retries the server connection instead of showing a blank error
