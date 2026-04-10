@@ -16,7 +16,7 @@ function LegalLayout({ title, children }: { title: string; children: React.React
             </button>
           </Link>
           <div className="flex items-center gap-2">
-            <Waves className="w-5 h-5 text-primary" />
+            <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/breezy-logo_3fae44dd.jpeg" alt="Breezy" className="h-7 w-7 rounded-full object-cover" />
             <span style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "16px" }}>{title}</span>
           </div>
         </div>
@@ -40,7 +40,7 @@ export function TermsPage() {
       <p>By accessing and using BreezyCoastalRentals.com and renting our golf cart, you accept and agree to be bound by these Terms of Service. If you do not agree, please do not use our service.</p>
 
       <h2>2. Eligibility</h2>
-      <p>You must be at least 18 years of age and hold a valid driver's license to rent our golf cart. This service is exclusively available to guests with an active Airbnb reservation at our property in Cape Canaveral, Florida.</p>
+      <p>You must be at least 25 years of age and hold a valid driver's license to rent our golf cart. This service is available to vacation rental guests and visitors staying in the Cape Canaveral, Florida area.</p>
 
       <h2>3. Rental Agreement</h2>
       <p>By completing the booking process, you agree to the Liability Waiver and all terms outlined therein. The rental period is as specified in your booking confirmation. The golf cart must be returned by the end date of your rental period.</p>
@@ -77,7 +77,7 @@ export function PrivacyPage() {
       <p>We collect the following information when you make a booking:</p>
       <ul>
         <li>Personal information: name, email address, phone number</li>
-        <li>Airbnb booking reference name</li>
+        <li>Vacation rental booking name (for verification purposes)</li>
         <li>Driver's license and proof of insurance documents</li>
         <li>Waiver signature, timestamp, and IP address</li>
         <li>Payment information (processed securely by Stripe — we do not store card details)</li>

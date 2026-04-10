@@ -23,6 +23,8 @@ const PATHWAY_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7h
 const LIFESTYLE_FAMILY = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/lifestyle-family-cart-cDv5eUToTmXadSgKubPizH.webp";
 const LIFESTYLE_GIRLS = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/lifestyle-girls-trip-cart-VRqpYxcrwAXpxxaoCVmbGB.webp";
 const LIFESTYLE_SUNSET = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/lifestyle-sunset-cart-534yNishhjohtUif7DYkRm.webp";
+const LOGO_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/breezy-logo_b618d519.jpeg";
+const LIFESTYLE_SENIORS = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/lifestyle-seniors-cart-PLnkACK6CsPZBmy83yJ8Jh.webp";
 
 // Cinemagraph-style animated coastal scene
 function CoastalCinemagraph() {
@@ -204,7 +206,7 @@ function FAQSection() {
   const faqs = [
     {
       q: "Who can rent the golf cart?",
-      a: "Anyone with a valid driver's license and proof of insurance is welcome to rent. You must be 18 or older. The cart is available to local visitors, vacation rental guests, and anyone staying in the Cape Canaveral area.",
+      a: "You must be 25 or older with a valid driver's license and proof of insurance. The cart is available to vacation rental guests and visitors staying in the Cape Canaveral area.",
     },
     {
       q: "Do I need insurance to rent?",
@@ -438,10 +440,10 @@ export default function Home() {
               border: "1px solid rgba(255,255,255,0.6)",
             }}
           >
-            <Waves className="w-5 h-5 text-primary" />
+            <img src={LOGO_URL} alt="Breezy Coastal Rentals" className="h-9 w-9 rounded-full object-cover" style={{ border: "2px solid rgba(255,255,255,0.6)" }} />
             <span
-              style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "17px" }}
-              className="text-foreground"
+              style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "17px" }}
+              className="text-foreground hidden sm:inline"
             >
               Breezy
             </span>
@@ -640,12 +642,13 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Lifestyle photo grid — 3 images */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {/* Lifestyle photo grid — 4 images */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
                 { src: LIFESTYLE_FAMILY, alt: "Family heading to the beach in a golf cart", label: "Family Fun" },
                 { src: LIFESTYLE_GIRLS, alt: "Girls trip on a golf cart by the ocean", label: "Girls Trip" },
-                { src: LIFESTYLE_SUNSET, alt: "Couple watching sunset from a golf cart" , label: "Sunset Rides" },
+                { src: LIFESTYLE_SUNSET, alt: "Couple watching sunset from a golf cart", label: "Golden Hour" },
+                { src: LIFESTYLE_SENIORS, alt: "Silver-haired couple laughing in a golf cart", label: "Any Age, Any Vibe" },
               ].map(({ src, alt, label }) => (
                 <div key={label} className="rounded-2xl overflow-hidden relative group" style={{ aspectRatio: "4/3", boxShadow: "0 20px 60px -10px rgba(0,0,0,0.5)" }}>
                   <img src={src} alt={alt} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
@@ -759,7 +762,7 @@ export default function Home() {
               </Button>
             </Link>
             <p className="text-xs text-muted-foreground mt-3">
-              Available for local guests · Cape Canaveral, FL
+              Must be 25+ · Valid license & insurance required · Cape Canaveral, FL
             </p>
           </div>
         </div>
@@ -812,12 +815,12 @@ export default function Home() {
 
       {/* ── Footer ────────────────────────────────────────────────── */}
       <footer className="py-10 px-4 text-center" style={{ background: "oklch(0.08 0.04 240)" }}>
-        <div className="flex items-center justify-center gap-2 mb-3">
-          <Waves className="w-5 h-5" style={{ color: "oklch(0.62 0.15 215)" }} />
+        <div className="flex items-center justify-center gap-3 mb-3">
+          <img src={LOGO_URL} alt="Breezy Coastal Rentals" className="h-12 w-12 rounded-full object-cover" style={{ border: "2px solid rgba(255,255,255,0.25)" }} />
           <span
-            style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "18px", color: "white" }}
+            style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "20px", color: "white" }}
           >
-            Breezy
+            Breezy Coastal Rentals
           </span>
         </div>
         <p className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>

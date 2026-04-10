@@ -52,7 +52,7 @@ By signing below, I ("Renter") acknowledge and agree to the following:
 
 5. DAMAGE RESPONSIBILITY: I agree to return the golf cart in the same condition it was received. I am financially responsible for any damage, theft, or loss that occurs during my rental period.
 
-6. AGE REQUIREMENT: I confirm that I am at least 18 years of age and hold a valid driver's license.
+6. AGE REQUIREMENT: I confirm that I am at least 25 years of age and hold a valid driver's license.
 
 7. INDEMNIFICATION: I agree to indemnify and hold harmless Breezy Coastal Rentals from any claims, costs, or expenses arising from my use of the golf cart.
 
@@ -374,7 +374,7 @@ export default function Booking() {
             </button>
           </Link>
           <div className="flex items-center gap-2 flex-1">
-            <Waves className="w-5 h-5 text-primary" />
+            <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/breezy-logo_b618d519.jpeg" alt="Breezy" className="h-8 w-8 rounded-full object-cover" style={{ border: "1.5px solid oklch(0.85 0.04 220)" }} />
             <span style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "16px" }}>
               Breezy
             </span>

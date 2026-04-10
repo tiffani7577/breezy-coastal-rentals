@@ -145,3 +145,10 @@
 
 ## Round 14 Bug Fixes
 - [x] Remove duplicate lifestyle photo strip — same 3 photos showing twice on landing page
+
+## Round 15 Changes
+- [x] Upload Breezy Coastal Rentals logo to CDN and add to nav, booking header, availability header, favicon, footer
+- [x] Add 25+ age requirement to landing page requirements section, booking waiver, and FAQ
+- [x] SKIPPED: Keep copy exclusive to vacation rental guests (not opening to general public)
+- [x] Regenerate one lifestyle photo with older guests (silver hair, 50s-60s couple) — added as 4th photo in 2x2 grid
+- [x] Confirmed Stripe is in TEST mode (sk_test_... prefix) — no real money moves until live keys added

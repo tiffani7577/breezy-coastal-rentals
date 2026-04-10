@@ -204,7 +204,7 @@ export default function Availability() {
             </button>
           </Link>
           <div className="flex items-center gap-2 flex-1">
-            <Waves className="w-5 h-5 text-primary" />
+            <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/breezy-logo_b618d519.jpeg" alt="Breezy" className="h-8 w-8 rounded-full object-cover" style={{ border: "1.5px solid oklch(0.85 0.04 220)" }} />
             <span style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "16px" }}>
               Breezy
             </span>
