@@ -163,3 +163,7 @@
 
 ## Round 18 Bug Fixes
 - [x] Fix 4th lifestyle photo (senior couple) not showing on mobile Safari — added loading="eager" and minHeight to force render
+
+## Round 19 Changes
+- [x] Regenerate hero image with bright red golf cart (candy apple red) instead of navy blue
+- [x] Regenerate senior couple photo with dark-haired, slimmer woman (matching user's grandparents' look)

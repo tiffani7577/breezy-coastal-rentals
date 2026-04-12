@@ -16,7 +16,7 @@ import {
   Zap,
 } from "lucide-react";
 
-const HERO_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/hero-cart-star-v2-mcLDwN3BAs5WTWWi3cSAm4.webp";
+const HERO_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/hero-cart-red-v2_9bccd01e.png";
 // Original aerial beach (saved): https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/hero-beach_99596afc.jpg
 const BEACH_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/canaveral-coast-v2-BncqoUn3dE4qSpBSMm5UR6.webp";
 const PATHWAY_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/peacock-beach-v2-oFnvRDfks9XVPJbpXCtwWP.webp";
@@ -24,7 +24,7 @@ const LIFESTYLE_FAMILY = "https://d2xsxph8kpxj0f.cloudfront.net/3105196634133005
 const LIFESTYLE_GIRLS = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/lifestyle-girls-trip-cart-VRqpYxcrwAXpxxaoCVmbGB.webp";
 const LIFESTYLE_SUNSET = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/lifestyle-sunset-cart-534yNishhjohtUif7DYkRm.webp";
 const LOGO_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/breezy-logo-transparent_f177cea4.png";
-const LIFESTYLE_SENIORS = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/lifestyle-seniors-cart-PLnkACK6CsPZBmy83yJ8Jh.webp";
+const LIFESTYLE_SENIORS = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/lifestyle-seniors-v3_8fd8ef29.png";
 
 // Cinemagraph-style animated coastal scene
 function CoastalCinemagraph() {
