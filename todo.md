@@ -160,3 +160,6 @@
 ## Round 17 Changes
 - [x] Remove white background from logo PNG — make it transparent so only the circular badge shows
 - [x] Upload transparent logo to CDN and update all logo references (nav, footer, splash, favicon)
+
+## Round 18 Bug Fixes
+- [x] Fix 4th lifestyle photo (senior couple) not showing on mobile Safari — added loading="eager" and minHeight to force render

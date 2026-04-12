@@ -647,11 +647,11 @@ export default function Home() {
               {[
                 { src: LIFESTYLE_FAMILY, alt: "Family heading to the beach in a golf cart", label: "Family Fun" },
                 { src: LIFESTYLE_GIRLS, alt: "Girls trip on a golf cart by the ocean", label: "Girls Trip" },
-                { src: LIFESTYLE_SUNSET, alt: "Couple watching sunset from a golf cart", label: "Golden Hour" },
+                { src: LIFESTYLE_SUNSET, alt: "Couple watching sunset from a golf cart", label: "Sunset Rides" },
                 { src: LIFESTYLE_SENIORS, alt: "Silver-haired couple laughing in a golf cart", label: "Any Age, Any Vibe" },
               ].map(({ src, alt, label }) => (
-                <div key={label} className="rounded-2xl overflow-hidden relative group" style={{ aspectRatio: "4/3", boxShadow: "0 20px 60px -10px rgba(0,0,0,0.5)" }}>
-                  <img src={src} alt={alt} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                <div key={label} className="rounded-2xl overflow-hidden relative group" style={{ aspectRatio: "4/3", minHeight: "160px", boxShadow: "0 20px 60px -10px rgba(0,0,0,0.5)" }}>
+                  <img src={src} alt={alt} loading="eager" decoding="async" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" style={{ display: "block", minHeight: "160px" }} />
                   <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, transparent 55%, rgba(10,28,60,0.7) 100%)" }} />
                   <span className="absolute bottom-3 left-4 text-white text-xs font-semibold tracking-wide" style={{ textShadow: "0 1px 6px rgba(0,0,0,0.5)" }}>{label}</span>
                 </div>
