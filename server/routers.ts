@@ -26,6 +26,7 @@ import {
   updateDocumentStatus,
   updatePricing,
   upsertInspection,
+  upsertUser,
 } from "./db";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
@@ -61,6 +62,35 @@ export const appRouter = router({
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
       return { success: true } as const;
     }),
+    adminLogin: publicProcedure
+      .input(z.object({ email: z.string(), password: z.string() }))
+      .mutation(async ({ ctx, input }) => {
+        const { adminEmail, adminPassword } = ENV;
+        if (!adminEmail || !adminPassword) {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Admin credentials not configured" });
+        }
+        if (input.email !== adminEmail || input.password !== adminPassword) {
+          throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid email or password" });
+        }
+        // Ensure admin user exists in DB
+        const ADMIN_OPEN_ID = "admin-local";
+        await upsertUser({
+          openId: ADMIN_OPEN_ID,
+          name: "Admin",
+          email: adminEmail,
+          role: "admin",
+          lastSignedIn: new Date(),
+        });
+        const { sdk } = await import("./_core/sdk");
+        const { ONE_YEAR_MS } = await import("@shared/const");
+        const sessionToken = await sdk.signSession(
+          { openId: ADMIN_OPEN_ID, appId: ENV.appId, name: "Admin" },
+          { expiresInMs: ONE_YEAR_MS }
+        );
+        const cookieOptions = getSessionCookieOptions(ctx.req);
+        ctx.res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
+        return { success: true } as const;
+      }),
   }),
 
   // ─── Pricing ───────────────────────────────────────────────────────────────

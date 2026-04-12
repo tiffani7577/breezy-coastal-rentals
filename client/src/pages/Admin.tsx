@@ -558,9 +558,68 @@ function BookingDetail({ bookingId, onBack }: { bookingId: number; onBack: () =>
   );
 }
 
+// ─── Admin Login Form ────────────────────────────────────────────────────────
+function AdminLoginForm({ onSuccess }: { onSuccess: () => void }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const adminLogin = trpc.auth.adminLogin.useMutation({
+    onSuccess: () => onSuccess(),
+    onError: (e) => setError(e.message || "Invalid email or password"),
+  });
+  return (
+    <div className="min-h-screen flex items-center justify-center px-6" style={{ background: "#f0f9ff" }}>
+      <div className="w-full max-w-sm">
+        <div className="text-center mb-8">
+          <div className="w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-4" style={{ background: "#0284c7" }}>
+            <Waves className="w-10 h-10 text-white" />
+          </div>
+          <h1 style={{ fontSize: "28px", fontWeight: 800, color: "#0f172a", fontFamily: "'Playfair Display', serif", marginBottom: "6px" }}>Breezy Admin</h1>
+          <p className="text-gray-500" style={{ fontSize: "15px" }}>Sign in to manage your bookings</p>
+        </div>
+        <div className="bg-white rounded-3xl p-8 shadow-lg">
+          <div className="mb-4">
+            <Label className="text-gray-700 font-semibold mb-2 block">Email</Label>
+            <Input
+              type="email"
+              placeholder="booking@breezycoastalrentals.com"
+              value={email}
+              onChange={e => { setEmail(e.target.value); setError(""); }}
+              className="h-12 rounded-xl"
+              autoComplete="email"
+            />
+          </div>
+          <div className="mb-6">
+            <Label className="text-gray-700 font-semibold mb-2 block">Password</Label>
+            <Input
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={e => { setPassword(e.target.value); setError(""); }}
+              className="h-12 rounded-xl"
+              autoComplete="current-password"
+              onKeyDown={e => e.key === "Enter" && adminLogin.mutate({ email, password })}
+            />
+          </div>
+          {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
+          <Button
+            className="w-full h-12 rounded-xl font-bold text-white"
+            style={{ background: "#0284c7", border: "none", fontSize: "16px" }}
+            onClick={() => adminLogin.mutate({ email, password })}
+            disabled={adminLogin.isPending || !email || !password}
+          >
+            {adminLogin.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : "Sign In"}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Main Admin Page ──────────────────────────────────────────────────────────
 export default function Admin() {
   const { user, loading, isAuthenticated, logout } = useAuth();
+  const [adminAuthed, setAdminAuthed] = useState(false);
   const [view, setView] = useState<AdminView>("list");
   const [selectedBookingId, setSelectedBookingId] = useState<number | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -607,7 +666,7 @@ export default function Admin() {
   const removeBlock = trpc.availability.removeBlock.useMutation();
   const updatePricing = trpc.pricing.update.useMutation();
 
-  // Auth guard
+  // Auth guard — use new admin email/password login
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -616,39 +675,14 @@ export default function Admin() {
     );
   }
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen flex items-center justify-center px-6" style={{ background: "#f0f9ff" }}>
-        <div className="text-center max-w-sm w-full">
-          <div className="w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-6" style={{ background: "#0284c7" }}>
-            <Waves className="w-10 h-10 text-white" />
-          </div>
-          <h1 style={{ fontSize: "28px", fontWeight: 800, color: "#0f172a", fontFamily: "'Playfair Display', serif", marginBottom: "8px" }}>
-            Breezy Admin
-          </h1>
-          <p className="text-gray-500 mb-8" style={{ fontSize: "16px" }}>Sign in to manage your bookings</p>
-          <Button
-            className="w-full h-14 rounded-2xl font-bold text-white"
-            style={{ background: "#0284c7", border: "none", fontSize: "17px" }}
-            onClick={() => (window.location.href = getLoginUrl())}
-          >
-            Sign In
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
-  if (user?.role !== "admin") {
-    return (
-      <div className="min-h-screen flex items-center justify-center px-6">
-        <div className="text-center">
-          <AlertCircle className="w-14 h-14 mx-auto mb-4" style={{ color: "#ef4444" }} />
-          <p className="font-bold text-gray-900" style={{ fontSize: "20px" }}>Access Denied</p>
-          <p className="text-gray-500 mt-2" style={{ fontSize: "16px" }}>You don't have admin access.</p>
-        </div>
-      </div>
-    );
+  // Show login form if not authenticated OR not admin role
+  if (!isAuthenticated || user?.role !== "admin") {
+    if (adminAuthed) {
+      // Just logged in — reload to pick up session
+      window.location.reload();
+      return null;
+    }
+    return <AdminLoginForm onSuccess={() => setAdminAuthed(true)} />;
   }
 
   const filteredBookings = (bookingsList ?? [])

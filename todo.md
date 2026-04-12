@@ -167,3 +167,8 @@
 ## Round 19 Changes
 - [x] Regenerate hero image with bright red golf cart (candy apple red) instead of navy blue
 - [x] Regenerate senior couple photo with dark-haired, slimmer woman (matching user's grandparents' look)
+
+## Round 20 Changes
+- [x] Replace Manus OAuth admin login with simple email/password login so grandma can access /admin without a Manus account
+- [x] Add ADMIN_PASSWORD secret for secure admin authentication
+- [x] Admin session stored in JWT cookie (no Manus account required)
