@@ -10,7 +10,9 @@ function getResend() {
   return new Resend(key);
 }
 
-const FROM = "Breezy Coastal Rentals <bookings@breezycoastalrentals.com>";
+// Using Resend shared sender until domain DNS is verified.
+// Switch back to: "Breezy Coastal Rentals <bookings@breezycoastalrentals.com>" after Resend domain verification.
+const FROM = "Breezy Coastal Rentals <onboarding@resend.dev>";
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "admin@breezycoastalrentals.com";
 const APP_URL = process.env.APP_URL ?? "https://breezycoastalrentals.com";
 

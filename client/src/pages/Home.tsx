@@ -315,7 +315,7 @@ function SafetySection() {
         { title: "Speed & Throttle", body: "Press the accelerator pedal gently to move. The cart has a governed top speed of approximately 20 mph. Do not force the pedal on inclines." },
         { title: "Braking", body: "Release the accelerator to slow down — regenerative braking engages automatically. Press the brake pedal firmly for a full stop. The parking brake lever is on the floor between the seats." },
         { title: "Lights & Signals", body: "Headlights: toggle switch on the dash. Turn signals: left-hand stalk. Horn: center of the steering wheel. Always use signals when turning on public roads." },
-        { title: "Charging", body: "Plug the charging cable (stored under the seat) into the rear port. A full charge takes 6–8 hours. Do not run the battery below 20% — return the cart with at least 30% charge remaining." },
+        { title: "Charging", body: "Please plug in the golf cart each night using the extension cord provided to the front porch outlet. A full charge takes 6–8 hours and keeps the cart ready for daily use. Avoid parking on grass while charging. Do not let the battery drop below 20%, and please return the cart with at least 30% charge." },
       ],
     },
     {
@@ -336,8 +336,8 @@ function SafetySection() {
       icon: "⚖️",
       label: "Local Laws",
       items: [
-        { title: "Florida Golf Cart Law", body: "Under Florida Statute §316.212, golf carts may only be operated on public roads with a posted speed limit of 30 mph or less, during daylight hours, unless the cart is equipped with proper lighting." },
-        { title: "Required Equipment", body: "This cart is equipped with headlights, brake lights, turn signals, a rearview mirror, and a windshield — meeting Florida's low-speed vehicle requirements for road use." },
+        { title: "Local Road Use", body: "This street-legal golf cart (LSV) can be driven on roads with speed limits of 35 mph or less throughout Cape Canaveral." },
+        { title: "Street-Legal & Ready", body: "This is a fully street-legal low-speed vehicle (LSV), designed for safe and easy driving around town. Just hop in and go—no special setup needed." },
         { title: "Driver's License Required", body: "A valid driver's license is required to operate this cart on public roads in Cape Canaveral, FL. Unlicensed operation is a traffic violation." },
         { title: "Right-of-Way", body: "Golf carts must yield to all standard motor vehicles. Treat all intersections as you would in a car — obey all stop signs, traffic lights, and road markings." },
         { title: "Parking", body: "Park only in designated areas. Do not block driveways, fire hydrants, or ADA-accessible spaces. Parking on the beach is prohibited." },
@@ -506,7 +506,7 @@ export default function Home() {
             className="mb-10 leading-relaxed"
             style={{ fontSize: "clamp(1rem, 3vw, 1.2rem)", color: "rgba(255,255,255,0.88)", textShadow: "0 1px 8px rgba(0,0,0,0.2)" }}
           >
-            Your private golf cart is already there — charged, ready, and waiting for you.
+            Your street-legal, private golf cart is already there — charged, ready, and waiting for you.
           </p>
 
           {/* CTA */}
@@ -531,7 +531,7 @@ export default function Home() {
           <div className="flex items-center justify-center gap-6 mt-8">
             {[
               { icon: Clock, label: "60-sec booking" },
-              { icon: ShieldCheck, label: "Secure payment" },
+              { icon: ShieldCheck, label: "Street-legal LSV" },
               { icon: Star, label: "5-star experience" },
             ].map(({ icon: Icon, label }) => (
               <div key={label} className="flex items-center gap-1.5" style={{ color: "rgba(255,255,255,0.8)" }}>
@@ -567,14 +567,14 @@ export default function Home() {
           <div className="text-center mb-14">
               <p className="text-primary text-sm font-semibold tracking-widest uppercase mb-3">Why Add Breezy to Your Stay</p>
             <h2 className="text-foreground" style={{ fontSize: "clamp(1.8rem, 5vw, 2.6rem)", fontFamily: "'Playfair Display', serif" }}>
-              More Fun. Zero Hassle.
+              The Easiest Upgrade to Your Stay
             </h2>
-            <p className="text-muted-foreground mt-3 max-w-md mx-auto leading-relaxed">
-              Parking near the beach in Cape Canaveral is a nightmare. A golf cart changes everything — it's faster, cheaper, and way more fun than driving your car every time you want to go out.
+            <p className="text-muted-foreground mt-3 max-w-xl mx-auto leading-relaxed">
+              Turn every quick trip into part of the vacation. With your own golf cart, the beach, restaurants, and everything in between are just a relaxed ride away—no planning, no hassle, just go.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               {
                 icon: Star,
@@ -585,8 +585,8 @@ export default function Home() {
               },
               {
                 icon: ParkingCircleOff,
-                title: "Skip the Parking Nightmare",
-                desc: "Beach parking in Cape Canaveral fills up fast — especially on weekends. The golf cart parks anywhere in seconds. No circling, no fees, no frustration.",
+                title: "Skip the Parking Stress",
+                desc: "The golf cart parks anywhere in seconds. No circling, no fees, no frustration — just hop out and enjoy.",
                 color: "oklch(0.95 0.04 175)",
                 iconColor: "oklch(0.45 0.15 175)",
               },
@@ -596,6 +596,13 @@ export default function Home() {
                 desc: "Peacock Beach is a 2-minute ride. Restaurants, shops, and the waterfront are all within easy cart distance. See more, spend less time in the car.",
                 color: "oklch(0.96 0.04 80)",
                 iconColor: "oklch(0.55 0.14 60)",
+              },
+              {
+                icon: ShieldCheck,
+                title: "Street-Legal & Ready to Go",
+                desc: "This is a fully street-legal low-speed vehicle (LSV) — licensed for roads with speed limits of 35 mph or less throughout Cape Canaveral. No special permit needed.",
+                color: "oklch(0.94 0.04 250)",
+                iconColor: "oklch(0.45 0.18 250)",
               },
             ].map(({ icon: Icon, title, desc, color, iconColor }) => (
               <div
@@ -663,6 +670,7 @@ export default function Home() {
               {[
                 { icon: "👥", text: "Seats up to 6 guests" },
                 { icon: "⚡", text: "Electric · full-day range" },
+                { icon: "✅", text: "Street-legal LSV" },
               ].map(({ icon, text }) => (
                 <div key={text} className="flex items-center gap-2 px-5 py-2.5 rounded-full"
                   style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)" }}>

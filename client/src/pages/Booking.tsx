@@ -38,23 +38,24 @@ const STEPS = [
   { id: 6, label: "Payment", icon: CreditCard },
 ];
 
-const WAIVER_TEXT = `GOLF CART RENTAL LIABILITY WAIVER & RELEASE AGREEMENT
+const WAIVER_TEXT = `LOW-SPEED VEHICLE (LSV) RENTAL LIABILITY WAIVER & RELEASE AGREEMENT
+(AKA Golf Cart)
 
 By signing below, I ("Renter") acknowledge and agree to the following:
 
-1. ASSUMPTION OF RISK: I understand that operating a golf cart involves inherent risks, including but not limited to personal injury, property damage, and accidents. I voluntarily assume all such risks.
+1. ASSUMPTION OF RISK: I understand that operating a low-speed vehicle (LSV) involves inherent risks, including but not limited to personal injury, property damage, and accidents. I voluntarily assume all such risks.
 
-2. RELEASE OF LIABILITY: I hereby release, waive, and discharge Breezy Coastal Rentals and its owners, agents, and representatives from any and all claims, damages, losses, or liability arising from my use of the golf cart.
+2. RELEASE OF LIABILITY: I hereby release, waive, and discharge Breezy Coastal Rentals and its owners, agents, and representatives from any and all claims, damages, losses, or liability arising from my use of the LSV.
 
-3. RESPONSIBLE USE: I agree to operate the golf cart in a safe and lawful manner, obey all applicable traffic laws, and not operate the cart under the influence of alcohol or drugs.
+3. RESPONSIBLE USE: I agree to operate the LSV in a safe and lawful manner, obey all applicable traffic laws, and not operate the vehicle under the influence of alcohol or drugs.
 
-4. INSURANCE: I confirm that I have valid personal auto insurance that covers golf cart use, or I accept full financial responsibility for any damages.
+4. INSURANCE: I confirm that I have valid personal auto insurance that covers LSV use, or I accept full financial responsibility for any damages.
 
-5. DAMAGE RESPONSIBILITY: I agree to return the golf cart in the same condition it was received. I am financially responsible for any damage, theft, or loss that occurs during my rental period.
+5. DAMAGE RESPONSIBILITY: I agree to return the LSV in the same condition it was received. I am financially responsible for any damage, theft, or loss that occurs during my rental period.
 
 6. AGE REQUIREMENT: I confirm that I am at least 25 years of age and hold a valid driver's license.
 
-7. INDEMNIFICATION: I agree to indemnify and hold harmless Breezy Coastal Rentals from any claims, costs, or expenses arising from my use of the golf cart.
+7. INDEMNIFICATION: I agree to indemnify and hold harmless Breezy Coastal Rentals from any claims, costs, or expenses arising from my use of the LSV.
 
 This agreement is binding upon signing and constitutes the entire agreement between the parties regarding liability.`;
 
@@ -112,14 +113,18 @@ export default function Booking() {
   const uploadDoc = trpc.documents.upload.useMutation();
   const createCheckout = trpc.bookings.createCheckout.useMutation();
 
-  const dailyRate = parseFloat(pricingData?.dailyRate ?? "170");
+  const MIN_DAYS = 4;
+  const dailyRate = parseFloat(pricingData?.dailyRate ?? "160");
   const deliveryFee = parseFloat(pricingData?.deliveryFee ?? "0");
   const totalDays =
     dateRange.from && dateRange.to
       ? Math.max(1, differenceInCalendarDays(dateRange.to, dateRange.from) + 1)
       : 0;
   const subtotal = totalDays * dailyRate;
-  const totalAmount = subtotal + deliveryFee;
+  const taxRate = 0.07;
+  const taxAmount = subtotal * taxRate;
+  const depositAmount = 300;
+  const totalAmount = subtotal + taxAmount;
 
   // Build disabled dates
   const disabledDates = useCallback(() => {
@@ -175,6 +180,10 @@ export default function Booking() {
     if (step === 1) {
       if (!dateRange.from || !dateRange.to) {
         toast.error("Please select your rental dates.");
+        return;
+      }
+      if (totalDays < MIN_DAYS) {
+        toast.error(`Minimum rental is ${MIN_DAYS} nights. Please select at least ${MIN_DAYS} days.`);
         return;
       }
       setStep(2);
@@ -444,7 +453,7 @@ export default function Booking() {
                 Select Your Dates
               </h1>
               <p className="text-muted-foreground text-sm mt-1">
-                Choose your rental start and end dates.
+                Choose your rental start and end dates. Minimum 4-night rental.
               </p>
             </div>
 
@@ -494,7 +503,7 @@ export default function Booking() {
 
             {pricingData && (
               <p className="text-xs text-muted-foreground text-center mt-3">
-                ${dailyRate}/day · {deliveryFee > 0 ? `$${deliveryFee} delivery fee` : "No delivery fee"}
+                ${dailyRate}/day · 4-night minimum · 7% tax · $300 refundable deposit collected at pickup
               </p>
             )}
           </div>
@@ -750,16 +759,18 @@ export default function Booking() {
                   <span className="text-muted-foreground">${dailyRate}/day × {totalDays} days</span>
                   <span className="font-medium text-foreground">${subtotal.toFixed(2)}</span>
                 </div>
-                {deliveryFee > 0 && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Delivery fee</span>
-                    <span className="font-medium text-foreground">${deliveryFee.toFixed(2)}</span>
-                  </div>
-                )}
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Florida sales tax (7%)</span>
+                  <span className="font-medium text-foreground">${taxAmount.toFixed(2)}</span>
+                </div>
                 <div className="h-px" style={{ background: "oklch(0.93 0.01 220)" }} />
                 <div className="flex justify-between">
-                  <span className="font-bold text-foreground">Total</span>
+                  <span className="font-bold text-foreground">Total Due Now</span>
                   <span className="font-bold text-xl text-primary">${totalAmount.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Refundable deposit (collected at pickup)</span>
+                  <span className="font-medium text-foreground">${depositAmount}</span>
                 </div>
               </div>
             </div>

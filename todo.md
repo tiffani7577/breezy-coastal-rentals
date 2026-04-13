@@ -172,3 +172,29 @@
 - [x] Replace Manus OAuth admin login with simple email/password login so grandma can access /admin without a Manus account
 - [x] Add ADMIN_PASSWORD secret for secure admin authentication
 - [x] Admin session stored in JWT cookie (no Manus account required)
+
+## Round 21 Changes
+- [ ] Homepage: Update tagline section to "The Easiest Upgrade to Your Stay" with new copy
+- [ ] Homepage: Add "street legal" to hero subheadline
+- [ ] Homepage: Update FL golf cart law to "Local Road Use" LSV copy
+- [ ] Homepage: Remove "Required Equipment" section, add "Street-Legal & Ready" section
+- [ ] Homepage: Update charging instructions copy
+- [ ] Waiver: Replace "golf cart" with "low-speed vehicle (LSV) (AKA golf cart)"
+- [ ] Booking: Enforce 4-day minimum rental
+- [ ] Booking: Change price to $160/day
+- [ ] Booking: Add 7% Florida sales tax
+- [ ] Booking: Add $300 refundable deposit via Stripe
+- [ ] Booking: Disable bank/ACH payment method in Stripe Checkout
+- [ ] Booking: Add flat-rate promo codes (SeaShell5=$700/5nights, SeaShell6=$840/6nights, SeaShell7=$900/7nights)
+- [ ] Booking: Remove "where will the cart be delivered?" section
+- [ ] Email: Fix sending by using onboarding@resend.dev as fallback from address
+- [x] Add "street-legal" as a selling point throughout the site (hero trust badge, 4th benefit card, vehicle specs pill)
+- [x] Create Stripe flat-rate promo codes: SEASHELL5=$700, SEASHELL6=$800, SEASHELL7=$900
+- [x] Fix email FROM address to use onboarding@resend.dev while DNS is pending
+- [x] 4-day minimum rental enforced (frontend + toast error)
+- [x] Price updated to $160/day in DB and frontend fallback
+- [x] 7% Florida sales tax shown in booking summary
+- [x] $300 refundable deposit noted in booking summary (collected at pickup)
+- [x] Waiver updated to say "Low-Speed Vehicle (LSV) (AKA Golf Cart)"
+- [x] Homepage benefits section updated with new copy and 4th street-legal card
+- [x] Homepage tagline updated to "The Easiest Upgrade to Your Stay"

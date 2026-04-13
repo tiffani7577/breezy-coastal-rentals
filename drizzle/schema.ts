@@ -29,7 +29,7 @@ export type InsertUser = typeof users.$inferInsert;
 // ─── Pricing ────────────────────────────────────────────────────────────────
 export const pricing = mysqlTable("pricing", {
   id: int("id").autoincrement().primaryKey(),
-  dailyRate: decimal("dailyRate", { precision: 10, scale: 2 }).notNull().default("170.00"),
+  dailyRate: decimal("dailyRate", { precision: 10, scale: 2 }).notNull().default("160.00"),
   deliveryFee: decimal("deliveryFee", { precision: 10, scale: 2 }).notNull().default("0.00"),
   cartName: varchar("cartName", { length: 128 }).notNull().default("Breezy Golf Cart"),
   cartDescription: text("cartDescription"),
