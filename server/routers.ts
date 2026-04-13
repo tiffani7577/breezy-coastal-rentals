@@ -216,10 +216,21 @@ export const appRouter = router({
               price_data: {
                 currency: "usd",
                 product_data: {
-                  name: `Breezy Golf Cart Rental`,
+                  name: `Breezy Coastal Rentals — Golf Cart Rental`,
                   description: `${booking.totalDays} day${booking.totalDays > 1 ? "s" : ""} — ${booking.startDate} to ${booking.endDate}`,
                 },
                 unit_amount: Math.round(parseFloat(booking.totalAmount) * 100),
+              },
+              quantity: 1,
+            },
+            {
+              price_data: {
+                currency: "usd",
+                product_data: {
+                  name: "Refundable Security Deposit",
+                  description: "$300 refundable deposit — returned after cart is inspected at end of rental. Admin releases hold via Stripe dashboard.",
+                },
+                unit_amount: 30000,
               },
               quantity: 1,
             },

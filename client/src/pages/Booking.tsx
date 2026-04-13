@@ -503,7 +503,7 @@ export default function Booking() {
 
             {pricingData && (
               <p className="text-xs text-muted-foreground text-center mt-3">
-                ${dailyRate}/day · 4-night minimum · 7% tax · $300 refundable deposit collected at pickup
+                ${dailyRate}/day · 4-night minimum · 7% tax · $300 refundable security deposit charged at checkout
               </p>
             )}
           </div>
@@ -769,7 +769,7 @@ export default function Booking() {
                   <span className="font-bold text-xl text-primary">${totalAmount.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Refundable deposit (collected at pickup)</span>
+                  <span className="text-muted-foreground">Refundable security deposit (charged at checkout, returned after inspection)</span>
                   <span className="font-medium text-foreground">${depositAmount}</span>
                 </div>
               </div>

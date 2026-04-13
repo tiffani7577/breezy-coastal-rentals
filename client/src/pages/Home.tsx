@@ -222,19 +222,15 @@ function FAQSection() {
     },
     {
       q: "What is the daily rate?",
-      a: "The base rate is $170/day. A delivery or setup fee may apply depending on your location. The full pricing breakdown is shown before you pay.",
+      a: "The base rate is $160/day with a 4-night minimum. A 7% Florida sales tax applies. The full pricing breakdown is shown before you pay.",
     },
     {
       q: "Can I ride the golf cart on the beach?",
       a: "No — Cape Canaveral beaches do not permit golf cart or vehicle access on the sand. The cart is street-legal and perfect for roads, beach access paths, and local exploration.",
     },
     {
-      q: "Where will the cart be delivered?",
-      a: "The cart is delivered to your address and waiting for you, charged and ready to go. Pickup and drop-off logistics are confirmed after your booking is approved.",
-    },
-    {
       q: "What happens if I need to cancel?",
-      a: "Cancellations are handled on a case-by-case basis. Contact us as soon as possible and we'll work with you. Refunds are processed manually through Stripe.",
+      a: "You may cancel for a full refund, minus a $75 processing fee, as long as we receive notice more than 72 hours before your scheduled arrival date. Cancellations made within 72 hours of arrival are non-refundable. Once your rental period has begun, the reservation is also non-refundable, including for unused days or early departures. To cancel, contact us at 321-544-1539.",
     },
     {
       q: "Do you offer a discount code?",
@@ -243,6 +239,18 @@ function FAQSection() {
     {
       q: "Is the cart safe for families?",
       a: "Absolutely. The cart seats 6 passengers and is designed for comfortable, low-speed local travel. Children must be seated and supervised at all times. Please review the safety guidelines on this page before your rental.",
+    },
+    {
+      q: "What if the battery dies while I'm out?",
+      a: "If your cart runs out of battery, call or text us right away at 321-544-1539 and do not attempt to continue driving. If a standard outlet is nearby, you may plug the cart in to recharge — even a short charge can provide enough power to get you back. If you're unable to recharge, contact us and we'll assist. A $75 service call fee applies if we need to come out in person. You are responsible for any third-party towing fees if you choose to contact a tow company. Tip: charge the cart nightly to avoid this situation.",
+    },
+    {
+      q: "Can I cross roads with speed limits over 35 mph?",
+      a: "Yes. You may cross higher-speed roads at intersections only, as permitted by Florida law. Driving along roads with speed limits over 35 mph is not allowed.",
+    },
+    {
+      q: "Can I drive the golf cart at night?",
+      a: "Yes. Our carts are fully street-legal and equipped with headlights, taillights, brake lights, and turn signals, making them safe to operate day or night.",
     },
   ];
 
@@ -445,10 +453,20 @@ export default function Home() {
               style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "17px" }}
               className="text-foreground hidden sm:inline"
             >
-              Breezy
+              Breezy Coastal Rentals
             </span>
           </div>
           <div className="flex items-center gap-2">
+            <Link href="/about">
+              <Button
+                size="sm"
+                variant="ghost"
+                className="shadow-sm hidden sm:flex"
+                style={{ background: "rgba(255,255,255,0.75)", color: "var(--primary)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.5)", fontWeight: 600 }}
+              >
+                About
+              </Button>
+            </Link>
             <Link href="/availability">
               <Button
                 size="sm"
@@ -522,7 +540,7 @@ export default function Home() {
                 letterSpacing: "0.01em",
               }}
             >
-              Reserve Your Golf Cart
+              Reserve Your Street-Legal Golf Cart Today!
               <ChevronRight className="w-5 h-5 ml-1" />
             </Button>
           </Link>
@@ -765,7 +783,7 @@ export default function Home() {
                   border: "none",
                 }}
               >
-                Reserve Your Golf Cart
+                Reserve Your Street-Legal Golf Cart Today!
                 <ChevronRight className="w-5 h-5 ml-1" />
               </Button>
             </Link>
@@ -834,6 +852,9 @@ export default function Home() {
         <p className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>
           Cape Canaveral, Florida · Private Golf Cart Rental
         </p>
+        <a href="tel:3215441539" className="inline-block mt-3 text-sm font-semibold" style={{ color: "oklch(0.65 0.18 232)" }}>
+          📞 321-544-1539
+        </a>
         <div className="flex items-center justify-center gap-6 mt-4">
           <Link href="/terms" className="text-xs hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.4)" }}>
             Terms of Service

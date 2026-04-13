@@ -82,7 +82,7 @@ export default function SplashScreen({ onReady }: SplashScreenProps) {
           animation: "breezy-pulse 2s ease-in-out infinite",
         }}
       >
-        <img src={LOGO_URL} alt="Breezy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        <img src={LOGO_URL} alt="Breezy Coastal Rentals" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
       </div>
 
       {/* Brand name */}
@@ -97,19 +97,7 @@ export default function SplashScreen({ onReady }: SplashScreenProps) {
             letterSpacing: "-0.5px",
           }}
         >
-          Breezy
-        </p>
-        <p
-          style={{
-            fontFamily: "Inter, sans-serif",
-            fontSize: "13px",
-            color: "oklch(0.65 0.08 220)",
-            margin: "4px 0 0",
-            letterSpacing: "0.08em",
-            textTransform: "uppercase",
-          }}
-        >
-          Coastal Rentals
+          Breezy Coastal Rentals
         </p>
       </div>
 
