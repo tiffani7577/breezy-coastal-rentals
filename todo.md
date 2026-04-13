@@ -184,7 +184,7 @@
 - [x] Booking: Change price to $160/day
 - [x] Booking: Add 7% Florida sales tax
 - [x] Booking: Add $300 refundable deposit note in booking summary (collected at pickup)
-- [ ] Booking: Disable bank/ACH payment method in Stripe Checkout
+- [x] Booking: Disable bank/ACH payment method in Stripe Checkout (payment_method_types: ["card"] already set)
 - [x] Booking: Add flat-rate promo codes (SEASHELL5=$700/5nights, SEASHELL6=$800/6nights, SEASHELL7=$900/7nights)
 - [x] Booking: Remove "where will the cart be delivered?" section
 - [x] Email: Fix sending by using onboarding@resend.dev as fallback from address

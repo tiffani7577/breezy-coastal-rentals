@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 
-const DOROTHY_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/dorothy-placeholder-VSh6EH7UEGoRfN99G7vTuA.webp";
+const DOROTHY_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/dorothy-v2-XyXFVKiTNsxc74AFjNYPHU.webp";
 
 export default function About() {
   return (
