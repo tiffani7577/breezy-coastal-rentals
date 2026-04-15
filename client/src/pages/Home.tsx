@@ -540,7 +540,7 @@ export default function Home() {
                 letterSpacing: "0.01em",
               }}
             >
-              Reserve Your Street-Legal Golf Cart Today!
+              Reserve Your Cart
               <ChevronRight className="w-5 h-5 ml-1" />
             </Button>
           </Link>
@@ -603,8 +603,8 @@ export default function Home() {
               },
               {
                 icon: ParkingCircleOff,
-                title: "Skip the Parking Stress",
-                desc: "The golf cart parks anywhere in seconds. No circling, no fees, no frustration — just hop out and enjoy.",
+                title: "Park Like a Car",
+                desc: "As a street-legal vehicle, the golf cart parks in regular parking spots just like a car. No special permits needed — just find a spot and go.",
                 color: "oklch(0.95 0.04 175)",
                 iconColor: "oklch(0.45 0.15 175)",
               },
@@ -783,7 +783,7 @@ export default function Home() {
                   border: "none",
                 }}
               >
-                Reserve Your Street-Legal Golf Cart Today!
+                Reserve Your Cart
                 <ChevronRight className="w-5 h-5 ml-1" />
               </Button>
             </Link>
@@ -850,7 +850,7 @@ export default function Home() {
           </span>
         </div>
         <p className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>
-          Cape Canaveral, Florida · Private Golf Cart Rental
+          Cape Canaveral, Florida · Street-Legal Golf Cart Rental
         </p>
         <a href="tel:3215441539" className="inline-block mt-3 text-sm font-semibold" style={{ color: "oklch(0.65 0.18 232)" }}>
           📞 321-544-1539
