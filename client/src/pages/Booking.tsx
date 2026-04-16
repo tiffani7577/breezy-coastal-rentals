@@ -759,19 +759,12 @@ export default function Booking() {
                   <span className="text-muted-foreground">${dailyRate}/day × {totalDays} days</span>
                   <span className="font-medium text-foreground">${subtotal.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Florida sales tax (7%)</span>
-                  <span className="font-medium text-foreground">${taxAmount.toFixed(2)}</span>
-                </div>
                 <div className="h-px" style={{ background: "oklch(0.93 0.01 220)" }} />
                 <div className="flex justify-between">
-                  <span className="font-bold text-foreground">Total Due Now</span>
-                  <span className="font-bold text-xl text-primary">${totalAmount.toFixed(2)}</span>
+                  <span className="font-bold text-foreground">Subtotal</span>
+                  <span className="font-bold text-xl text-primary">${subtotal.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Refundable security deposit (charged at checkout, returned after inspection)</span>
-                  <span className="font-medium text-foreground">${depositAmount}</span>
-                </div>
+                <p className="text-xs text-muted-foreground mt-2">Tax and security deposit will be added at checkout.</p>
               </div>
             </div>
 
