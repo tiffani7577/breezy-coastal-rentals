@@ -6,7 +6,9 @@ import {
   addBlockedDate,
   createBooking,
   createDocument,
+  createInspectionPhoto,
   createMessage,
+  createSmsNotification,
   createWaiverSignature,
   getAllBookings,
   getApprovedBookingDates,
@@ -15,8 +17,11 @@ import {
   getBookingByRef,
   getDocumentsByBookingId,
   getInspectionByBookingId,
+  getInspectionPhotosByBooking,
   getMessagesByBookingId,
+  getMonthlyRevenue,
   getPricing,
+  getSmsNotificationsByBooking,
   getUnreadCountForAdmin,
   getWaiverByBookingId,
   markMessagesRead,
@@ -458,6 +463,70 @@ export const appRouter = router({
         const { url } = await storagePut(key, buffer, input.mimeType);
         await updatePricing({ cartImageUrl: url });
         return { url };
+      }),
+
+    // ─── Inspection Photos ────────────────────────────────────────────────────────
+    uploadInspectionPhoto: adminProcedure
+      .input(
+        z.object({
+          bookingId: z.number(),
+          photoType: z.enum(["before", "after"]),
+          fileName: z.string(),
+          mimeType: z.string(),
+          fileBase64: z.string(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const buffer = Buffer.from(input.fileBase64, "base64");
+        const fileKey = `inspection/${input.bookingId}/${input.photoType}-${nanoid(8)}.jpg`;
+        const { url } = await storagePut(fileKey, buffer, input.mimeType);
+        await createInspectionPhoto({
+          bookingId: input.bookingId,
+          photoType: input.photoType,
+          photoUrl: url,
+          fileKey,
+        });
+        return { url, fileKey };
+      }),
+
+    getInspectionPhotos: adminProcedure
+      .input(z.object({ bookingId: z.number() }))
+      .query(async ({ input }) => {
+        return getInspectionPhotosByBooking(input.bookingId);
+      }),
+
+    // ─── SMS Notifications ────────────────────────────────────────────────────────
+    sendSmsNotification: adminProcedure
+      .input(
+        z.object({
+          bookingId: z.number(),
+          phoneNumber: z.string(),
+          notificationType: z.enum(["approval_confirmation", "reminder_24h"]),
+          messageContent: z.string(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        await createSmsNotification({
+          bookingId: input.bookingId,
+          phoneNumber: input.phoneNumber,
+          notificationType: input.notificationType,
+          messageContent: input.messageContent,
+          status: "pending",
+        });
+        return { success: true };
+      }),
+
+    getSmsNotifications: adminProcedure
+      .input(z.object({ bookingId: z.number() }))
+      .query(async ({ input }) => {
+        return getSmsNotificationsByBooking(input.bookingId);
+      }),
+
+    // ─── Revenue Report ───────────────────────────────────────────────────────────
+    getMonthlyReport: adminProcedure
+      .input(z.object({ year: z.number(), month: z.number() }))
+      .query(async ({ input }) => {
+        return getMonthlyRevenue(input.year, input.month);
       }),
   }),
 

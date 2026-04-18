@@ -168,3 +168,31 @@ export const inspectionChecklists = mysqlTable("inspection_checklists", {
 
 export type InspectionChecklist = typeof inspectionChecklists.$inferSelect;
 export type InsertInspectionChecklist = typeof inspectionChecklists.$inferInsert;
+
+// ─── SMS Notifications ──────────────────────────────────────────────────────────
+export const smsNotifications = mysqlTable("sms_notifications", {
+  id: int("id").autoincrement().primaryKey(),
+  bookingId: int("bookingId").notNull(),
+  notificationType: mysqlEnum("notificationType", ["approval_confirmation", "reminder_24h"]).notNull(),
+  phoneNumber: varchar("phoneNumber", { length: 32 }).notNull(),
+  messageContent: text("messageContent").notNull(),
+  sentAt: timestamp("sentAt").defaultNow().notNull(),
+  status: mysqlEnum("status", ["pending", "sent", "failed"]).notNull().default("pending"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type SmsNotification = typeof smsNotifications.$inferSelect;
+export type InsertSmsNotification = typeof smsNotifications.$inferInsert;
+
+// ─── Inspection Photos ──────────────────────────────────────────────────────────
+export const inspectionPhotos = mysqlTable("inspection_photos", {
+  id: int("id").autoincrement().primaryKey(),
+  bookingId: int("bookingId").notNull(),
+  photoType: mysqlEnum("photoType", ["before", "after"]).notNull(),
+  photoUrl: text("photoUrl").notNull(),
+  fileKey: varchar("fileKey", { length: 255 }).notNull(),
+  uploadedAt: timestamp("uploadedAt").defaultNow().notNull(),
+});
+
+export type InspectionPhoto = typeof inspectionPhotos.$inferSelect;
+export type InsertInspectionPhoto = typeof inspectionPhotos.$inferInsert;

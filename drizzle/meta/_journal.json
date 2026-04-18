@@ -43,6 +43,27 @@
       "when": 1776110574653,
       "tag": "0005_lethal_carmella_unuscione",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1776490194218,
+      "tag": "0006_nasty_scarlet_witch",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1776490227817,
+      "tag": "0007_regular_doomsday",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1776490298337,
+      "tag": "0008_true_black_cat",
+      "breakpoints": true
     }
   ]
 }

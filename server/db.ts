@@ -6,10 +6,14 @@ import {
   bookings,
   documents,
   inspectionChecklists,
+  inspectionPhotos,
+  smsNotifications,
   InsertBooking,
   InsertBookingMessage,
   InsertDocument,
   InsertInspectionChecklist,
+  InsertInspectionPhoto,
+  InsertSmsNotification,
   InsertUser,
   InsertWaiverSignature,
   pricing,
@@ -321,4 +325,64 @@ export async function upsertInspection(data: InsertInspectionChecklist) {
   } else {
     await db.insert(inspectionChecklists).values(data);
   }
+}
+
+// ─── SMS Notifications ─────────────────────────────────────────────────────────
+export async function createSmsNotification(data: InsertSmsNotification) {
+  const db = await getDb();
+  if (!db) throw new Error("DB unavailable");
+  await db.insert(smsNotifications).values(data);
+}
+
+export async function getSmsNotificationsByBooking(bookingId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db
+    .select()
+    .from(smsNotifications)
+    .where(eq(smsNotifications.bookingId, bookingId));
+}
+
+// ─── Inspection Photos ─────────────────────────────────────────────────────────
+export async function createInspectionPhoto(data: InsertInspectionPhoto) {
+  const db = await getDb();
+  if (!db) throw new Error("DB unavailable");
+  await db.insert(inspectionPhotos).values(data);
+}
+
+export async function getInspectionPhotosByBooking(bookingId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db
+    .select()
+    .from(inspectionPhotos)
+    .where(eq(inspectionPhotos.bookingId, bookingId));
+}
+
+// ─── Revenue Report ────────────────────────────────────────────────────────────
+export async function getMonthlyRevenue(year: number, month: number) {
+  const db = await getDb();
+  if (!db) return { totalRevenue: 0, totalBookings: 0, bookings: [] };
+  
+  const startDate = new Date(year, month - 1, 1);
+  const endDate = new Date(year, month, 0);
+  
+  const result = await db
+    .select()
+    .from(bookings)
+    .where(
+      and(
+        gte(bookings.startDate, startDate),
+        lte(bookings.endDate, endDate),
+        eq(bookings.bookingStatus, "approved")
+      )
+    );
+  
+  const totalRevenue = result.reduce((sum, b) => sum + parseFloat(b.totalAmount.toString()), 0);
+  
+  return {
+    totalRevenue,
+    totalBookings: result.length,
+    bookings: result,
+  };
 }
