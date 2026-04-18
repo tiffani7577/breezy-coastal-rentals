@@ -50,7 +50,7 @@ const STATUS_CONFIG: Record<string, { label: string; emoji: string; color: strin
   cancelled:        { label: "Cancelled",            emoji: "🚫", color: "#6b7280", bg: "#f9fafb", border: "#e5e7eb" },
 };
 
-type AdminView = "list" | "detail" | "calendar" | "settings";
+type AdminView = "list" | "detail" | "calendar" | "settings" | "dashboard";
 
 // ─── Quick Message Modal ────────────────────────────────────────────────────────────────────
 function QuickMessageModal({ bookingId, guestName, onClose }: { bookingId: number; guestName: string; onClose: () => void }) {
@@ -662,6 +662,58 @@ export default function Admin() {
   const { data: availData, refetch: refetchAvail } = trpc.availability.getBlockedDates.useQuery();
   const { data: pricingData, refetch: refetchPricing } = trpc.pricing.get.useQuery();
 
+  // Calculate approved booking dates for calendar
+  const approvedBookingDates = (bookingsList ?? [])
+    .filter(b => b.bookingStatus === "approved")
+    .flatMap(b => {
+      const dates = [];
+      const start = new Date(b.startDate);
+      const end = new Date(b.endDate);
+      for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+        dates.push(new Date(d));
+      }
+      return dates;
+    });
+
+  const blockedDates = (availData?.blocks ?? []).map(b => new Date(b.blockDate));
+
+  // Calculate daily/weekly/monthly revenue
+  const calculateRevenue = () => {
+    const approved = (bookingsList ?? []).filter(b => b.bookingStatus === "approved");
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const dailyTotal = approved
+      .filter(b => new Date(b.startDate).toDateString() === today.toDateString())
+      .reduce((sum, b) => sum + parseFloat(b.totalAmount.toString()), 0);
+    
+    const weekStart = new Date(today);
+    weekStart.setDate(today.getDate() - today.getDay());
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6);
+    
+    const weeklyTotal = approved
+      .filter(b => {
+        const start = new Date(b.startDate);
+        return start >= weekStart && start <= weekEnd;
+      })
+      .reduce((sum, b) => sum + parseFloat(b.totalAmount.toString()), 0);
+    
+    const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+    const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    
+    const monthlyTotal = approved
+      .filter(b => {
+        const start = new Date(b.startDate);
+        return start >= monthStart && start <= monthEnd;
+      })
+      .reduce((sum, b) => sum + parseFloat(b.totalAmount.toString()), 0);
+    
+    return { dailyTotal, weeklyTotal, monthlyTotal };
+  };
+
+  const revenue = calculateRevenue();
+
   const addBlock = trpc.availability.addBlock.useMutation();
   const removeBlock = trpc.availability.removeBlock.useMutation();
   const updatePricing = trpc.pricing.update.useMutation();
@@ -761,6 +813,7 @@ export default function Admin() {
         {[
           { id: "list" as AdminView, icon: User, label: "Bookings", badge: newBookings > 0 ? newBookings : 0 },
           { id: "calendar" as AdminView, icon: Calendar, label: "Calendar", badge: 0 },
+        { id: "dashboard" as AdminView, icon: DollarSign, label: "Revenue", badge: 0 },
           { id: "settings" as AdminView, icon: Settings, label: "Settings", badge: 0 },
         ].map(({ id, icon: Icon, label, badge }) => (
           <button
@@ -960,6 +1013,16 @@ export default function Admin() {
             <p className="text-gray-500 mb-6" style={{ fontSize: "15px" }}>
               Use this to mark dates when the cart is not available (maintenance, personal use, etc.)
             </p>
+            <div className="flex gap-4 mb-4 text-sm">
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 rounded" style={{ background: "#fee2e2" }}></div>
+                <span className="text-gray-600">Already Booked</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 rounded" style={{ background: "#fef3c7" }}></div>
+                <span className="text-gray-600">Manually Blocked</span>
+              </div>
+            </div>
 
             <div className="rounded-2xl p-5 mb-5" style={{ background: "white", border: "1px solid #e5e7eb" }}>
               <p className="font-bold text-gray-800 mb-3" style={{ fontSize: "16px" }}>Pick a date to block:</p>
@@ -967,8 +1030,19 @@ export default function Admin() {
                 mode="single"
                 selected={blockDate}
                 onSelect={setBlockDate}
-                disabled={[{ before: new Date() }]}
+                disabled={(date) => {
+                  if (date < new Date(new Date().setHours(0, 0, 0, 0))) return true;
+                  return approvedBookingDates.some(d => d.toDateString() === date.toDateString());
+                }}
                 className="w-full"
+                modifiers={{
+                  booked: approvedBookingDates,
+                  blocked: blockedDates,
+                }}
+                modifiersStyles={{
+                  booked: { background: "#fee2e2", color: "#991b1b", fontWeight: "bold" },
+                  blocked: { background: "#fef3c7", color: "#92400e", fontWeight: "bold" },
+                }}
               />
               <Input
                 placeholder="Reason (optional) — e.g. Maintenance"
@@ -1021,9 +1095,82 @@ export default function Admin() {
           </div>
         )}
 
+        
+        {/* ── Revenue Dashboard Tab ────────────────────────────────────────────── */}
+        {!selectedBookingId && view === "dashboard" && (
+          <div className="max-w-4xl mx-auto px-4 py-6">
+            <button
+              onClick={() => setView("list")}
+              className="flex items-center text-blue-600 hover:text-blue-700 mb-4 font-medium"
+              style={{ fontSize: "14px" }}
+            >
+              <ChevronLeft className="w-4 h-4 mr-1" />
+              Back to Bookings
+            </button>
+            <h1 style={{ fontSize: "26px", fontWeight: 800, color: "#0f172a", fontFamily: "'Playfair Display', serif", marginBottom: "6px" }}>
+              Revenue Dashboard
+            </h1>
+            <p className="text-gray-500 mb-6" style={{ fontSize: "15px" }}>
+              Track your daily, weekly, and monthly earnings
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+              <div className="rounded-2xl p-6" style={{ background: "white", border: "1px solid #e5e7eb" }}>
+                <p className="text-gray-600 text-sm mb-2">Today</p>
+                <p className="text-3xl font-bold text-gray-900">${revenue.dailyTotal.toFixed(2)}</p>
+              </div>
+              <div className="rounded-2xl p-6" style={{ background: "white", border: "1px solid #e5e7eb" }}>
+                <p className="text-gray-600 text-sm mb-2">This Week</p>
+                <p className="text-3xl font-bold text-gray-900">${revenue.weeklyTotal.toFixed(2)}</p>
+              </div>
+              <div className="rounded-2xl p-6" style={{ background: "white", border: "1px solid #e5e7eb" }}>
+                <p className="text-gray-600 text-sm mb-2">This Month</p>
+                <p className="text-3xl font-bold text-gray-900">${revenue.monthlyTotal.toFixed(2)}</p>
+              </div>
+            </div>
+
+            <div className="rounded-2xl p-6" style={{ background: "white", border: "1px solid #e5e7eb" }}>
+              <h2 className="font-bold text-gray-900 mb-4" style={{ fontSize: "18px" }}>Approved Bookings</h2>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr style={{ borderBottom: "1px solid #e5e7eb" }}>
+                      <th className="text-left py-3 px-4 font-bold text-gray-700">Guest</th>
+                      <th className="text-left py-3 px-4 font-bold text-gray-700">Dates</th>
+                      <th className="text-left py-3 px-4 font-bold text-gray-700">Days</th>
+                      <th className="text-right py-3 px-4 font-bold text-gray-700">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(bookingsList ?? [])
+                      .filter(b => b.bookingStatus === "approved")
+                      .map(b => (
+                        <tr key={b.id} style={{ borderBottom: "1px solid #f3f4f6" }}>
+                          <td className="py-3 px-4 text-gray-900">{b.guestName}</td>
+                          <td className="py-3 px-4 text-gray-600">{format(new Date(b.startDate), "MMM d")} - {format(new Date(b.endDate), "MMM d")}</td>
+                          <td className="py-3 px-4 text-gray-600">{b.totalDays}</td>
+                          <td className="py-3 px-4 text-right font-bold text-gray-900">${b.totalAmount.toFixed(2)}</td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* ── Settings Tab ────────────────────────────────────────────── */}
         {!selectedBookingId && view === "settings" && (
           <div className="max-w-2xl mx-auto px-4 py-6">
+            <button
+              onClick={() => setView("list")}
+              className="flex items-center text-blue-600 hover:text-blue-700 mb-4 font-medium"
+              style={{ fontSize: "14px" }}
+            >
+              <ChevronLeft className="w-4 h-4 mr-1" />
+              Back to Bookings
+            </button>
+            
             <h1 style={{ fontSize: "26px", fontWeight: 800, color: "#0f172a", fontFamily: "'Playfair Display', serif", marginBottom: "6px" }}>
               Settings
             </h1>
