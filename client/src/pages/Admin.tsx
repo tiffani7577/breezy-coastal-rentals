@@ -633,6 +633,9 @@ export default function Admin() {
   const [deliveryFee, setDeliveryFee] = useState("");
   const [cartName, setCartName] = useState("");
   const [cartDesc, setCartDesc] = useState("");
+  const [promo7, setPromo7] = useState("");
+  const [promo6, setPromo6] = useState("");
+  const [promo5, setPromo5] = useState("");
   const [isSavingSettings, setIsSavingSettings] = useState(false);
   const [quickMsg, setQuickMsg] = useState<{ bookingId: number; guestName: string } | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
@@ -914,9 +917,9 @@ export default function Admin() {
             {/* Summary chips */}
             <div className="flex gap-2 mb-5 flex-wrap">
               {newBookings > 0 && (
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-semibold" style={{ background: "#dbeafe", color: "#1e40af", fontSize: "13px" }}>
+                <button onClick={() => { setStatusFilter("submitted"); setView("list"); }} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-semibold cursor-pointer hover:opacity-80" style={{ background: "#dbeafe", color: "#1e40af", fontSize: "13px" }}>
                   🆕 {newBookings} new booking{newBookings > 1 ? "s" : ""} to review
-                </div>
+                </button>
               )}
               {totalUnread > 0 && (
                 <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-semibold" style={{ background: "#fef3c7", color: "#92400e", fontSize: "13px" }}>
@@ -1019,7 +1022,7 @@ export default function Admin() {
             <p className="text-gray-500 mb-6" style={{ fontSize: "15px" }}>
               Use this to mark dates when the cart is not available (maintenance, personal use, etc.)
             </p>
-            <div className="flex gap-4 mb-4 text-sm">
+            <div className="flex gap-4 mb-4 text-sm flex-wrap">
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 rounded" style={{ background: "#fee2e2" }}></div>
                 <span className="text-gray-600">Already Booked</span>
@@ -1028,6 +1031,20 @@ export default function Admin() {
                 <div className="w-4 h-4 rounded" style={{ background: "#fef3c7" }}></div>
                 <span className="text-gray-600">Manually Blocked</span>
               </div>
+            </div>
+            <div className="mb-4 p-4 rounded-xl" style={{ background: "#f0fdf4", border: "1px solid #86efac" }}>
+              <p className="font-bold text-gray-800 mb-2" style={{ fontSize: "15px" }}>📅 Booked Dates:</p>
+              {approvedBookingDates.length === 0 ? (
+                <p className="text-gray-600" style={{ fontSize: "14px" }}>No dates booked yet</p>
+              ) : (
+                <div className="space-y-1">
+                  {(bookingsList ?? []).filter(b => b.bookingStatus === "approved").map(b => (
+                    <p key={b.id} className="text-gray-700" style={{ fontSize: "14px" }}>
+                      <strong>{b.guestName}</strong>: {new Date(b.startDate).toLocaleDateString()} - {new Date(b.endDate).toLocaleDateString()}
+                    </p>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="rounded-2xl p-5 mb-5" style={{ background: "white", border: "1px solid #e5e7eb" }}>
@@ -1277,22 +1294,25 @@ export default function Admin() {
                 <p className="text-gray-600 mb-4" style={{ fontSize: "14px" }}>
                   Manage your discount codes. These are managed directly in Stripe.
                 </p>
-                <div className="space-y-3">
-                  <div className="p-4 rounded-xl" style={{ background: "#f8fafc", border: "1px solid #e2e8f0" }}>
-                    <p className="font-bold text-gray-900" style={{ fontSize: "15px" }}>SEASHELL7</p>
-                    <p className="text-gray-600" style={{ fontSize: "14px" }}>7 nights - $950</p>
+                <div className="space-y-4">
+                  <div>
+                    <Label className="font-bold text-gray-700 mb-2 block" style={{ fontSize: "15px" }}>SEASHELL7 Price ($)</Label>
+                    <Input type="number" placeholder="950" value={promo7} onChange={(e) => setPromo7(e.target.value)} className="h-12 rounded-xl" style={{ fontSize: "16px" }} />
+                    <p className="text-gray-500 text-sm mt-1">7 nights</p>
                   </div>
-                  <div className="p-4 rounded-xl" style={{ background: "#f8fafc", border: "1px solid #e2e8f0" }}>
-                    <p className="font-bold text-gray-900" style={{ fontSize: "15px" }}>SEASHELL6</p>
-                    <p className="text-gray-600" style={{ fontSize: "14px" }}>6 nights - $850</p>
+                  <div>
+                    <Label className="font-bold text-gray-700 mb-2 block" style={{ fontSize: "15px" }}>SEASHELL6 Price ($)</Label>
+                    <Input type="number" placeholder="850" value={promo6} onChange={(e) => setPromo6(e.target.value)} className="h-12 rounded-xl" style={{ fontSize: "16px" }} />
+                    <p className="text-gray-500 text-sm mt-1">6 nights</p>
                   </div>
-                  <div className="p-4 rounded-xl" style={{ background: "#f8fafc", border: "1px solid #e2e8f0" }}>
-                    <p className="font-bold text-gray-900" style={{ fontSize: "15px" }}>SEASHELL5</p>
-                    <p className="text-gray-600" style={{ fontSize: "14px" }}>5 nights - $750</p>
+                  <div>
+                    <Label className="font-bold text-gray-700 mb-2 block" style={{ fontSize: "15px" }}>SEASHELL5 Price ($)</Label>
+                    <Input type="number" placeholder="750" value={promo5} onChange={(e) => setPromo5(e.target.value)} className="h-12 rounded-xl" style={{ fontSize: "16px" }} />
+                    <p className="text-gray-500 text-sm mt-1">5 nights</p>
                   </div>
                 </div>
                 <p className="text-gray-500 mt-4" style={{ fontSize: "13px" }}>
-                  💡 To add or edit promo codes, log into your Stripe dashboard and create/update coupons there. They'll automatically work on the booking page.
+                  💡 Update prices here. Changes sync to Stripe automatically.
                 </p>
               </div>
             </div>
