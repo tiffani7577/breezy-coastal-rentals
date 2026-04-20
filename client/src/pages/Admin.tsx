@@ -683,9 +683,15 @@ export default function Admin() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     
+    const toNumber = (val: any) => {
+      if (val === null || val === undefined) return 0;
+      const num = typeof val === 'number' ? val : parseFloat(String(val));
+      return isNaN(num) ? 0 : num;
+    };
+    
     const dailyTotal = approved
       .filter(b => new Date(b.startDate).toDateString() === today.toDateString())
-      .reduce((sum, b) => sum + parseFloat(b.totalAmount.toString()), 0);
+      .reduce((sum, b) => sum + toNumber(b.totalAmount), 0);
     
     const weekStart = new Date(today);
     weekStart.setDate(today.getDate() - today.getDay());
@@ -697,7 +703,7 @@ export default function Admin() {
         const start = new Date(b.startDate);
         return start >= weekStart && start <= weekEnd;
       })
-      .reduce((sum, b) => sum + parseFloat(b.totalAmount.toString()), 0);
+      .reduce((sum, b) => sum + toNumber(b.totalAmount), 0);
     
     const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
     const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
@@ -707,7 +713,7 @@ export default function Admin() {
         const start = new Date(b.startDate);
         return start >= monthStart && start <= monthEnd;
       })
-      .reduce((sum, b) => sum + parseFloat(b.totalAmount.toString()), 0);
+      .reduce((sum, b) => sum + toNumber(b.totalAmount), 0);
     
     return { dailyTotal, weeklyTotal, monthlyTotal };
   };
@@ -1117,15 +1123,15 @@ export default function Admin() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
               <div className="rounded-2xl p-6" style={{ background: "white", border: "1px solid #e5e7eb" }}>
                 <p className="text-gray-600 text-sm mb-2">Today</p>
-                <p className="text-3xl font-bold text-gray-900">${revenue.dailyTotal.toFixed(2)}</p>
+                <p className="text-3xl font-bold text-gray-900">${(revenue?.dailyTotal ?? 0).toFixed(2)}</p>
               </div>
               <div className="rounded-2xl p-6" style={{ background: "white", border: "1px solid #e5e7eb" }}>
                 <p className="text-gray-600 text-sm mb-2">This Week</p>
-                <p className="text-3xl font-bold text-gray-900">${revenue.weeklyTotal.toFixed(2)}</p>
+                <p className="text-3xl font-bold text-gray-900">${(revenue?.weeklyTotal ?? 0).toFixed(2)}</p>
               </div>
               <div className="rounded-2xl p-6" style={{ background: "white", border: "1px solid #e5e7eb" }}>
                 <p className="text-gray-600 text-sm mb-2">This Month</p>
-                <p className="text-3xl font-bold text-gray-900">${revenue.monthlyTotal.toFixed(2)}</p>
+                <p className="text-3xl font-bold text-gray-900">${(revenue?.monthlyTotal ?? 0).toFixed(2)}</p>
               </div>
             </div>
 
@@ -1144,14 +1150,17 @@ export default function Admin() {
                   <tbody>
                     {(bookingsList ?? [])
                       .filter(b => b.bookingStatus === "approved")
-                      .map(b => (
-                        <tr key={b.id} style={{ borderBottom: "1px solid #f3f4f6" }}>
-                          <td className="py-3 px-4 text-gray-900">{b.guestName}</td>
-                          <td className="py-3 px-4 text-gray-600">{format(new Date(b.startDate), "MMM d")} - {format(new Date(b.endDate), "MMM d")}</td>
-                          <td className="py-3 px-4 text-gray-600">{b.totalDays}</td>
-                          <td className="py-3 px-4 text-right font-bold text-gray-900">${b.totalAmount.toFixed(2)}</td>
-                        </tr>
-                      ))}
+                      .map(b => {
+                        const amount = typeof b.totalAmount === 'number' ? b.totalAmount : parseFloat(String(b.totalAmount || 0));
+                        return (
+                          <tr key={b.id} style={{ borderBottom: "1px solid #f3f4f6" }}>
+                            <td className="py-3 px-4 text-gray-900">{b.guestName}</td>
+                            <td className="py-3 px-4 text-gray-600">{format(new Date(b.startDate), "MMM d")} - {format(new Date(b.endDate), "MMM d")}</td>
+                            <td className="py-3 px-4 text-gray-600">{b.totalDays}</td>
+                            <td className="py-3 px-4 text-right font-bold text-gray-900">${amount.toFixed(2)}</td>
+                          </tr>
+                        );
+                      })}
                   </tbody>
                 </table>
               </div>
@@ -1259,6 +1268,32 @@ export default function Admin() {
                   {isSavingSettings ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : null}
                   Save Changes
                 </Button>
+              </div>
+            </div>
+
+            <div className="mt-8 rounded-2xl overflow-hidden" style={{ background: "white", border: "1px solid #e5e7eb" }}>
+              <div className="p-5">
+                <h2 className="font-bold text-gray-900 mb-4" style={{ fontSize: "18px" }}>Promo Codes</h2>
+                <p className="text-gray-600 mb-4" style={{ fontSize: "14px" }}>
+                  Manage your discount codes. These are managed directly in Stripe.
+                </p>
+                <div className="space-y-3">
+                  <div className="p-4 rounded-xl" style={{ background: "#f8fafc", border: "1px solid #e2e8f0" }}>
+                    <p className="font-bold text-gray-900" style={{ fontSize: "15px" }}>SEASHELL7</p>
+                    <p className="text-gray-600" style={{ fontSize: "14px" }}>7 nights - $950</p>
+                  </div>
+                  <div className="p-4 rounded-xl" style={{ background: "#f8fafc", border: "1px solid #e2e8f0" }}>
+                    <p className="font-bold text-gray-900" style={{ fontSize: "15px" }}>SEASHELL6</p>
+                    <p className="text-gray-600" style={{ fontSize: "14px" }}>6 nights - $850</p>
+                  </div>
+                  <div className="p-4 rounded-xl" style={{ background: "#f8fafc", border: "1px solid #e2e8f0" }}>
+                    <p className="font-bold text-gray-900" style={{ fontSize: "15px" }}>SEASHELL5</p>
+                    <p className="text-gray-600" style={{ fontSize: "14px" }}>5 nights - $750</p>
+                  </div>
+                </div>
+                <p className="text-gray-500 mt-4" style={{ fontSize: "13px" }}>
+                  💡 To add or edit promo codes, log into your Stripe dashboard and create/update coupons there. They'll automatically work on the booking page.
+                </p>
               </div>
             </div>
           </div>
