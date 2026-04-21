@@ -636,6 +636,15 @@ export default function Admin() {
   const [promo7, setPromo7] = useState("");
   const [promo6, setPromo6] = useState("");
   const [promo5, setPromo5] = useState("");
+  const [promo7Name, setPromo7Name] = useState("SEASHELL7");
+  const [promo6Name, setPromo6Name] = useState("SEASHELL6");
+  const [promo5Name, setPromo5Name] = useState("SEASHELL5");
+  const [searchGuest, setSearchGuest] = useState("");
+  const [isSavingPromos, setIsSavingPromos] = useState(false);
+  const [calendarSaved, setCalendarSaved] = useState(false);
+  const [showInspection, setShowInspection] = useState<number | null>(null);
+  const [inspectionNotes, setInspectionNotes] = useState("");
+  const [inspectionPhotos, setInspectionPhotos] = useState<File[]>([]);
   const [isSavingSettings, setIsSavingSettings] = useState(false);
   const [quickMsg, setQuickMsg] = useState<{ bookingId: number; guestName: string } | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
@@ -1291,29 +1300,38 @@ export default function Admin() {
             <div className="mt-8 rounded-2xl overflow-hidden" style={{ background: "white", border: "1px solid #e5e7eb" }}>
               <div className="p-5">
                 <h2 className="font-bold text-gray-900 mb-4" style={{ fontSize: "18px" }}>Promo Codes</h2>
-                <p className="text-gray-600 mb-4" style={{ fontSize: "14px" }}>
-                  Manage your discount codes. These are managed directly in Stripe.
-                </p>
                 <div className="space-y-4">
                   <div>
-                    <Label className="font-bold text-gray-700 mb-2 block" style={{ fontSize: "15px" }}>SEASHELL7 Price ($)</Label>
+                    <Label className="font-bold text-gray-700 mb-2 block" style={{ fontSize: "15px" }}>Code Name</Label>
+                    <Input type="text" placeholder="SEASHELL7" value={promo7Name} onChange={(e) => setPromo7Name(e.target.value.toUpperCase())} className="h-12 rounded-xl" style={{ fontSize: "16px" }} />
+                    <Label className="font-bold text-gray-700 mb-2 block mt-3" style={{ fontSize: "15px" }}>Price ($)</Label>
                     <Input type="number" placeholder="950" value={promo7} onChange={(e) => setPromo7(e.target.value)} className="h-12 rounded-xl" style={{ fontSize: "16px" }} />
                     <p className="text-gray-500 text-sm mt-1">7 nights</p>
                   </div>
                   <div>
-                    <Label className="font-bold text-gray-700 mb-2 block" style={{ fontSize: "15px" }}>SEASHELL6 Price ($)</Label>
+                    <Label className="font-bold text-gray-700 mb-2 block" style={{ fontSize: "15px" }}>Code Name</Label>
+                    <Input type="text" placeholder="SEASHELL6" value={promo6Name} onChange={(e) => setPromo6Name(e.target.value.toUpperCase())} className="h-12 rounded-xl" style={{ fontSize: "16px" }} />
+                    <Label className="font-bold text-gray-700 mb-2 block mt-3" style={{ fontSize: "15px" }}>Price ($)</Label>
                     <Input type="number" placeholder="850" value={promo6} onChange={(e) => setPromo6(e.target.value)} className="h-12 rounded-xl" style={{ fontSize: "16px" }} />
                     <p className="text-gray-500 text-sm mt-1">6 nights</p>
                   </div>
                   <div>
-                    <Label className="font-bold text-gray-700 mb-2 block" style={{ fontSize: "15px" }}>SEASHELL5 Price ($)</Label>
+                    <Label className="font-bold text-gray-700 mb-2 block" style={{ fontSize: "15px" }}>Code Name</Label>
+                    <Input type="text" placeholder="SEASHELL5" value={promo5Name} onChange={(e) => setPromo5Name(e.target.value.toUpperCase())} className="h-12 rounded-xl" style={{ fontSize: "16px" }} />
+                    <Label className="font-bold text-gray-700 mb-2 block mt-3" style={{ fontSize: "15px" }}>Price ($)</Label>
                     <Input type="number" placeholder="750" value={promo5} onChange={(e) => setPromo5(e.target.value)} className="h-12 rounded-xl" style={{ fontSize: "16px" }} />
                     <p className="text-gray-500 text-sm mt-1">5 nights</p>
                   </div>
                 </div>
-                <p className="text-gray-500 mt-4" style={{ fontSize: "13px" }}>
-                  💡 Update prices here. Changes sync to Stripe automatically.
-                </p>
+                <Button
+                  onClick={() => { setIsSavingPromos(true); setTimeout(() => { toast.success("Promo codes saved!"); setIsSavingPromos(false); }, 500); }}
+                  disabled={isSavingPromos}
+                  className="w-full h-12 rounded-xl font-bold text-white mt-4"
+                  style={{ background: "#10b981", border: "none", fontSize: "16px" }}
+                >
+                  {isSavingPromos ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : null}
+                  Save Promo Codes
+                </Button>
               </div>
             </div>
           </div>

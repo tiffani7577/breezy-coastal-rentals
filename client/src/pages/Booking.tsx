@@ -38,26 +38,50 @@ const STEPS = [
   { id: 6, label: "Payment", icon: CreditCard },
 ];
 
-const WAIVER_TEXT = `LOW-SPEED VEHICLE (LSV) RENTAL LIABILITY WAIVER & RELEASE AGREEMENT
-(AKA Golf Cart)
+const WAIVER_TEXT = `Golf Cart Rental Agreement & Liability Waiver
 
-By signing below, I ("Renter") acknowledge and agree to the following:
+This Rental Agreement & Liability Waiver is entered into between Breezy Coastal Rentals, LLC ("Company") and the undersigned renter. By signing below, you agree to all terms and conditions outlined herein.
 
-1. ASSUMPTION OF RISK: I understand that operating a low-speed vehicle (LSV) involves inherent risks, including but not limited to personal injury, property damage, and accidents. I voluntarily assume all such risks.
+1. ASSUMPTION OF RISK
+I understand that operating a street-legal low-speed vehicle (LSV) involves inherent risks, including but not limited to personal injury, property damage, and accidents. I voluntarily assume all such risks.
 
-2. RELEASE OF LIABILITY: I hereby release, waive, and discharge Breezy Coastal Rentals and its owners, agents, and representatives from any and all claims, damages, losses, or liability arising from my use of the LSV.
+2. RELEASE OF LIABILITY
+I hereby release, waive, and discharge Breezy Coastal Rentals, LLC ("Company"), its owners, agents, and representatives from any and all claims, damages, losses, or liability arising from my use of the vehicle.
 
-3. RESPONSIBLE USE: I agree to operate the LSV in a safe and lawful manner, obey all applicable traffic laws, and not operate the vehicle under the influence of alcohol or drugs.
+3. RESPONSIBLE USE
+I agree to operate the vehicle in a safe and lawful manner, obey all applicable traffic laws, and not operate the vehicle under the influence of alcohol or drugs.
 
-4. INSURANCE: I confirm that I have valid personal auto insurance that covers LSV use, or I accept full financial responsibility for any damages.
+4. INSURANCE
+I confirm that I have valid personal auto insurance that covers LSV use, or I accept full financial responsibility for any damage or liability.
 
-5. DAMAGE RESPONSIBILITY: I agree to return the LSV in the same condition it was received. I am financially responsible for any damage, theft, or loss that occurs during my rental period.
+5. DAMAGE RESPONSIBILITY
+I agree to return the vehicle in the same condition it was received. I am financially responsible for any damage, theft, loss, or excessive cleaning that occurs during my rental period. Damages will be charged at the cost of repair or replacement.
 
-6. AGE REQUIREMENT: I confirm that I am at least 25 years of age and hold a valid driver's license.
+6. AGE & DRIVER REQUIREMENTS
+All drivers must be at least 21 years of age, hold a valid driver's license, and be listed on this agreement. The primary renter must be at least 25 years of age and is fully responsible for all drivers and use of the vehicle.
 
-7. INDEMNIFICATION: I agree to indemnify and hold harmless Breezy Coastal Rentals from any claims, costs, or expenses arising from my use of the LSV.
+7. INDEMNIFICATION
+I agree to indemnify and hold harmless the Company from any claims, costs, or expenses arising from my use of the vehicle.
 
-This agreement is binding upon signing and constitutes the entire agreement between the parties regarding liability.`;
+8. RENTAL TERMS
+Rental period applies to the dates selected at booking and begins at 4:00 PM on the first day and ends at 10:00 AM on the final day. The golf cart is provided at and must be returned to: 8720 Seashell Ln., Cape Canaveral, FL 32920. The vehicle may be used off the property but must be returned to and stored at this address when not in use. Late returns may result in additional charges.
+
+9. SECURITY DEPOSIT & DAMAGES
+A security deposit will be collected at the time of booking. The deposit will be returned within 3 days after the rental period, following a satisfactory inspection of the vehicle. The Company reserves the right to charge the renter's payment method for any damages exceeding the deposit amount.
+
+GOLF CART RULES
+- Must follow all traffic laws, including speed limits and use of headlights when required
+- May not be operated between 10:00 PM and 6:00 AM
+- No parking on grass. Cart must be parked in the gravel driveway at the property
+- Maximum of 6 passengers. All passengers must be seated while the vehicle is in motion
+- No reckless driving, racing, or misuse of the vehicle
+- No operation under the influence of alcohol or drugs
+- Renter agrees to report any malfunction or issue immediately
+- Vehicle must be charged nightly using the provided charger and extension cord only
+
+Violation of these rules may result in immediate termination of rental privileges without refund.
+
+By signing below, I agree to all terms of this Rental Agreement & Liability Waiver.`;
 
 type DateRange = { from: Date | undefined; to: Date | undefined };
 type UploadedFile = { file: File; preview: string; base64: string } | null;
@@ -118,13 +142,13 @@ export default function Booking() {
   const deliveryFee = parseFloat(pricingData?.deliveryFee ?? "0");
   const totalDays =
     dateRange.from && dateRange.to
-      ? Math.max(1, differenceInCalendarDays(dateRange.to, dateRange.from) + 1)
+      ? differenceInCalendarDays(dateRange.to, dateRange.from)
       : 0;
   const subtotal = totalDays * dailyRate;
   const taxRate = 0.07;
-  const taxAmount = subtotal * taxRate;
+  const taxAmount = parseFloat((subtotal * taxRate).toFixed(2));
   const depositAmount = 300;
-  const totalAmount = subtotal + taxAmount;
+  const totalAmount = parseFloat((subtotal + taxAmount).toFixed(2));
 
   // Build disabled dates
   const disabledDates = useCallback(() => {
@@ -183,7 +207,7 @@ export default function Booking() {
         return;
       }
       if (totalDays < MIN_DAYS) {
-        toast.error(`Minimum rental is ${MIN_DAYS} nights. Please select at least ${MIN_DAYS} days.`);
+        toast.error(`Minimum rental is ${MIN_DAYS} nights. You selected ${totalDays} nights.`);
         return;
       }
       setStep(2);
@@ -657,7 +681,7 @@ export default function Booking() {
           <div>
             <div className="mb-6">
               <h1 className="text-2xl font-bold text-foreground" style={{ fontFamily: "'Playfair Display', serif" }}>
-                Liability Waiver
+                Rental Agreement & Liability Waiver
               </h1>
               <p className="text-muted-foreground text-sm mt-1">
                 Please read and sign the rental agreement.
@@ -707,7 +731,7 @@ export default function Booking() {
                   className="mt-0.5"
                 />
                 <label htmlFor="waiver-agree" className="text-sm text-foreground leading-relaxed cursor-pointer">
-                  I have read and agree to the Liability Waiver, <Link href="/terms" className="text-primary underline">Terms of Service</Link>, and <Link href="/privacy" className="text-primary underline">Privacy Policy</Link>.
+                  I have read and agree to the Rental Agreement & Liability Waiver, <Link href="/terms" className="text-primary underline">Terms of Service</Link>, and <Link href="/privacy" className="text-primary underline">Privacy Policy</Link>.
                 </label>
               </div>
             </div>

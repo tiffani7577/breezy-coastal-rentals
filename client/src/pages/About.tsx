@@ -34,43 +34,14 @@ export default function About() {
           Breezy Coastal Rentals
         </h1>
         <p className="mt-4 max-w-xl mx-auto text-base" style={{ color: "oklch(0.75 0.04 220)", lineHeight: 1.7 }}>
-          A locally owned, family-run business based in Titusville, Florida — dedicated to helping guests enjoy the Space Coast with ease.
+          A locally owned, family-run business based in Cape Canaveral, Florida — dedicated to helping guests enjoy the Space Coast with ease.
         </p>
       </div>
 
       {/* Main content */}
       <div className="max-w-3xl mx-auto px-4 py-16">
 
-        {/* Dorothy card */}
-        <div className="rounded-3xl overflow-hidden mb-12 flex flex-col md:flex-row gap-0"
-          style={{ background: "white", boxShadow: "0 4px 32px rgba(0,80,160,0.08)" }}>
-          <div className="md:w-64 flex-shrink-0">
-            <img
-              src={DOROTHY_IMG}
-              alt="Dorothy Russ, Owner of Breezy Coastal Rentals"
-              className="w-full h-72 md:h-full object-cover"
-              loading="eager"
-            />
-          </div>
-          <div className="p-8 flex flex-col justify-center">
-            <h2 style={{ fontSize: "1.5rem", fontFamily: "'Playfair Display', serif", color: "oklch(0.15 0.025 232)" }}>
-              Dorothy Russ
-            </h2>
-            <p className="text-sm font-semibold mt-1 mb-4" style={{ color: "oklch(0.48 0.18 232)" }}>
-              Owner, Breezy Coastal Rentals
-            </p>
-            <p className="text-base mb-2" style={{ color: "oklch(0.35 0.02 220)", lineHeight: 1.7 }}>
-              Your local contact during your stay
-            </p>
-            <a
-              href="tel:3215441539"
-              className="inline-flex items-center gap-2 mt-3 text-sm font-semibold"
-              style={{ color: "oklch(0.48 0.18 232)" }}
-            >
-              📞 321-544-1539
-            </a>
-          </div>
-        </div>
+
 
         {/* About text */}
         <div className="rounded-3xl p-8 mb-8" style={{ background: "white", boxShadow: "0 4px 32px rgba(0,80,160,0.06)" }}>
@@ -79,7 +50,7 @@ export default function About() {
           </h2>
           <div className="space-y-4 text-base" style={{ color: "oklch(0.35 0.02 220)", lineHeight: 1.8 }}>
             <p>
-              Based in Titusville, Florida, Breezy Coastal Rentals is proudly operated as a locally owned, family-run business dedicated to helping guests enjoy the Space Coast with ease.
+              Based in Cape Canaveral, Florida, Breezy Coastal Rentals is proudly operated as a locally owned, family-run business dedicated to helping guests enjoy the Space Coast with ease.
             </p>
             <p>
               Our goal is simple: provide clean, reliable, fully street-legal golf carts that make getting around fun and effortless. Whether you're heading to the beach, cruising the neighborhood, or exploring the area, our carts are designed to enhance your stay.
@@ -114,7 +85,7 @@ export default function About() {
                 className="px-8 py-3 rounded-full text-sm font-semibold"
                 style={{ background: "white", color: "oklch(0.15 0.025 232)" }}
               >
-                Reserve Your Street-Legal Golf Cart Today!
+                Reserve Your Cart
               </button>
             </Link>
           </div>
