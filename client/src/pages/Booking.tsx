@@ -46,7 +46,7 @@ This Rental Agreement & Liability Waiver is entered into between Breezy Coastal 
 I understand that operating a street-legal low-speed vehicle (LSV) involves inherent risks, including but not limited to personal injury, property damage, and accidents. I voluntarily assume all such risks.
 
 2. RELEASE OF LIABILITY
-I hereby release, waive, and discharge Breezy Coastal Rentals, LLC ("Company"), its owners, agents, and representatives from any and all claims, damages, losses, or liability arising from my use of the vehicle.
+I hereby release, waive, and discharge the Company, its owners, agents, and representatives from any and all claims, damages, losses, or liability arising from my use of the vehicle.
 
 3. RESPONSIBLE USE
 I agree to operate the vehicle in a safe and lawful manner, obey all applicable traffic laws, and not operate the vehicle under the influence of alcohol or drugs.
@@ -69,17 +69,19 @@ Rental period applies to the dates selected at booking and begins at 4:00 PM on 
 9. SECURITY DEPOSIT & DAMAGES
 A security deposit will be collected at the time of booking. The deposit will be returned within 3 days after the rental period, following a satisfactory inspection of the vehicle. The Company reserves the right to charge the renter's payment method for any damages exceeding the deposit amount.
 
-GOLF CART RULES
-- Must follow all traffic laws, including speed limits and use of headlights when required
-- May not be operated between 10:00 PM and 6:00 AM
-- No parking on grass. Cart must be parked in the gravel driveway at the property
-- Maximum of 6 passengers. All passengers must be seated while the vehicle is in motion
-- No reckless driving, racing, or misuse of the vehicle
-- No operation under the influence of alcohol or drugs
-- Renter agrees to report any malfunction or issue immediately
-- Vehicle must be charged nightly using the provided charger and extension cord only
+10. SERVICE & TOWING
+A $75 service fee may apply if assistance is required due to misuse or avoidable issues. Towing or recovery costs are the responsibility of the renter.
 
-Violation of these rules may result in immediate termination of rental privileges without refund.
+11. BATTERY & CHARGING
+The vehicle must be charged nightly using the provided charger and extension cord only. Renter is responsible for ensuring the vehicle remains adequately charged throughout the rental period. Failure to properly charge the vehicle may result in additional fees if service, towing, or battery-related issues occur.
+
+12. CANCELLATION POLICY
+Cancellations made 72 hours or more prior to the rental start date will receive a full refund. Cancellations made within 72 hours of the rental start date are non-refundable. No refunds will be issued for unused rental time after the rental period has begun.
+
+GOLF CART RULES
+The golf cart is a street-legal low-speed vehicle (LSV) and must follow all traffic laws, including speed limits and use of headlights when required. Golf cart may not be operated between 10:00 PM and 6:00 AM. No parking on grass. Cart must be parked in the gravel driveway at the property. Maximum of 6 passengers. All passengers must be seated while the vehicle is in motion. No reckless driving, racing, or misuse of the vehicle. No operation under the influence of alcohol or drugs. Renter agrees to report any malfunction or issue immediately.
+
+Violation of these rules may result in immediate termination of rental privileges without refund. This includes but not limited to: Underage or unapproved drivers, Driving under the influence, Reckless or unsafe operation, Operating off-road or on grass areas.
 
 By signing below, I agree to all terms of this Rental Agreement & Liability Waiver.`;
 
