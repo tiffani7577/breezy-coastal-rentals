@@ -494,8 +494,11 @@ export default function Home() {
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Background image */}
         <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${HERO_IMG})` }}
+          className="absolute inset-0 bg-cover"
+          style={{ 
+            backgroundImage: `url(${HERO_IMG})`,
+            backgroundPosition: 'center 40%'
+          }}
         />
         {/* Gradient overlay */}
         <div

@@ -720,6 +720,22 @@ export default function Booking() {
             </div>
 
             <div className="space-y-4">
+              <Button
+                variant="outline"
+                className="w-full h-10 rounded-xl text-sm font-medium"
+                onClick={() => {
+                  const element = document.createElement('a');
+                  const file = new Blob([WAIVER_TEXT], {type: 'text/plain'});
+                  element.href = URL.createObjectURL(file);
+                  element.download = `Breezy_Rental_Agreement_${new Date().toISOString().split('T')[0]}.txt`;
+                  document.body.appendChild(element);
+                  element.click();
+                  document.body.removeChild(element);
+                  toast.success('Contract downloaded');
+                }}
+              >
+                📥 Download Contract
+              </Button>
               <div>
                 <Label className="text-sm font-semibold text-foreground mb-1.5 block">
                   Type Your Full Legal Name to Sign
