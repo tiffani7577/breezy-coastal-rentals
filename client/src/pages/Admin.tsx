@@ -1327,23 +1327,14 @@ export default function Admin() {
                   onClick={async () => {
                     setIsSavingPromos(true);
                     try {
-                      // Call backend to update Stripe coupons
-                      const response = await fetch('/api/admin/update-promos', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                          promo7: { name: promo7Name, price: parseInt(promo7) || 950 },
-                          promo6: { name: promo6Name, price: parseInt(promo6) || 850 },
-                          promo5: { name: promo5Name, price: parseInt(promo5) || 750 }
-                        })
+                      await trpc.admin.updatePromos.mutate({
+                        promo7: { name: promo7Name, price: parseInt(promo7) || 950 },
+                        promo6: { name: promo6Name, price: parseInt(promo6) || 850 },
+                        promo5: { name: promo5Name, price: parseInt(promo5) || 750 }
                       });
-                      if (response.ok) {
-                        toast.success("Promo codes updated in Stripe!");
-                      } else {
-                        toast.error("Failed to update promo codes");
-                      }
+                      toast.success("Promo codes updated in Stripe!");
                     } catch (error) {
-                      toast.error("Error updating promo codes");
+                      toast.error("Failed to update promo codes");
                     } finally {
                       setIsSavingPromos(false);
                     }

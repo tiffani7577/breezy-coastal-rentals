@@ -528,6 +528,46 @@ export const appRouter = router({
       .query(async ({ input }) => {
         return getMonthlyRevenue(input.year, input.month);
       }),
+
+    // ─── Update Promo Codes ───────────────────────────────────────────────────────────
+    updatePromos: adminProcedure
+      .input(z.object({
+        promo7: z.object({ name: z.string(), price: z.number() }),
+        promo6: z.object({ name: z.string(), price: z.number() }),
+        promo5: z.object({ name: z.string(), price: z.number() })
+      }))
+      .mutation(async ({ input }) => {
+        const stripe = new Stripe(ENV.stripeSecretKey);
+        
+        try {
+          const results = [];
+          const promos = [
+            { name: input.promo7.name, price: input.promo7.price },
+            { name: input.promo6.name, price: input.promo6.price },
+            { name: input.promo5.name, price: input.promo5.price }
+          ];
+
+          for (const promo of promos) {
+            try {
+              const coupon = await stripe.coupons.create({
+                id: promo.name,
+                amount_off: promo.price * 100,
+                currency: 'usd',
+                duration: 'repeating',
+                duration_in_months: 1
+              });
+              results.push(coupon);
+            } catch (e: any) {
+              if (e.code !== 'resource_already_exists') throw e;
+            }
+          }
+
+          return { success: true, coupons: results };
+        } catch (error) {
+          console.error('Error updating promos:', error);
+          throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Failed to update promo codes' });
+        }
+      }),
   }),
 
   // ─── Guest Messaging (public, by booking ref) ──────────────────────────────────
