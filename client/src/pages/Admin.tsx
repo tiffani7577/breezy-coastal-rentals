@@ -1324,7 +1324,30 @@ export default function Admin() {
                   </div>
                 </div>
                 <Button
-                  onClick={() => { setIsSavingPromos(true); setTimeout(() => { toast.success("Promo codes saved!"); setIsSavingPromos(false); }, 500); }}
+                  onClick={async () => {
+                    setIsSavingPromos(true);
+                    try {
+                      // Call backend to update Stripe coupons
+                      const response = await fetch('/api/admin/update-promos', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                          promo7: { name: promo7Name, price: parseInt(promo7) || 950 },
+                          promo6: { name: promo6Name, price: parseInt(promo6) || 850 },
+                          promo5: { name: promo5Name, price: parseInt(promo5) || 750 }
+                        })
+                      });
+                      if (response.ok) {
+                        toast.success("Promo codes updated in Stripe!");
+                      } else {
+                        toast.error("Failed to update promo codes");
+                      }
+                    } catch (error) {
+                      toast.error("Error updating promo codes");
+                    } finally {
+                      setIsSavingPromos(false);
+                    }
+                  }}
                   disabled={isSavingPromos}
                   className="w-full h-12 rounded-xl font-bold text-white mt-4"
                   style={{ background: "#10b981", border: "none", fontSize: "16px" }}

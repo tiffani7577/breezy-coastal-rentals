@@ -38,50 +38,70 @@ const STEPS = [
   { id: 6, label: "Payment", icon: CreditCard },
 ];
 
-const WAIVER_TEXT = `Golf Cart Rental Agreement & Liability Waiver
+const WAIVER_TEXT = `Rental Agreement & Liability Waiver
 
 This Rental Agreement & Liability Waiver is entered into between Breezy Coastal Rentals, LLC ("Company") and the undersigned renter. By signing below, you agree to all terms and conditions outlined herein.
 
-1. ASSUMPTION OF RISK
-I understand that operating a street-legal low-speed vehicle (LSV) involves inherent risks, including but not limited to personal injury, property damage, and accidents. I voluntarily assume all such risks.
+RENTAL TERMS
+• Rental period applies April 26 - May 2, 2026 and begins at 4:00 PM on the first day and ends at 10:00 AM on the final day.
+• The golf cart is provided at and must be returned to: 8720 Seashell Ln., Cape Canaveral, FL 32920
+• The vehicle may be used off the property but must be returned to and stored at this address when not in use. Late returns will result in an additional charge of $160.
 
-2. RELEASE OF LIABILITY
-I hereby release, waive, and discharge the Company, its owners, agents, and representatives from any and all claims, damages, losses, or liability arising from my use of the vehicle.
+SECURITY DEPOSIT & DAMAGES
+• A security deposit will be collected at the time of booking. The deposit will be returned within 3 days after the rental period, following a satisfactory inspection of the vehicle.
+• The Company reserves the right to charge the renter's payment method for any damages exceeding the deposit amount. Any such charges will be reasonable, documented, and made in good faith based on the cost of repair or replacement. The renter will be notified prior to any charges being processed.
 
-3. RESPONSIBLE USE
-I agree to operate the vehicle in a safe and lawful manner, obey all applicable traffic laws, and not operate the vehicle under the influence of alcohol or drugs.
+AGE & DRIVER REQUIREMENTS
+• The primary renter must be at least 25 years of age and is fully responsible for all drivers and use of the vehicle. All additional drivers must be at least 21 years of age, hold a valid driver's license, and be listed on this agreement.
 
-4. INSURANCE
-I confirm that I have valid personal auto insurance that covers LSV use, or I accept full financial responsibility for any damage or liability.
+DAMAGE RESPONSIBILITY
+• I agree to return the vehicle in the same condition it was received. I am financially responsible for any damage, theft, loss, or excessive cleaning that occurs during my rental period. Damages will be charged at the cost of repair or replacement.
 
-5. DAMAGE RESPONSIBILITY
-I agree to return the vehicle in the same condition it was received. I am financially responsible for any damage, theft, loss, or excessive cleaning that occurs during my rental period. Damages will be charged at the cost of repair or replacement.
+ASSUMPTION OF RISK
+• I understand that operating a street-legal low-speed vehicle (LSV) involves inherent risks, including but not limited to personal injury, property damage, and accidents. I voluntarily assume all such risks.
 
-6. AGE & DRIVER REQUIREMENTS
-All drivers must be at least 21 years of age, hold a valid driver's license, and be listed on this agreement. The primary renter must be at least 25 years of age and is fully responsible for all drivers and use of the vehicle.
+RELEASE OF LIABILITY
+• I hereby release, waive, and discharge the Company, its owners, agents, and representatives from any and all claims, damages, losses, or liability arising from my use of the vehicle.
 
-7. INDEMNIFICATION
-I agree to indemnify and hold harmless the Company from any claims, costs, or expenses arising from my use of the vehicle.
+RESPONSIBLE USE
+• I agree to operate the vehicle in a safe and lawful manner, obey all applicable traffic laws, and not operate the vehicle under the influence of alcohol or drugs.
 
-8. RENTAL TERMS
-Rental period applies to the dates selected at booking and begins at 4:00 PM on the first day and ends at 10:00 AM on the final day. The golf cart is provided at and must be returned to: 8720 Seashell Ln., Cape Canaveral, FL 32920. The vehicle may be used off the property but must be returned to and stored at this address when not in use. Late returns may result in additional charges.
+TRAFFIC VIOLATIONS & FINES
+• Renter is solely responsible for any traffic violations, citations, fines, towing, or impound fees incurred during the rental period and agrees to reimburse the Company for any such costs if charged to the Company.
 
-9. SECURITY DEPOSIT & DAMAGES
-A security deposit will be collected at the time of booking. The deposit will be returned within 3 days after the rental period, following a satisfactory inspection of the vehicle. The Company reserves the right to charge the renter's payment method for any damages exceeding the deposit amount.
+INSURANCE
+• I confirm that I have valid personal auto insurance that covers LSV use, or I accept full financial responsibility for any damage or liability.
 
-10. SERVICE & TOWING
-A $75 service fee may apply if assistance is required due to misuse or avoidable issues. Towing or recovery costs are the responsibility of the renter.
+INDEMNIFICATION
+• I agree to indemnify and hold harmless the Company from any claims, costs, or expenses arising from my use of the vehicle.
 
-11. BATTERY & CHARGING
-The vehicle must be charged nightly using the provided charger and extension cord only. Renter is responsible for ensuring the vehicle remains adequately charged throughout the rental period. Failure to properly charge the vehicle may result in additional fees if service, towing, or battery-related issues occur.
+SERVICE & TOWING
+• A $75 service fee will be charged if assistance is required due to misuse or avoidable issues (including but not limited to running out of battery charge). Towing or recovery costs are the responsibility of the renter.
 
-12. CANCELLATION POLICY
-Cancellations made 72 hours or more prior to the rental start date will receive a full refund. Cancellations made within 72 hours of the rental start date are non-refundable. No refunds will be issued for unused rental time after the rental period has begun.
+KEY LOSS / REPLACEMENT
+• Renter will be provided with one (1) key. Loss of the key will result in a $200 replacement fee.
+
+BATTERY & CHARGING
+• The vehicle must be charged nightly using the provided charger and extension cord only. Renter is responsible for ensuring the vehicle remains adequately charged throughout the rental period. Failure to properly charge the vehicle may result in additional fees if service, towing, or battery-related issues occur.
+
+CANCELLATION POLICY
+• Cancellations made 72 hours or more prior to the rental start date will receive a full refund. Cancellations made within 72 hours of the rental start date are non-refundable. No refunds will be issued for unused rental time after the rental period has begun.
 
 GOLF CART RULES
-The golf cart is a street-legal low-speed vehicle (LSV) and must follow all traffic laws, including speed limits and use of headlights when required. Golf cart may not be operated between 10:00 PM and 6:00 AM. No parking on grass. Cart must be parked in the gravel driveway at the property. Maximum of 6 passengers. All passengers must be seated while the vehicle is in motion. No reckless driving, racing, or misuse of the vehicle. No operation under the influence of alcohol or drugs. Renter agrees to report any malfunction or issue immediately.
+• The golf cart is a street-legal low-speed vehicle (LSV) and must follow all traffic laws, including speed limits and use of headlights when required.
+• The vehicle may only be operated on roads with posted speed limits of 35 MPH or less.
+• Operation on highways or higher-speed roadways is strictly prohibited.
+• Golf cart may not be operated between 11:00 PM and 6:00 AM.
+• No parking on grass. Cart must be parked in the gravel driveway at the property.
+• Maximum of 6 passengers. All passengers must be seated while the vehicle is in motion.
+• No reckless driving, racing, or misuse of the vehicle.
+• No operation under the influence of alcohol or drugs.
+• Renter agrees to report any malfunction or issue immediately.
+• At the end of the rental period, the golf cart must be returned to the property and plugged in using the provided charger and extension cord.
 
 Violation of these rules may result in immediate termination of rental privileges without refund. This includes but not limited to: Underage or unapproved drivers, Driving under the influence, Reckless or unsafe operation, Operating off-road or on grass areas.
+
+Renter must provide a valid driver's license and proof of auto insurance prior to receiving the vehicle.
 
 By signing below, I agree to all terms of this Rental Agreement & Liability Waiver.`;
 
