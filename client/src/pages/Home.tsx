@@ -22,7 +22,7 @@ const BEACH_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUD
 const PATHWAY_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/peacock-beach-v2-oFnvRDfks9XVPJbpXCtwWP.webp";
 const LIFESTYLE_FAMILY = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/lifestyle-family-red-cart-34RZSKBssW4hJLcAMPiYNo.webp";
 const LIFESTYLE_GIRLS = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/lifestyle-girls-trip-red-cart-bTPTVVKBzyvgsyewtHGH9F.webp";
-const LIFESTYLE_SUNSET = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/lifestyle-sunset-cart-534yNishhjohtUif7DYkRm.webp";
+const LIFESTYLE_SUNSET = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/lifestyle-any-age-red-cart-fixed-HPukZpfyZvQEQtvJLnjV5Z.webp";
 const LOGO_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/breezy-logo-transparent_f177cea4.png";
 const LIFESTYLE_SENIORS = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/lifestyle-seniors-v3_8fd8ef29.png";
 
