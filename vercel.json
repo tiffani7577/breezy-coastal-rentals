@@ -2,7 +2,6 @@
   "buildCommand": "pnpm install && pnpm db:push && pnpm build",
   "outputDirectory": "client/dist",
   "installCommand": "pnpm install",
-  "nodeVersion": "22.x",
   "env": {
     "NODE_ENV": "production"
   }
