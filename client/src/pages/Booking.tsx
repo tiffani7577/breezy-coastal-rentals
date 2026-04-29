@@ -364,7 +364,7 @@ export default function Booking() {
       // Create Stripe checkout
       const { url } = await createCheckout.mutateAsync({
         bookingRef: ref,
-        origin: window.location.origin,
+        origin: "https://www.breezycoastalrentals.com",
       });
 
       if (url) {
