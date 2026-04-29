@@ -83,10 +83,25 @@ export async function sendEmail(payload: EmailPayload) {
         <td style="font-size:13px;color:#64748b;padding-bottom:6px;font-family:sans-serif;">Check-out</td>
         <td style="font-size:13px;font-weight:600;color:#1e293b;padding-bottom:6px;text-align:right;font-family:sans-serif;">${formatDate(booking.endDate)}</td>
       </tr>
+      ${booking.originalAmount && parseFloat(booking.originalAmount.toString()) !== parseFloat(booking.totalAmount.toString()) ? `
+      <tr>
+        <td style="font-size:13px;color:#64748b;padding-bottom:4px;font-family:sans-serif;">Original Price</td>
+        <td style="font-size:13px;color:#94a3b8;text-align:right;text-decoration:line-through;font-family:sans-serif;">$${parseFloat(booking.originalAmount.toString()).toFixed(2)}</td>
+      </tr>
+      <tr>
+        <td style="font-size:13px;color:#16a34a;padding-bottom:4px;font-family:sans-serif;">Discount Applied</td>
+        <td style="font-size:13px;color:#16a34a;text-align:right;font-family:sans-serif;">-$${(parseFloat(booking.originalAmount.toString()) - parseFloat(booking.totalAmount.toString())).toFixed(2)}</td>
+      </tr>
+      <tr>
+        <td style="font-size:13px;color:#64748b;font-family:sans-serif;font-weight:600;">Total Paid</td>
+        <td style="font-size:13px;font-weight:700;color:#0284c7;text-align:right;font-family:sans-serif;">$${booking.totalAmount}</td>
+      </tr>
+      ` : `
       <tr>
         <td style="font-size:13px;color:#64748b;font-family:sans-serif;">Total Paid</td>
         <td style="font-size:13px;font-weight:700;color:#0284c7;text-align:right;font-family:sans-serif;">$${booking.totalAmount}</td>
       </tr>
+      `}
     </table>
   </td></tr>
 </table>`;

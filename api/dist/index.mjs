@@ -561,6 +561,7 @@ var init_schema = __esm({
       dailyRate: decimal("dailyRate", { precision: 10, scale: 2 }).notNull(),
       deliveryFee: decimal("deliveryFee", { precision: 10, scale: 2 }).notNull().default("0.00"),
       totalAmount: decimal("totalAmount", { precision: 10, scale: 2 }).notNull(),
+      originalAmount: decimal("originalAmount", { precision: 10, scale: 2 }),
       // Status
       bookingStatus: mysqlEnum("bookingStatus", [
         "pending_payment",
@@ -850,7 +851,13 @@ async function updateBookingStripe(bookingRef, stripeSessionId, stripePaymentInt
     paidAt: /* @__PURE__ */ new Date()
   };
   if (amountPaid !== void 0) {
-    updateData.totalAmount = (amountPaid / 100).toFixed(2);
+    const existing = await db.select({ totalAmount: bookings.totalAmount }).from(bookings).where(eq(bookings.bookingRef, bookingRef)).limit(1);
+    const currentTotal = existing[0]?.totalAmount;
+    const paidFormatted = (amountPaid / 100).toFixed(2);
+    if (currentTotal && parseFloat(currentTotal.toString()) !== parseFloat(paidFormatted)) {
+      updateData.originalAmount = parseFloat(currentTotal.toString()).toFixed(2);
+    }
+    updateData.totalAmount = paidFormatted;
   }
   await db.update(bookings).set(updateData).where(eq(bookings.bookingRef, bookingRef));
 }
@@ -38163,10 +38170,25 @@ async function sendEmail(payload) {
         <td style="font-size:13px;color:#64748b;padding-bottom:6px;font-family:sans-serif;">Check-out</td>
         <td style="font-size:13px;font-weight:600;color:#1e293b;padding-bottom:6px;text-align:right;font-family:sans-serif;">${formatDate(booking.endDate)}</td>
       </tr>
+      ${booking.originalAmount && parseFloat(booking.originalAmount.toString()) !== parseFloat(booking.totalAmount.toString()) ? `
+      <tr>
+        <td style="font-size:13px;color:#64748b;padding-bottom:4px;font-family:sans-serif;">Original Price</td>
+        <td style="font-size:13px;color:#94a3b8;text-align:right;text-decoration:line-through;font-family:sans-serif;">$${parseFloat(booking.originalAmount.toString()).toFixed(2)}</td>
+      </tr>
+      <tr>
+        <td style="font-size:13px;color:#16a34a;padding-bottom:4px;font-family:sans-serif;">Discount Applied</td>
+        <td style="font-size:13px;color:#16a34a;text-align:right;font-family:sans-serif;">-$${(parseFloat(booking.originalAmount.toString()) - parseFloat(booking.totalAmount.toString())).toFixed(2)}</td>
+      </tr>
+      <tr>
+        <td style="font-size:13px;color:#64748b;font-family:sans-serif;font-weight:600;">Total Paid</td>
+        <td style="font-size:13px;font-weight:700;color:#0284c7;text-align:right;font-family:sans-serif;">$${booking.totalAmount}</td>
+      </tr>
+      ` : `
       <tr>
         <td style="font-size:13px;color:#64748b;font-family:sans-serif;">Total Paid</td>
         <td style="font-size:13px;font-weight:700;color:#0284c7;text-align:right;font-family:sans-serif;">$${booking.totalAmount}</td>
       </tr>
+      `}
     </table>
   </td></tr>
 </table>`;

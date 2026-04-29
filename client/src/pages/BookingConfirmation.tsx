@@ -144,10 +144,29 @@ export default function BookingConfirmation() {
                 </div>
               </div>
               <div className="h-px" style={{ background: "oklch(0.93 0.01 220)" }} />
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Total Paid</span>
-                <span className="font-bold text-lg text-primary">${booking.totalAmount}</span>
-              </div>
+              {booking.originalAmount && parseFloat(booking.originalAmount) !== parseFloat(booking.totalAmount) ? (
+                <>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Original Price</span>
+                    <span className="text-sm text-muted-foreground line-through">${parseFloat(booking.originalAmount).toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium" style={{ color: "oklch(0.52 0.18 175)" }}>Discount Applied</span>
+                    <span className="text-sm font-medium" style={{ color: "oklch(0.52 0.18 175)" }}>
+                      −${(parseFloat(booking.originalAmount) - parseFloat(booking.totalAmount)).toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center pt-1" style={{ borderTop: "1px solid oklch(0.93 0.01 220)" }}>
+                    <span className="text-sm font-semibold text-foreground">Total Paid</span>
+                    <span className="font-bold text-lg text-primary">${booking.totalAmount}</span>
+                  </div>
+                </>
+              ) : (
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Total Paid</span>
+                  <span className="font-bold text-lg text-primary">${booking.totalAmount}</span>
+                </div>
+              )}
             </div>
           </div>
         )}

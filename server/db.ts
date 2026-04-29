@@ -214,7 +214,19 @@ export async function updateBookingStripe(
     paidAt: new Date(),
   };
   if (amountPaid !== undefined) {
-    updateData.totalAmount = (amountPaid / 100).toFixed(2);
+    // Read the current totalAmount so we can preserve it as originalAmount if a discount was applied.
+    const existing = await db
+      .select({ totalAmount: bookings.totalAmount })
+      .from(bookings)
+      .where(eq(bookings.bookingRef, bookingRef))
+      .limit(1);
+    const currentTotal = existing[0]?.totalAmount;
+    const paidFormatted = (amountPaid / 100).toFixed(2);
+    // Only record originalAmount when the paid amount differs (coupon/discount was used)
+    if (currentTotal && parseFloat(currentTotal.toString()) !== parseFloat(paidFormatted)) {
+      updateData.originalAmount = parseFloat(currentTotal.toString()).toFixed(2);
+    }
+    updateData.totalAmount = paidFormatted;
   }
   await db
     .update(bookings)
