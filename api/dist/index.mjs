@@ -39845,7 +39845,7 @@ async function storagePut(relKey, data, contentType = "application/octet-stream"
     buffer = Buffer.from(data);
   }
   const blob = await put(key, buffer, {
-    access: "public",
+    access: "private",
     contentType,
     token: process.env.BLOB_READ_WRITE_TOKEN
   });

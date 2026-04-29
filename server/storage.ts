@@ -22,7 +22,7 @@ export async function storagePut(
 
   // Upload to Vercel Blob (files stored on Vercel's CDN, no size limit issues)
   const blob = await put(key, buffer, {
-    access: "public",
+    access: "private",
     contentType,
     token: process.env.BLOB_READ_WRITE_TOKEN,
   });
