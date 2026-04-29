@@ -118,12 +118,13 @@ function fileToBase64(file: File): Promise<string> {
       reader.readAsDataURL(file);
       return;
     }
-    // For images, compress and resize to stay under Vercel's 4.5MB request limit
+    // For images, compress and resize aggressively to stay under Vercel's 4.5MB request limit
+    // Target: final base64 string under 2MB (about 1.5MB raw image)
     const reader = new FileReader();
     reader.onload = (e) => {
       const img = new Image();
       img.onload = () => {
-        const MAX_SIZE = 1200;
+        const MAX_SIZE = 800; // max 800px on longest side
         let { width, height } = img;
         if (width > MAX_SIZE || height > MAX_SIZE) {
           if (width > height) {
@@ -139,8 +140,14 @@ function fileToBase64(file: File): Promise<string> {
         canvas.height = height;
         const ctx = canvas.getContext("2d")!;
         ctx.drawImage(img, 0, 0, width, height);
-        // Compress to JPEG at 80% quality - keeps file well under 1MB
-        const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
+        // Start at 60% quality and reduce further if still too large
+        let quality = 0.6;
+        let dataUrl = canvas.toDataURL("image/jpeg", quality);
+        // Keep reducing quality until base64 is under 2MB
+        while (dataUrl.length > 2 * 1024 * 1024 && quality > 0.1) {
+          quality -= 0.1;
+          dataUrl = canvas.toDataURL("image/jpeg", quality);
+        }
         resolve(dataUrl.split(",")[1]);
       };
       img.onerror = reject;
