@@ -6,6 +6,9 @@
 dist/
 build/
 *.dist
+# Exception: api/dist is needed by Vercel serverless function
+!api/dist/
+!api/dist/**
 
 # Environment variables
 .env

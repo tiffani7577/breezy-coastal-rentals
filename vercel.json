@@ -3,12 +3,12 @@
   "outputDirectory": "client/dist",
   "installCommand": "pnpm install",
   "functions": {
-    "api/index.ts": {
+    "api/dist/index.js": {
       "maxDuration": 30
     }
   },
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/index.ts" }
+    { "source": "/api/(.*)", "destination": "/api/dist/index.js" }
   ],
   "env": {
     "NODE_ENV": "production"
