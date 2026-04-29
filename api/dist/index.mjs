@@ -840,15 +840,19 @@ async function updateDocumentStatus(id, documentStatus) {
   if (!db) return;
   await db.update(bookings).set({ documentStatus }).where(eq(bookings.id, id));
 }
-async function updateBookingStripe(bookingRef, stripeSessionId, stripePaymentIntentId) {
+async function updateBookingStripe(bookingRef, stripeSessionId, stripePaymentIntentId, amountPaid) {
   const db = await getDb();
   if (!db) return;
-  await db.update(bookings).set({
+  const updateData = {
     stripeSessionId,
     stripePaymentIntentId: stripePaymentIntentId ?? null,
     bookingStatus: "submitted",
     paidAt: /* @__PURE__ */ new Date()
-  }).where(eq(bookings.bookingRef, bookingRef));
+  };
+  if (amountPaid !== void 0) {
+    updateData.totalAmount = (amountPaid / 100).toFixed(2);
+  }
+  await db.update(bookings).set(updateData).where(eq(bookings.bookingRef, bookingRef));
 }
 async function createDocument(data) {
   const db = await getDb();
@@ -40042,7 +40046,8 @@ var appRouter = router({
           await updateBookingStripe(
             input.bookingRef,
             input.sessionId,
-            session.payment_intent
+            session.payment_intent,
+            session.amount_total ?? void 0
           );
           const updatedBooking = await getBookingByRef(input.bookingRef);
           if (updatedBooking) {

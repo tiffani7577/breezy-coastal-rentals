@@ -202,18 +202,23 @@ export async function updateDocumentStatus(id: number, documentStatus: string) {
 export async function updateBookingStripe(
   bookingRef: string,
   stripeSessionId: string,
-  stripePaymentIntentId?: string
+  stripePaymentIntentId?: string,
+  amountPaid?: number
 ) {
   const db = await getDb();
   if (!db) return;
+  const updateData: Record<string, unknown> = {
+    stripeSessionId,
+    stripePaymentIntentId: stripePaymentIntentId ?? null,
+    bookingStatus: "submitted",
+    paidAt: new Date(),
+  };
+  if (amountPaid !== undefined) {
+    updateData.totalAmount = (amountPaid / 100).toFixed(2);
+  }
   await db
     .update(bookings)
-    .set({
-      stripeSessionId,
-      stripePaymentIntentId: stripePaymentIntentId ?? null,
-      bookingStatus: "submitted",
-      paidAt: new Date(),
-    })
+    .set(updateData as any)
     .where(eq(bookings.bookingRef, bookingRef));
 }
 

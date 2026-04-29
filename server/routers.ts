@@ -262,7 +262,8 @@ export const appRouter = router({
             await updateBookingStripe(
               input.bookingRef,
               input.sessionId,
-              session.payment_intent as string
+              session.payment_intent as string,
+              session.amount_total ?? undefined
             );
             // Send emails
             const updatedBooking = await getBookingByRef(input.bookingRef);
