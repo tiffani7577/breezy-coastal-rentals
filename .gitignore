@@ -8,7 +8,7 @@ build/
 *.dist
 # Exception: api/dist is needed by Vercel serverless function
 !api/dist/
-!api/dist/**
+!api/dist/index.mjs
 
 # Environment variables
 .env

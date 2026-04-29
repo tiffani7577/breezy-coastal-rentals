@@ -1,10 +1,5 @@
-"use strict";
-var __create = Object.create;
 var __defProp = Object.defineProperty;
-var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
-var __getProtoOf = Object.getPrototypeOf;
-var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __esm = (fn, res) => function __init() {
   return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
 };
@@ -12,23 +7,6 @@ var __export = (target, all) => {
   for (var name in all)
     __defProp(target, name, { get: all[name], enumerable: true });
 };
-var __copyProps = (to, from, except, desc2) => {
-  if (from && typeof from === "object" || typeof from === "function") {
-    for (let key of __getOwnPropNames(from))
-      if (!__hasOwnProp.call(to, key) && key !== except)
-        __defProp(to, key, { get: () => from[key], enumerable: !(desc2 = __getOwnPropDesc(from, key)) || desc2.enumerable });
-  }
-  return to;
-};
-var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
-  // If the importer is in node compatibility mode or this is not an ESM
-  // file that has been converted to a CommonJS file using a Babel-
-  // compatible transform (i.e. "__esModule" has not been set), then set
-  // "default" to the CommonJS "module.exports" for node compatibility.
-  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
-  mod
-));
-var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
 // shared/const.ts
 var const_exports = {};
@@ -52,55 +30,66 @@ var init_const = __esm({
 });
 
 // drizzle/schema.ts
-var import_mysql_core, users, pricing, availabilityBlocks, bookings, documents, waiverSignatures, bookingMessages, inspectionChecklists, smsNotifications, inspectionPhotos;
+import {
+  bigint,
+  boolean,
+  decimal,
+  int,
+  mysqlEnum,
+  mysqlTable,
+  text,
+  timestamp,
+  varchar,
+  date
+} from "drizzle-orm/mysql-core";
+var users, pricing, availabilityBlocks, bookings, documents, waiverSignatures, bookingMessages, inspectionChecklists, smsNotifications, inspectionPhotos;
 var init_schema = __esm({
   "drizzle/schema.ts"() {
     "use strict";
-    import_mysql_core = require("drizzle-orm/mysql-core");
-    users = (0, import_mysql_core.mysqlTable)("users", {
-      id: (0, import_mysql_core.int)("id").autoincrement().primaryKey(),
-      openId: (0, import_mysql_core.varchar)("openId", { length: 64 }).notNull().unique(),
-      name: (0, import_mysql_core.text)("name"),
-      email: (0, import_mysql_core.varchar)("email", { length: 320 }),
-      loginMethod: (0, import_mysql_core.varchar)("loginMethod", { length: 64 }),
-      role: (0, import_mysql_core.mysqlEnum)("role", ["user", "admin"]).default("user").notNull(),
-      createdAt: (0, import_mysql_core.timestamp)("createdAt").defaultNow().notNull(),
-      updatedAt: (0, import_mysql_core.timestamp)("updatedAt").defaultNow().onUpdateNow().notNull(),
-      lastSignedIn: (0, import_mysql_core.timestamp)("lastSignedIn").defaultNow().notNull()
+    users = mysqlTable("users", {
+      id: int("id").autoincrement().primaryKey(),
+      openId: varchar("openId", { length: 64 }).notNull().unique(),
+      name: text("name"),
+      email: varchar("email", { length: 320 }),
+      loginMethod: varchar("loginMethod", { length: 64 }),
+      role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
+      createdAt: timestamp("createdAt").defaultNow().notNull(),
+      updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+      lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull()
     });
-    pricing = (0, import_mysql_core.mysqlTable)("pricing", {
-      id: (0, import_mysql_core.int)("id").autoincrement().primaryKey(),
-      dailyRate: (0, import_mysql_core.decimal)("dailyRate", { precision: 10, scale: 2 }).notNull().default("160.00"),
-      deliveryFee: (0, import_mysql_core.decimal)("deliveryFee", { precision: 10, scale: 2 }).notNull().default("0.00"),
-      cartName: (0, import_mysql_core.varchar)("cartName", { length: 128 }).notNull().default("Breezy Golf Cart"),
-      cartDescription: (0, import_mysql_core.text)("cartDescription"),
-      cartImageUrl: (0, import_mysql_core.text)("cartImageUrl"),
-      updatedAt: (0, import_mysql_core.timestamp)("updatedAt").defaultNow().onUpdateNow().notNull()
+    pricing = mysqlTable("pricing", {
+      id: int("id").autoincrement().primaryKey(),
+      dailyRate: decimal("dailyRate", { precision: 10, scale: 2 }).notNull().default("160.00"),
+      deliveryFee: decimal("deliveryFee", { precision: 10, scale: 2 }).notNull().default("0.00"),
+      cartName: varchar("cartName", { length: 128 }).notNull().default("Breezy Golf Cart"),
+      cartDescription: text("cartDescription"),
+      cartImageUrl: text("cartImageUrl"),
+      updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
     });
-    availabilityBlocks = (0, import_mysql_core.mysqlTable)("availability_blocks", {
-      id: (0, import_mysql_core.int)("id").autoincrement().primaryKey(),
-      blockDate: (0, import_mysql_core.date)("blockDate").notNull(),
-      reason: (0, import_mysql_core.varchar)("reason", { length: 255 }),
-      createdAt: (0, import_mysql_core.timestamp)("createdAt").defaultNow().notNull()
+    availabilityBlocks = mysqlTable("availability_blocks", {
+      id: int("id").autoincrement().primaryKey(),
+      blockDate: date("blockDate").notNull(),
+      reason: varchar("reason", { length: 255 }),
+      createdAt: timestamp("createdAt").defaultNow().notNull()
     });
-    bookings = (0, import_mysql_core.mysqlTable)("bookings", {
-      id: (0, import_mysql_core.int)("id").autoincrement().primaryKey(),
-      bookingRef: (0, import_mysql_core.varchar)("bookingRef", { length: 16 }).notNull().unique(),
+    bookings = mysqlTable("bookings", {
+      id: int("id").autoincrement().primaryKey(),
+      bookingRef: varchar("bookingRef", { length: 16 }).notNull().unique(),
       // Guest info
-      guestName: (0, import_mysql_core.varchar)("guestName", { length: 128 }).notNull(),
-      guestEmail: (0, import_mysql_core.varchar)("guestEmail", { length: 320 }).notNull(),
-      guestPhone: (0, import_mysql_core.varchar)("guestPhone", { length: 32 }).notNull(),
-      airbnbBookingName: (0, import_mysql_core.varchar)("airbnbBookingName", { length: 128 }),
+      guestName: varchar("guestName", { length: 128 }).notNull(),
+      guestEmail: varchar("guestEmail", { length: 320 }).notNull(),
+      guestPhone: varchar("guestPhone", { length: 32 }).notNull(),
+      airbnbBookingName: varchar("airbnbBookingName", { length: 128 }),
       // Dates
-      startDate: (0, import_mysql_core.date)("startDate").notNull(),
-      endDate: (0, import_mysql_core.date)("endDate").notNull(),
-      totalDays: (0, import_mysql_core.int)("totalDays").notNull(),
+      startDate: date("startDate").notNull(),
+      endDate: date("endDate").notNull(),
+      totalDays: int("totalDays").notNull(),
       // Pricing snapshot
-      dailyRate: (0, import_mysql_core.decimal)("dailyRate", { precision: 10, scale: 2 }).notNull(),
-      deliveryFee: (0, import_mysql_core.decimal)("deliveryFee", { precision: 10, scale: 2 }).notNull().default("0.00"),
-      totalAmount: (0, import_mysql_core.decimal)("totalAmount", { precision: 10, scale: 2 }).notNull(),
+      dailyRate: decimal("dailyRate", { precision: 10, scale: 2 }).notNull(),
+      deliveryFee: decimal("deliveryFee", { precision: 10, scale: 2 }).notNull().default("0.00"),
+      totalAmount: decimal("totalAmount", { precision: 10, scale: 2 }).notNull(),
       // Status
-      bookingStatus: (0, import_mysql_core.mysqlEnum)("bookingStatus", [
+      bookingStatus: mysqlEnum("bookingStatus", [
         "pending_payment",
         "submitted",
         "under_review",
@@ -109,89 +98,89 @@ var init_schema = __esm({
         "completed",
         "cancelled"
       ]).notNull().default("pending_payment"),
-      documentStatus: (0, import_mysql_core.mysqlEnum)("documentStatus", [
+      documentStatus: mysqlEnum("documentStatus", [
         "pending",
         "received",
         "needs_update",
         "approved"
       ]).notNull().default("pending"),
       // Admin notes
-      adminNotes: (0, import_mysql_core.text)("adminNotes"),
-      rejectionReason: (0, import_mysql_core.text)("rejectionReason"),
+      adminNotes: text("adminNotes"),
+      rejectionReason: text("rejectionReason"),
       // Stripe
-      stripeSessionId: (0, import_mysql_core.varchar)("stripeSessionId", { length: 256 }),
-      stripePaymentIntentId: (0, import_mysql_core.varchar)("stripePaymentIntentId", { length: 256 }),
+      stripeSessionId: varchar("stripeSessionId", { length: 256 }),
+      stripePaymentIntentId: varchar("stripePaymentIntentId", { length: 256 }),
       // Timestamps
-      createdAt: (0, import_mysql_core.timestamp)("createdAt").defaultNow().notNull(),
-      updatedAt: (0, import_mysql_core.timestamp)("updatedAt").defaultNow().onUpdateNow().notNull(),
-      paidAt: (0, import_mysql_core.timestamp)("paidAt")
+      createdAt: timestamp("createdAt").defaultNow().notNull(),
+      updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+      paidAt: timestamp("paidAt")
     });
-    documents = (0, import_mysql_core.mysqlTable)("documents", {
-      id: (0, import_mysql_core.int)("id").autoincrement().primaryKey(),
-      bookingId: (0, import_mysql_core.int)("bookingId").notNull(),
-      documentType: (0, import_mysql_core.mysqlEnum)("documentType", ["drivers_license", "proof_of_insurance"]).notNull(),
-      fileKey: (0, import_mysql_core.varchar)("fileKey", { length: 512 }).notNull(),
-      fileUrl: (0, import_mysql_core.text)("fileUrl").notNull(),
-      fileName: (0, import_mysql_core.varchar)("fileName", { length: 256 }),
-      mimeType: (0, import_mysql_core.varchar)("mimeType", { length: 64 }),
-      fileSize: (0, import_mysql_core.bigint)("fileSize", { mode: "number" }),
-      uploadedAt: (0, import_mysql_core.timestamp)("uploadedAt").defaultNow().notNull()
+    documents = mysqlTable("documents", {
+      id: int("id").autoincrement().primaryKey(),
+      bookingId: int("bookingId").notNull(),
+      documentType: mysqlEnum("documentType", ["drivers_license", "proof_of_insurance"]).notNull(),
+      fileKey: varchar("fileKey", { length: 512 }).notNull(),
+      fileUrl: text("fileUrl").notNull(),
+      fileName: varchar("fileName", { length: 256 }),
+      mimeType: varchar("mimeType", { length: 64 }),
+      fileSize: bigint("fileSize", { mode: "number" }),
+      uploadedAt: timestamp("uploadedAt").defaultNow().notNull()
     });
-    waiverSignatures = (0, import_mysql_core.mysqlTable)("waiver_signatures", {
-      id: (0, import_mysql_core.int)("id").autoincrement().primaryKey(),
-      bookingId: (0, import_mysql_core.int)("bookingId").notNull(),
-      legalName: (0, import_mysql_core.varchar)("legalName", { length: 256 }).notNull(),
-      agreedToTerms: (0, import_mysql_core.boolean)("agreedToTerms").notNull().default(false),
-      ipAddress: (0, import_mysql_core.varchar)("ipAddress", { length: 64 }),
-      userAgent: (0, import_mysql_core.text)("userAgent"),
-      signedAt: (0, import_mysql_core.timestamp)("signedAt").defaultNow().notNull()
+    waiverSignatures = mysqlTable("waiver_signatures", {
+      id: int("id").autoincrement().primaryKey(),
+      bookingId: int("bookingId").notNull(),
+      legalName: varchar("legalName", { length: 256 }).notNull(),
+      agreedToTerms: boolean("agreedToTerms").notNull().default(false),
+      ipAddress: varchar("ipAddress", { length: 64 }),
+      userAgent: text("userAgent"),
+      signedAt: timestamp("signedAt").defaultNow().notNull()
     });
-    bookingMessages = (0, import_mysql_core.mysqlTable)("booking_messages", {
-      id: (0, import_mysql_core.int)("id").autoincrement().primaryKey(),
-      bookingId: (0, import_mysql_core.int)("bookingId").notNull(),
-      senderRole: (0, import_mysql_core.mysqlEnum)("senderRole", ["admin", "guest"]).notNull(),
-      senderName: (0, import_mysql_core.varchar)("senderName", { length: 128 }).notNull(),
-      content: (0, import_mysql_core.text)("content").notNull(),
-      isRead: (0, import_mysql_core.boolean)("isRead").notNull().default(false),
-      createdAt: (0, import_mysql_core.timestamp)("createdAt").defaultNow().notNull()
+    bookingMessages = mysqlTable("booking_messages", {
+      id: int("id").autoincrement().primaryKey(),
+      bookingId: int("bookingId").notNull(),
+      senderRole: mysqlEnum("senderRole", ["admin", "guest"]).notNull(),
+      senderName: varchar("senderName", { length: 128 }).notNull(),
+      content: text("content").notNull(),
+      isRead: boolean("isRead").notNull().default(false),
+      createdAt: timestamp("createdAt").defaultNow().notNull()
     });
-    inspectionChecklists = (0, import_mysql_core.mysqlTable)("inspection_checklists", {
-      id: (0, import_mysql_core.int)("id").autoincrement().primaryKey(),
-      bookingId: (0, import_mysql_core.int)("bookingId").notNull().unique(),
+    inspectionChecklists = mysqlTable("inspection_checklists", {
+      id: int("id").autoincrement().primaryKey(),
+      bookingId: int("bookingId").notNull().unique(),
       // one checklist per booking
-      completedBy: (0, import_mysql_core.varchar)("completedBy", { length: 128 }).notNull(),
+      completedBy: varchar("completedBy", { length: 128 }).notNull(),
       // Individual checklist items (true = passed)
-      batteryCharged: (0, import_mysql_core.boolean)("batteryCharged").notNull().default(false),
-      tiresInflated: (0, import_mysql_core.boolean)("tiresInflated").notNull().default(false),
-      brakesWorking: (0, import_mysql_core.boolean)("brakesWorking").notNull().default(false),
-      steeringWorking: (0, import_mysql_core.boolean)("steeringWorking").notNull().default(false),
-      signalLightsWorking: (0, import_mysql_core.boolean)("signalLightsWorking").notNull().default(false),
-      brakeLightsWorking: (0, import_mysql_core.boolean)("brakeLightsWorking").notNull().default(false),
-      headlightsWorking: (0, import_mysql_core.boolean)("headlightsWorking").notNull().default(false),
-      bodyFrameOk: (0, import_mysql_core.boolean)("bodyFrameOk").notNull().default(false),
-      seatbeltsOk: (0, import_mysql_core.boolean)("seatbeltsOk").notNull().default(false),
-      cleanAndReady: (0, import_mysql_core.boolean)("cleanAndReady").notNull().default(false),
-      notes: (0, import_mysql_core.text)("notes"),
-      completedAt: (0, import_mysql_core.timestamp)("completedAt").defaultNow().notNull(),
-      updatedAt: (0, import_mysql_core.timestamp)("updatedAt").defaultNow().onUpdateNow().notNull()
+      batteryCharged: boolean("batteryCharged").notNull().default(false),
+      tiresInflated: boolean("tiresInflated").notNull().default(false),
+      brakesWorking: boolean("brakesWorking").notNull().default(false),
+      steeringWorking: boolean("steeringWorking").notNull().default(false),
+      signalLightsWorking: boolean("signalLightsWorking").notNull().default(false),
+      brakeLightsWorking: boolean("brakeLightsWorking").notNull().default(false),
+      headlightsWorking: boolean("headlightsWorking").notNull().default(false),
+      bodyFrameOk: boolean("bodyFrameOk").notNull().default(false),
+      seatbeltsOk: boolean("seatbeltsOk").notNull().default(false),
+      cleanAndReady: boolean("cleanAndReady").notNull().default(false),
+      notes: text("notes"),
+      completedAt: timestamp("completedAt").defaultNow().notNull(),
+      updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
     });
-    smsNotifications = (0, import_mysql_core.mysqlTable)("sms_notifications", {
-      id: (0, import_mysql_core.int)("id").autoincrement().primaryKey(),
-      bookingId: (0, import_mysql_core.int)("bookingId").notNull(),
-      notificationType: (0, import_mysql_core.mysqlEnum)("notificationType", ["approval_confirmation", "reminder_24h"]).notNull(),
-      phoneNumber: (0, import_mysql_core.varchar)("phoneNumber", { length: 32 }).notNull(),
-      messageContent: (0, import_mysql_core.text)("messageContent").notNull(),
-      sentAt: (0, import_mysql_core.timestamp)("sentAt").defaultNow().notNull(),
-      status: (0, import_mysql_core.mysqlEnum)("status", ["pending", "sent", "failed"]).notNull().default("pending"),
-      createdAt: (0, import_mysql_core.timestamp)("createdAt").defaultNow().notNull()
+    smsNotifications = mysqlTable("sms_notifications", {
+      id: int("id").autoincrement().primaryKey(),
+      bookingId: int("bookingId").notNull(),
+      notificationType: mysqlEnum("notificationType", ["approval_confirmation", "reminder_24h"]).notNull(),
+      phoneNumber: varchar("phoneNumber", { length: 32 }).notNull(),
+      messageContent: text("messageContent").notNull(),
+      sentAt: timestamp("sentAt").defaultNow().notNull(),
+      status: mysqlEnum("status", ["pending", "sent", "failed"]).notNull().default("pending"),
+      createdAt: timestamp("createdAt").defaultNow().notNull()
     });
-    inspectionPhotos = (0, import_mysql_core.mysqlTable)("inspection_photos", {
-      id: (0, import_mysql_core.int)("id").autoincrement().primaryKey(),
-      bookingId: (0, import_mysql_core.int)("bookingId").notNull(),
-      photoType: (0, import_mysql_core.mysqlEnum)("photoType", ["before", "after"]).notNull(),
-      photoUrl: (0, import_mysql_core.text)("photoUrl").notNull(),
-      fileKey: (0, import_mysql_core.varchar)("fileKey", { length: 255 }).notNull(),
-      uploadedAt: (0, import_mysql_core.timestamp)("uploadedAt").defaultNow().notNull()
+    inspectionPhotos = mysqlTable("inspection_photos", {
+      id: int("id").autoincrement().primaryKey(),
+      bookingId: int("bookingId").notNull(),
+      photoType: mysqlEnum("photoType", ["before", "after"]).notNull(),
+      photoUrl: text("photoUrl").notNull(),
+      fileKey: varchar("fileKey", { length: 255 }).notNull(),
+      uploadedAt: timestamp("uploadedAt").defaultNow().notNull()
     });
   }
 });
@@ -252,10 +241,12 @@ __export(db_exports, {
   upsertInspection: () => upsertInspection,
   upsertUser: () => upsertUser
 });
+import { and, eq, gte, lte } from "drizzle-orm";
+import { drizzle } from "drizzle-orm/mysql2";
 async function getDb() {
   if (!_db && process.env.DATABASE_URL) {
     try {
-      _db = (0, import_mysql2.drizzle)(process.env.DATABASE_URL);
+      _db = drizzle(process.env.DATABASE_URL);
     } catch (error) {
       console.warn("[Database] Failed to connect:", error);
       _db = null;
@@ -296,7 +287,7 @@ async function upsertUser(user) {
 async function getUserByOpenId(openId) {
   const db = await getDb();
   if (!db) return void 0;
-  const result = await db.select().from(users).where((0, import_drizzle_orm.eq)(users.openId, openId)).limit(1);
+  const result = await db.select().from(users).where(eq(users.openId, openId)).limit(1);
   return result.length > 0 ? result[0] : void 0;
 }
 async function getPricing() {
@@ -318,7 +309,7 @@ async function updatePricing(data) {
       cartImageUrl: data.cartImageUrl ?? null
     });
   } else {
-    await db.update(pricing).set(data).where((0, import_drizzle_orm.eq)(pricing.id, existing[0].id));
+    await db.update(pricing).set(data).where(eq(pricing.id, existing[0].id));
   }
 }
 async function getBlockedDates() {
@@ -335,30 +326,30 @@ async function addBlockedDate(blockDate, reason) {
 async function removeBlockedDate(id) {
   const db = await getDb();
   if (!db) return;
-  await db.delete(availabilityBlocks).where((0, import_drizzle_orm.eq)(availabilityBlocks.id, id));
+  await db.delete(availabilityBlocks).where(eq(availabilityBlocks.id, id));
 }
 async function getApprovedBookingDates() {
   const db = await getDb();
   if (!db) return [];
-  return db.select({ startDate: bookings.startDate, endDate: bookings.endDate }).from(bookings).where((0, import_drizzle_orm.eq)(bookings.bookingStatus, "approved"));
+  return db.select({ startDate: bookings.startDate, endDate: bookings.endDate }).from(bookings).where(eq(bookings.bookingStatus, "approved"));
 }
 async function createBooking(data) {
   const db = await getDb();
   if (!db) throw new Error("DB unavailable");
   await db.insert(bookings).values(data);
-  const result = await db.select().from(bookings).where((0, import_drizzle_orm.eq)(bookings.bookingRef, data.bookingRef)).limit(1);
+  const result = await db.select().from(bookings).where(eq(bookings.bookingRef, data.bookingRef)).limit(1);
   return result[0];
 }
 async function getBookingByRef(bookingRef) {
   const db = await getDb();
   if (!db) return null;
-  const result = await db.select().from(bookings).where((0, import_drizzle_orm.eq)(bookings.bookingRef, bookingRef)).limit(1);
+  const result = await db.select().from(bookings).where(eq(bookings.bookingRef, bookingRef)).limit(1);
   return result[0] ?? null;
 }
 async function getBookingById(id) {
   const db = await getDb();
   if (!db) return null;
-  const result = await db.select().from(bookings).where((0, import_drizzle_orm.eq)(bookings.id, id)).limit(1);
+  const result = await db.select().from(bookings).where(eq(bookings.id, id)).limit(1);
   return result[0] ?? null;
 }
 async function getAllBookings() {
@@ -369,12 +360,12 @@ async function getAllBookings() {
 async function updateBookingStatus(id, bookingStatus, opts) {
   const db = await getDb();
   if (!db) return;
-  await db.update(bookings).set({ bookingStatus, ...opts }).where((0, import_drizzle_orm.eq)(bookings.id, id));
+  await db.update(bookings).set({ bookingStatus, ...opts }).where(eq(bookings.id, id));
 }
 async function updateDocumentStatus(id, documentStatus) {
   const db = await getDb();
   if (!db) return;
-  await db.update(bookings).set({ documentStatus }).where((0, import_drizzle_orm.eq)(bookings.id, id));
+  await db.update(bookings).set({ documentStatus }).where(eq(bookings.id, id));
 }
 async function updateBookingStripe(bookingRef, stripeSessionId, stripePaymentIntentId) {
   const db = await getDb();
@@ -384,7 +375,7 @@ async function updateBookingStripe(bookingRef, stripeSessionId, stripePaymentInt
     stripePaymentIntentId: stripePaymentIntentId ?? null,
     bookingStatus: "submitted",
     paidAt: /* @__PURE__ */ new Date()
-  }).where((0, import_drizzle_orm.eq)(bookings.bookingRef, bookingRef));
+  }).where(eq(bookings.bookingRef, bookingRef));
 }
 async function createDocument(data) {
   const db = await getDb();
@@ -394,7 +385,7 @@ async function createDocument(data) {
 async function getDocumentsByBookingId(bookingId) {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(documents).where((0, import_drizzle_orm.eq)(documents.bookingId, bookingId));
+  return db.select().from(documents).where(eq(documents.bookingId, bookingId));
 }
 async function createWaiverSignature(data) {
   const db = await getDb();
@@ -404,7 +395,7 @@ async function createWaiverSignature(data) {
 async function getWaiverByBookingId(bookingId) {
   const db = await getDb();
   if (!db) return null;
-  const result = await db.select().from(waiverSignatures).where((0, import_drizzle_orm.eq)(waiverSignatures.bookingId, bookingId)).limit(1);
+  const result = await db.select().from(waiverSignatures).where(eq(waiverSignatures.bookingId, bookingId)).limit(1);
   return result[0] ?? null;
 }
 async function createMessage(data) {
@@ -415,24 +406,24 @@ async function createMessage(data) {
 async function getMessagesByBookingId(bookingId) {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(bookingMessages).where((0, import_drizzle_orm.eq)(bookingMessages.bookingId, bookingId)).orderBy(bookingMessages.createdAt);
+  return db.select().from(bookingMessages).where(eq(bookingMessages.bookingId, bookingId)).orderBy(bookingMessages.createdAt);
 }
 async function markMessagesRead(bookingId, readerRole) {
   const senderRole = readerRole === "admin" ? "guest" : "admin";
   const db = await getDb();
   if (!db) return;
   await db.update(bookingMessages).set({ isRead: true }).where(
-    (0, import_drizzle_orm.and)(
-      (0, import_drizzle_orm.eq)(bookingMessages.bookingId, bookingId),
-      (0, import_drizzle_orm.eq)(bookingMessages.senderRole, senderRole),
-      (0, import_drizzle_orm.eq)(bookingMessages.isRead, false)
+    and(
+      eq(bookingMessages.bookingId, bookingId),
+      eq(bookingMessages.senderRole, senderRole),
+      eq(bookingMessages.isRead, false)
     )
   );
 }
 async function getUnreadCountForAdmin() {
   const db = await getDb();
   if (!db) return {};
-  const rows = await db.select().from(bookingMessages).where((0, import_drizzle_orm.and)((0, import_drizzle_orm.eq)(bookingMessages.senderRole, "guest"), (0, import_drizzle_orm.eq)(bookingMessages.isRead, false)));
+  const rows = await db.select().from(bookingMessages).where(and(eq(bookingMessages.senderRole, "guest"), eq(bookingMessages.isRead, false)));
   const counts = {};
   for (const row of rows) {
     counts[row.bookingId] = (counts[row.bookingId] ?? 0) + 1;
@@ -442,15 +433,15 @@ async function getUnreadCountForAdmin() {
 async function getInspectionByBookingId(bookingId) {
   const db = await getDb();
   if (!db) return null;
-  const result = await db.select().from(inspectionChecklists).where((0, import_drizzle_orm.eq)(inspectionChecklists.bookingId, bookingId)).limit(1);
+  const result = await db.select().from(inspectionChecklists).where(eq(inspectionChecklists.bookingId, bookingId)).limit(1);
   return result[0] ?? null;
 }
 async function upsertInspection(data) {
   const db = await getDb();
   if (!db) throw new Error("DB unavailable");
-  const existing = await db.select().from(inspectionChecklists).where((0, import_drizzle_orm.eq)(inspectionChecklists.bookingId, data.bookingId)).limit(1);
+  const existing = await db.select().from(inspectionChecklists).where(eq(inspectionChecklists.bookingId, data.bookingId)).limit(1);
   if (existing.length > 0) {
-    await db.update(inspectionChecklists).set({ ...data }).where((0, import_drizzle_orm.eq)(inspectionChecklists.bookingId, data.bookingId));
+    await db.update(inspectionChecklists).set({ ...data }).where(eq(inspectionChecklists.bookingId, data.bookingId));
   } else {
     await db.insert(inspectionChecklists).values(data);
   }
@@ -463,7 +454,7 @@ async function createSmsNotification(data) {
 async function getSmsNotificationsByBooking(bookingId) {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(smsNotifications).where((0, import_drizzle_orm.eq)(smsNotifications.bookingId, bookingId));
+  return db.select().from(smsNotifications).where(eq(smsNotifications.bookingId, bookingId));
 }
 async function createInspectionPhoto(data) {
   const db = await getDb();
@@ -473,7 +464,7 @@ async function createInspectionPhoto(data) {
 async function getInspectionPhotosByBooking(bookingId) {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(inspectionPhotos).where((0, import_drizzle_orm.eq)(inspectionPhotos.bookingId, bookingId));
+  return db.select().from(inspectionPhotos).where(eq(inspectionPhotos.bookingId, bookingId));
 }
 async function getMonthlyRevenue(year, month) {
   const db = await getDb();
@@ -481,10 +472,10 @@ async function getMonthlyRevenue(year, month) {
   const startDate = new Date(year, month - 1, 1);
   const endDate = new Date(year, month, 0);
   const result = await db.select().from(bookings).where(
-    (0, import_drizzle_orm.and)(
-      (0, import_drizzle_orm.gte)(bookings.startDate, startDate),
-      (0, import_drizzle_orm.lte)(bookings.endDate, endDate),
-      (0, import_drizzle_orm.eq)(bookings.bookingStatus, "approved")
+    and(
+      gte(bookings.startDate, startDate),
+      lte(bookings.endDate, endDate),
+      eq(bookings.bookingStatus, "approved")
     )
   );
   const totalRevenue = result.reduce((sum, b) => sum + parseFloat(b.totalAmount.toString()), 0);
@@ -494,12 +485,10 @@ async function getMonthlyRevenue(year, month) {
     bookings: result
   };
 }
-var import_drizzle_orm, import_mysql2, _db;
+var _db;
 var init_db = __esm({
   "server/db.ts"() {
     "use strict";
-    import_drizzle_orm = require("drizzle-orm");
-    import_mysql2 = require("drizzle-orm/mysql2");
     init_schema();
     init_env();
     _db = null;
@@ -527,15 +516,15 @@ var sdk_exports = {};
 __export(sdk_exports, {
   sdk: () => sdk
 });
-var import_axios, import_cookie, import_jose, isNonEmptyString, EXCHANGE_TOKEN_PATH, GET_USER_INFO_PATH, GET_USER_INFO_WITH_JWT_PATH, OAuthService, createOAuthHttpClient, SDKServer, sdk;
+import axios from "axios";
+import { parse as parseCookieHeader } from "cookie";
+import { SignJWT, jwtVerify } from "jose";
+var isNonEmptyString, EXCHANGE_TOKEN_PATH, GET_USER_INFO_PATH, GET_USER_INFO_WITH_JWT_PATH, OAuthService, createOAuthHttpClient, SDKServer, sdk;
 var init_sdk = __esm({
   "server/_core/sdk.ts"() {
     "use strict";
     init_const();
     init_errors();
-    import_axios = __toESM(require("axios"), 1);
-    import_cookie = require("cookie");
-    import_jose = require("jose");
     init_db();
     init_env();
     isNonEmptyString = (value) => typeof value === "string" && value.length > 0;
@@ -579,7 +568,7 @@ var init_sdk = __esm({
         return data;
       }
     };
-    createOAuthHttpClient = () => import_axios.default.create({
+    createOAuthHttpClient = () => axios.create({
       baseURL: ENV.oAuthServerUrl,
       timeout: AXIOS_TIMEOUT_MS
     });
@@ -636,7 +625,7 @@ var init_sdk = __esm({
         if (!cookieHeader) {
           return /* @__PURE__ */ new Map();
         }
-        const parsed = (0, import_cookie.parse)(cookieHeader);
+        const parsed = parseCookieHeader(cookieHeader);
         return new Map(Object.entries(parsed));
       }
       getSessionSecret() {
@@ -663,7 +652,7 @@ var init_sdk = __esm({
         const expiresInMs = options.expiresInMs ?? ONE_YEAR_MS;
         const expirationSeconds = Math.floor((issuedAt + expiresInMs) / 1e3);
         const secretKey = this.getSessionSecret();
-        return new import_jose.SignJWT({
+        return new SignJWT({
           openId: payload.openId,
           appId: payload.appId,
           name: payload.name
@@ -676,7 +665,7 @@ var init_sdk = __esm({
         }
         try {
           const secretKey = this.getSessionSecret();
-          const { payload } = await (0, import_jose.jwtVerify)(cookieValue, secretKey, {
+          const { payload } = await jwtVerify(cookieValue, secretKey, {
             algorithms: ["HS256"]
           });
           const { openId, appId, name } = payload;
@@ -758,13 +747,14 @@ var email_exports = {};
 __export(email_exports, {
   sendEmail: () => sendEmail
 });
+import { Resend } from "resend";
 function getResend() {
   const key = process.env.RESEND_API_KEY;
   if (!key) {
     console.warn("[Email] RESEND_API_KEY not set \u2014 skipping email send");
     return null;
   }
-  return new import_resend.Resend(key);
+  return new Resend(key);
 }
 function formatDate(d) {
   if (!d) return "\u2014";
@@ -920,11 +910,10 @@ async function sendEmail(payload) {
     });
   }
 }
-var import_resend, FROM, ADMIN_EMAIL, APP_URL;
+var FROM, ADMIN_EMAIL, APP_URL;
 var init_email = __esm({
   "server/email.ts"() {
     "use strict";
-    import_resend = require("resend");
     FROM = "Breezy Coastal Rentals <onboarding@resend.dev>";
     ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "admin@breezycoastalrentals.com";
     APP_URL = process.env.APP_URL ?? "https://breezycoastalrentals.com";
@@ -932,14 +921,9 @@ var init_email = __esm({
 });
 
 // api/index.ts
-var index_exports = {};
-__export(index_exports, {
-  default: () => index_default
-});
-module.exports = __toCommonJS(index_exports);
-var import_config = require("dotenv/config");
-var import_express = __toESM(require("express"), 1);
-var import_express2 = require("@trpc/server/adapters/express");
+import "dotenv/config";
+import express from "express";
+import { createExpressMiddleware } from "@trpc/server/adapters/express";
 
 // server/_core/oauth.ts
 init_const();
@@ -1006,17 +990,17 @@ function registerOAuthRoutes(app2) {
 
 // server/routers.ts
 init_const();
-var import_server3 = require("@trpc/server");
-var import_nanoid = require("nanoid");
-var import_zod2 = require("zod");
 init_db();
+import { TRPCError as TRPCError3 } from "@trpc/server";
+import { nanoid } from "nanoid";
+import { z as z2 } from "zod";
 
 // server/_core/systemRouter.ts
-var import_zod = require("zod");
+import { z } from "zod";
 
 // server/_core/notification.ts
-var import_server = require("@trpc/server");
 init_env();
+import { TRPCError } from "@trpc/server";
 var TITLE_MAX_LENGTH = 1200;
 var CONTENT_MAX_LENGTH = 2e4;
 var trimValue = (value) => value.trim();
@@ -1030,13 +1014,13 @@ var buildEndpointUrl = (baseUrl) => {
 };
 var validatePayload = (input) => {
   if (!isNonEmptyString2(input.title)) {
-    throw new import_server.TRPCError({
+    throw new TRPCError({
       code: "BAD_REQUEST",
       message: "Notification title is required."
     });
   }
   if (!isNonEmptyString2(input.content)) {
-    throw new import_server.TRPCError({
+    throw new TRPCError({
       code: "BAD_REQUEST",
       message: "Notification content is required."
     });
@@ -1044,13 +1028,13 @@ var validatePayload = (input) => {
   const title = trimValue(input.title);
   const content = trimValue(input.content);
   if (title.length > TITLE_MAX_LENGTH) {
-    throw new import_server.TRPCError({
+    throw new TRPCError({
       code: "BAD_REQUEST",
       message: `Notification title must be at most ${TITLE_MAX_LENGTH} characters.`
     });
   }
   if (content.length > CONTENT_MAX_LENGTH) {
-    throw new import_server.TRPCError({
+    throw new TRPCError({
       code: "BAD_REQUEST",
       message: `Notification content must be at most ${CONTENT_MAX_LENGTH} characters.`
     });
@@ -1060,13 +1044,13 @@ var validatePayload = (input) => {
 async function notifyOwner(payload) {
   const { title, content } = validatePayload(payload);
   if (!ENV.forgeApiUrl) {
-    throw new import_server.TRPCError({
+    throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
       message: "Notification service URL is not configured."
     });
   }
   if (!ENV.forgeApiKey) {
-    throw new import_server.TRPCError({
+    throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
       message: "Notification service API key is not configured."
     });
@@ -1099,17 +1083,17 @@ async function notifyOwner(payload) {
 
 // server/_core/trpc.ts
 init_const();
-var import_server2 = require("@trpc/server");
-var import_superjson = __toESM(require("superjson"), 1);
-var t = import_server2.initTRPC.context().create({
-  transformer: import_superjson.default
+import { initTRPC, TRPCError as TRPCError2 } from "@trpc/server";
+import superjson from "superjson";
+var t = initTRPC.context().create({
+  transformer: superjson
 });
 var router = t.router;
 var publicProcedure = t.procedure;
 var requireUser = t.middleware(async (opts) => {
   const { ctx, next } = opts;
   if (!ctx.user) {
-    throw new import_server2.TRPCError({ code: "UNAUTHORIZED", message: UNAUTHED_ERR_MSG });
+    throw new TRPCError2({ code: "UNAUTHORIZED", message: UNAUTHED_ERR_MSG });
   }
   return next({
     ctx: {
@@ -1123,7 +1107,7 @@ var adminProcedure = t.procedure.use(
   t.middleware(async (opts) => {
     const { ctx, next } = opts;
     if (!ctx.user || ctx.user.role !== "admin") {
-      throw new import_server2.TRPCError({ code: "FORBIDDEN", message: NOT_ADMIN_ERR_MSG });
+      throw new TRPCError2({ code: "FORBIDDEN", message: NOT_ADMIN_ERR_MSG });
     }
     return next({
       ctx: {
@@ -1137,16 +1121,16 @@ var adminProcedure = t.procedure.use(
 // server/_core/systemRouter.ts
 var systemRouter = router({
   health: publicProcedure.input(
-    import_zod.z.object({
-      timestamp: import_zod.z.number().min(0, "timestamp cannot be negative")
+    z.object({
+      timestamp: z.number().min(0, "timestamp cannot be negative")
     })
   ).query(() => ({
     ok: true
   })),
   notifyOwner: adminProcedure.input(
-    import_zod.z.object({
-      title: import_zod.z.string().min(1, "title is required"),
-      content: import_zod.z.string().min(1, "content is required")
+    z.object({
+      title: z.string().min(1, "title is required"),
+      content: z.string().min(1, "content is required")
     })
   ).mutation(async ({ input }) => {
     const delivered = await notifyOwner(input);
@@ -1210,18 +1194,18 @@ async function storagePut(relKey, data, contentType = "application/octet-stream"
 
 // server/routers.ts
 init_email();
-var import_stripe = __toESM(require("stripe"), 1);
 init_env();
+import Stripe from "stripe";
 var adminProcedure2 = protectedProcedure.use(({ ctx, next }) => {
   if (ctx.user.role !== "admin") {
-    throw new import_server3.TRPCError({ code: "FORBIDDEN", message: "Admin access required" });
+    throw new TRPCError3({ code: "FORBIDDEN", message: "Admin access required" });
   }
   return next({ ctx });
 });
 function getStripe() {
   const key = process.env.STRIPE_SECRET_KEY;
-  if (!key) throw new import_server3.TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Stripe not configured" });
-  return new import_stripe.default(key, { apiVersion: "2026-03-25.dahlia" });
+  if (!key) throw new TRPCError3({ code: "INTERNAL_SERVER_ERROR", message: "Stripe not configured" });
+  return new Stripe(key, { apiVersion: "2026-03-25.dahlia" });
 }
 var appRouter = router({
   system: systemRouter,
@@ -1232,13 +1216,13 @@ var appRouter = router({
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
       return { success: true };
     }),
-    adminLogin: publicProcedure.input(import_zod2.z.object({ email: import_zod2.z.string(), password: import_zod2.z.string() })).mutation(async ({ ctx, input }) => {
+    adminLogin: publicProcedure.input(z2.object({ email: z2.string(), password: z2.string() })).mutation(async ({ ctx, input }) => {
       const { adminEmail, adminPassword } = ENV;
       if (!adminEmail || !adminPassword) {
-        throw new import_server3.TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Admin credentials not configured" });
+        throw new TRPCError3({ code: "INTERNAL_SERVER_ERROR", message: "Admin credentials not configured" });
       }
       if (input.email !== adminEmail || input.password !== adminPassword) {
-        throw new import_server3.TRPCError({ code: "UNAUTHORIZED", message: "Invalid email or password" });
+        throw new TRPCError3({ code: "UNAUTHORIZED", message: "Invalid email or password" });
       }
       const ADMIN_OPEN_ID = "admin-local";
       await upsertUser({
@@ -1265,12 +1249,12 @@ var appRouter = router({
       return getPricing();
     }),
     update: adminProcedure2.input(
-      import_zod2.z.object({
-        dailyRate: import_zod2.z.string().optional(),
-        deliveryFee: import_zod2.z.string().optional(),
-        cartName: import_zod2.z.string().optional(),
-        cartDescription: import_zod2.z.string().optional(),
-        cartImageUrl: import_zod2.z.string().optional()
+      z2.object({
+        dailyRate: z2.string().optional(),
+        deliveryFee: z2.string().optional(),
+        cartName: z2.string().optional(),
+        cartDescription: z2.string().optional(),
+        cartImageUrl: z2.string().optional()
       })
     ).mutation(async ({ input }) => {
       await updatePricing(input);
@@ -1284,11 +1268,11 @@ var appRouter = router({
       const approved = await getApprovedBookingDates();
       return { blocks, approvedRanges: approved };
     }),
-    addBlock: adminProcedure2.input(import_zod2.z.object({ date: import_zod2.z.string(), reason: import_zod2.z.string().optional() })).mutation(async ({ input }) => {
+    addBlock: adminProcedure2.input(z2.object({ date: z2.string(), reason: z2.string().optional() })).mutation(async ({ input }) => {
       await addBlockedDate(input.date, input.reason);
       return { success: true };
     }),
-    removeBlock: adminProcedure2.input(import_zod2.z.object({ id: import_zod2.z.number() })).mutation(async ({ input }) => {
+    removeBlock: adminProcedure2.input(z2.object({ id: z2.number() })).mutation(async ({ input }) => {
       await removeBlockedDate(input.id);
       return { success: true };
     })
@@ -1296,24 +1280,24 @@ var appRouter = router({
   // ─── Bookings ──────────────────────────────────────────────────────────────
   bookings: router({
     create: publicProcedure.input(
-      import_zod2.z.object({
-        guestName: import_zod2.z.string().min(2),
-        guestEmail: import_zod2.z.string().email(),
-        guestPhone: import_zod2.z.string().min(10),
-        airbnbBookingName: import_zod2.z.string().optional().default(""),
-        startDate: import_zod2.z.string(),
-        endDate: import_zod2.z.string(),
-        totalDays: import_zod2.z.number().min(1),
-        dailyRate: import_zod2.z.string(),
-        deliveryFee: import_zod2.z.string(),
-        totalAmount: import_zod2.z.string(),
-        waiverLegalName: import_zod2.z.string().min(2),
-        waiverAgreed: import_zod2.z.boolean(),
-        waiverIp: import_zod2.z.string().optional(),
-        waiverUserAgent: import_zod2.z.string().optional()
+      z2.object({
+        guestName: z2.string().min(2),
+        guestEmail: z2.string().email(),
+        guestPhone: z2.string().min(10),
+        airbnbBookingName: z2.string().optional().default(""),
+        startDate: z2.string(),
+        endDate: z2.string(),
+        totalDays: z2.number().min(1),
+        dailyRate: z2.string(),
+        deliveryFee: z2.string(),
+        totalAmount: z2.string(),
+        waiverLegalName: z2.string().min(2),
+        waiverAgreed: z2.boolean(),
+        waiverIp: z2.string().optional(),
+        waiverUserAgent: z2.string().optional()
       })
     ).mutation(async ({ input }) => {
-      const bookingRef = (0, import_nanoid.nanoid)(10).toUpperCase();
+      const bookingRef = nanoid(10).toUpperCase();
       const booking = await createBooking({
         bookingRef,
         guestName: input.guestName,
@@ -1338,21 +1322,21 @@ var appRouter = router({
       });
       return { bookingRef, bookingId: booking.id };
     }),
-    getByRef: publicProcedure.input(import_zod2.z.object({ ref: import_zod2.z.string() })).query(async ({ input }) => {
+    getByRef: publicProcedure.input(z2.object({ ref: z2.string() })).query(async ({ input }) => {
       const booking = await getBookingByRef(input.ref);
-      if (!booking) throw new import_server3.TRPCError({ code: "NOT_FOUND" });
+      if (!booking) throw new TRPCError3({ code: "NOT_FOUND" });
       const docs = await getDocumentsByBookingId(booking.id);
       const waiver = await getWaiverByBookingId(booking.id);
       return { booking, documents: docs, waiver };
     }),
     createCheckout: publicProcedure.input(
-      import_zod2.z.object({
-        bookingRef: import_zod2.z.string(),
-        origin: import_zod2.z.string()
+      z2.object({
+        bookingRef: z2.string(),
+        origin: z2.string()
       })
     ).mutation(async ({ input }) => {
       const booking = await getBookingByRef(input.bookingRef);
-      if (!booking) throw new import_server3.TRPCError({ code: "NOT_FOUND" });
+      if (!booking) throw new TRPCError3({ code: "NOT_FOUND" });
       const stripe = getStripe();
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
@@ -1388,9 +1372,9 @@ var appRouter = router({
       });
       return { url: session.url, sessionId: session.id };
     }),
-    confirmPayment: publicProcedure.input(import_zod2.z.object({ bookingRef: import_zod2.z.string(), sessionId: import_zod2.z.string() })).mutation(async ({ input }) => {
+    confirmPayment: publicProcedure.input(z2.object({ bookingRef: z2.string(), sessionId: z2.string() })).mutation(async ({ input }) => {
       const booking = await getBookingByRef(input.bookingRef);
-      if (!booking) throw new import_server3.TRPCError({ code: "NOT_FOUND" });
+      if (!booking) throw new TRPCError3({ code: "NOT_FOUND" });
       if (booking.bookingStatus === "pending_payment") {
         const stripe = getStripe();
         const session = await stripe.checkout.sessions.retrieve(input.sessionId);
@@ -1420,26 +1404,26 @@ var appRouter = router({
   // ─── Documents ─────────────────────────────────────────────────────────────
   documents: router({
     upload: publicProcedure.input(
-      import_zod2.z.object({
-        bookingId: import_zod2.z.number(),
-        documentType: import_zod2.z.enum(["drivers_license", "proof_of_insurance"]),
-        fileName: import_zod2.z.string(),
-        mimeType: import_zod2.z.string(),
-        fileSize: import_zod2.z.number(),
-        fileBase64: import_zod2.z.string()
+      z2.object({
+        bookingId: z2.number(),
+        documentType: z2.enum(["drivers_license", "proof_of_insurance"]),
+        fileName: z2.string(),
+        mimeType: z2.string(),
+        fileSize: z2.number(),
+        fileBase64: z2.string()
       })
     ).mutation(async ({ input }) => {
       const maxSize = 10 * 1024 * 1024;
       if (input.fileSize > maxSize) {
-        throw new import_server3.TRPCError({ code: "BAD_REQUEST", message: "File too large (max 10MB)" });
+        throw new TRPCError3({ code: "BAD_REQUEST", message: "File too large (max 10MB)" });
       }
       const allowed = ["image/jpeg", "image/png", "application/pdf"];
       if (!allowed.includes(input.mimeType)) {
-        throw new import_server3.TRPCError({ code: "BAD_REQUEST", message: "Invalid file type" });
+        throw new TRPCError3({ code: "BAD_REQUEST", message: "Invalid file type" });
       }
       const buffer = Buffer.from(input.fileBase64, "base64");
       const ext = input.fileName.split(".").pop() ?? "bin";
-      const fileKey = `documents/${input.bookingId}/${input.documentType}-${(0, import_nanoid.nanoid)(8)}.${ext}`;
+      const fileKey = `documents/${input.bookingId}/${input.documentType}-${nanoid(8)}.${ext}`;
       const { url } = await storagePut(fileKey, buffer, input.mimeType);
       await createDocument({
         bookingId: input.bookingId,
@@ -1459,19 +1443,19 @@ var appRouter = router({
     getAllBookings: adminProcedure2.query(async () => {
       return getAllBookings();
     }),
-    getBookingDetail: adminProcedure2.input(import_zod2.z.object({ id: import_zod2.z.number() })).query(async ({ input }) => {
+    getBookingDetail: adminProcedure2.input(z2.object({ id: z2.number() })).query(async ({ input }) => {
       const booking = await getBookingById(input.id);
-      if (!booking) throw new import_server3.TRPCError({ code: "NOT_FOUND" });
+      if (!booking) throw new TRPCError3({ code: "NOT_FOUND" });
       const docs = await getDocumentsByBookingId(booking.id);
       const waiver = await getWaiverByBookingId(booking.id);
       return { booking, documents: docs, waiver };
     }),
     updateBookingStatus: adminProcedure2.input(
-      import_zod2.z.object({
-        id: import_zod2.z.number(),
-        status: import_zod2.z.enum(["submitted", "under_review", "approved", "rejected", "completed", "cancelled"]),
-        adminNotes: import_zod2.z.string().optional(),
-        rejectionReason: import_zod2.z.string().optional()
+      z2.object({
+        id: z2.number(),
+        status: z2.enum(["submitted", "under_review", "approved", "rejected", "completed", "cancelled"]),
+        adminNotes: z2.string().optional(),
+        rejectionReason: z2.string().optional()
       })
     ).mutation(async ({ input }) => {
       await updateBookingStatus(input.id, input.status, {
@@ -1492,22 +1476,22 @@ var appRouter = router({
       }
       return { success: true };
     }),
-    updateDocumentStatus: adminProcedure2.input(import_zod2.z.object({ bookingId: import_zod2.z.number(), status: import_zod2.z.enum(["pending", "received", "needs_update", "approved"]) })).mutation(async ({ input }) => {
+    updateDocumentStatus: adminProcedure2.input(z2.object({ bookingId: z2.number(), status: z2.enum(["pending", "received", "needs_update", "approved"]) })).mutation(async ({ input }) => {
       await updateDocumentStatus(input.bookingId, input.status);
       return { success: true };
     }),
-    getBookingDetailWithMessages: adminProcedure2.input(import_zod2.z.object({ id: import_zod2.z.number() })).query(async ({ input, ctx }) => {
+    getBookingDetailWithMessages: adminProcedure2.input(z2.object({ id: z2.number() })).query(async ({ input, ctx }) => {
       const booking = await getBookingById(input.id);
-      if (!booking) throw new import_server3.TRPCError({ code: "NOT_FOUND" });
+      if (!booking) throw new TRPCError3({ code: "NOT_FOUND" });
       const docs = await getDocumentsByBookingId(booking.id);
       const waiver = await getWaiverByBookingId(booking.id);
       const messages = await getMessagesByBookingId(booking.id);
       await markMessagesRead(booking.id, "admin");
       return { booking, documents: docs, waiver, messages };
     }),
-    sendMessage: adminProcedure2.input(import_zod2.z.object({ bookingId: import_zod2.z.number(), content: import_zod2.z.string().min(1).max(2e3) })).mutation(async ({ input, ctx }) => {
+    sendMessage: adminProcedure2.input(z2.object({ bookingId: z2.number(), content: z2.string().min(1).max(2e3) })).mutation(async ({ input, ctx }) => {
       const booking = await getBookingById(input.bookingId);
-      if (!booking) throw new import_server3.TRPCError({ code: "NOT_FOUND" });
+      if (!booking) throw new TRPCError3({ code: "NOT_FOUND" });
       await createMessage({
         bookingId: input.bookingId,
         senderRole: "admin",
@@ -1525,22 +1509,22 @@ var appRouter = router({
       return getUnreadCountForAdmin();
     }),
     // ─ Inspection Checklist ───────────────────────────────────────────────────────────────────
-    getInspection: adminProcedure2.input(import_zod2.z.object({ bookingId: import_zod2.z.number() })).query(async ({ input }) => {
+    getInspection: adminProcedure2.input(z2.object({ bookingId: z2.number() })).query(async ({ input }) => {
       return getInspectionByBookingId(input.bookingId);
     }),
-    saveInspection: adminProcedure2.input(import_zod2.z.object({
-      bookingId: import_zod2.z.number(),
-      batteryCharged: import_zod2.z.boolean(),
-      tiresInflated: import_zod2.z.boolean(),
-      brakesWorking: import_zod2.z.boolean(),
-      steeringWorking: import_zod2.z.boolean(),
-      signalLightsWorking: import_zod2.z.boolean(),
-      brakeLightsWorking: import_zod2.z.boolean(),
-      headlightsWorking: import_zod2.z.boolean(),
-      bodyFrameOk: import_zod2.z.boolean(),
-      seatbeltsOk: import_zod2.z.boolean(),
-      cleanAndReady: import_zod2.z.boolean(),
-      notes: import_zod2.z.string().max(1e3).optional()
+    saveInspection: adminProcedure2.input(z2.object({
+      bookingId: z2.number(),
+      batteryCharged: z2.boolean(),
+      tiresInflated: z2.boolean(),
+      brakesWorking: z2.boolean(),
+      steeringWorking: z2.boolean(),
+      signalLightsWorking: z2.boolean(),
+      brakeLightsWorking: z2.boolean(),
+      headlightsWorking: z2.boolean(),
+      bodyFrameOk: z2.boolean(),
+      seatbeltsOk: z2.boolean(),
+      cleanAndReady: z2.boolean(),
+      notes: z2.string().max(1e3).optional()
     })).mutation(async ({ input, ctx }) => {
       await upsertInspection({
         ...input,
@@ -1550,10 +1534,10 @@ var appRouter = router({
       return { success: true };
     }),
     // ─ Cart Image Upload ────────────────────────────────────────────────────────────────────
-    uploadCartImage: adminProcedure2.input(import_zod2.z.object({
-      fileName: import_zod2.z.string(),
-      mimeType: import_zod2.z.string(),
-      fileBase64: import_zod2.z.string()
+    uploadCartImage: adminProcedure2.input(z2.object({
+      fileName: z2.string(),
+      mimeType: z2.string(),
+      fileBase64: z2.string()
     })).mutation(async ({ input }) => {
       const buffer = Buffer.from(input.fileBase64, "base64");
       const key = `cart-images/${Date.now()}-${input.fileName}`;
@@ -1563,16 +1547,16 @@ var appRouter = router({
     }),
     // ─── Inspection Photos ────────────────────────────────────────────────────────
     uploadInspectionPhoto: adminProcedure2.input(
-      import_zod2.z.object({
-        bookingId: import_zod2.z.number(),
-        photoType: import_zod2.z.enum(["before", "after"]),
-        fileName: import_zod2.z.string(),
-        mimeType: import_zod2.z.string(),
-        fileBase64: import_zod2.z.string()
+      z2.object({
+        bookingId: z2.number(),
+        photoType: z2.enum(["before", "after"]),
+        fileName: z2.string(),
+        mimeType: z2.string(),
+        fileBase64: z2.string()
       })
     ).mutation(async ({ input }) => {
       const buffer = Buffer.from(input.fileBase64, "base64");
-      const fileKey = `inspection/${input.bookingId}/${input.photoType}-${(0, import_nanoid.nanoid)(8)}.jpg`;
+      const fileKey = `inspection/${input.bookingId}/${input.photoType}-${nanoid(8)}.jpg`;
       const { url } = await storagePut(fileKey, buffer, input.mimeType);
       await createInspectionPhoto({
         bookingId: input.bookingId,
@@ -1582,16 +1566,16 @@ var appRouter = router({
       });
       return { url, fileKey };
     }),
-    getInspectionPhotos: adminProcedure2.input(import_zod2.z.object({ bookingId: import_zod2.z.number() })).query(async ({ input }) => {
+    getInspectionPhotos: adminProcedure2.input(z2.object({ bookingId: z2.number() })).query(async ({ input }) => {
       return getInspectionPhotosByBooking(input.bookingId);
     }),
     // ─── SMS Notifications ────────────────────────────────────────────────────────
     sendSmsNotification: adminProcedure2.input(
-      import_zod2.z.object({
-        bookingId: import_zod2.z.number(),
-        phoneNumber: import_zod2.z.string(),
-        notificationType: import_zod2.z.enum(["approval_confirmation", "reminder_24h"]),
-        messageContent: import_zod2.z.string()
+      z2.object({
+        bookingId: z2.number(),
+        phoneNumber: z2.string(),
+        notificationType: z2.enum(["approval_confirmation", "reminder_24h"]),
+        messageContent: z2.string()
       })
     ).mutation(async ({ input }) => {
       await createSmsNotification({
@@ -1603,20 +1587,20 @@ var appRouter = router({
       });
       return { success: true };
     }),
-    getSmsNotifications: adminProcedure2.input(import_zod2.z.object({ bookingId: import_zod2.z.number() })).query(async ({ input }) => {
+    getSmsNotifications: adminProcedure2.input(z2.object({ bookingId: z2.number() })).query(async ({ input }) => {
       return getSmsNotificationsByBooking(input.bookingId);
     }),
     // ─── Revenue Report ───────────────────────────────────────────────────────────
-    getMonthlyReport: adminProcedure2.input(import_zod2.z.object({ year: import_zod2.z.number(), month: import_zod2.z.number() })).query(async ({ input }) => {
+    getMonthlyReport: adminProcedure2.input(z2.object({ year: z2.number(), month: z2.number() })).query(async ({ input }) => {
       return getMonthlyRevenue(input.year, input.month);
     }),
     // ─── Update Promo Codes ───────────────────────────────────────────────────────────
-    updatePromos: adminProcedure2.input(import_zod2.z.object({
-      promo7: import_zod2.z.object({ name: import_zod2.z.string(), price: import_zod2.z.number() }),
-      promo6: import_zod2.z.object({ name: import_zod2.z.string(), price: import_zod2.z.number() }),
-      promo5: import_zod2.z.object({ name: import_zod2.z.string(), price: import_zod2.z.number() })
+    updatePromos: adminProcedure2.input(z2.object({
+      promo7: z2.object({ name: z2.string(), price: z2.number() }),
+      promo6: z2.object({ name: z2.string(), price: z2.number() }),
+      promo5: z2.object({ name: z2.string(), price: z2.number() })
     })).mutation(async ({ input }) => {
-      const stripe = new import_stripe.default(ENV.stripeSecretKey);
+      const stripe = new Stripe(ENV.stripeSecretKey);
       try {
         const results = [];
         const promos = [
@@ -1641,22 +1625,22 @@ var appRouter = router({
         return { success: true, coupons: results };
       } catch (error) {
         console.error("Error updating promos:", error);
-        throw new import_server3.TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Failed to update promo codes" });
+        throw new TRPCError3({ code: "INTERNAL_SERVER_ERROR", message: "Failed to update promo codes" });
       }
     })
   }),
   // ─── Guest Messaging (public, by booking ref) ──────────────────────────────────
   messages: router({
-    getByRef: publicProcedure.input(import_zod2.z.object({ ref: import_zod2.z.string() })).query(async ({ input }) => {
+    getByRef: publicProcedure.input(z2.object({ ref: z2.string() })).query(async ({ input }) => {
       const booking = await getBookingByRef(input.ref);
-      if (!booking) throw new import_server3.TRPCError({ code: "NOT_FOUND" });
+      if (!booking) throw new TRPCError3({ code: "NOT_FOUND" });
       const messages = await getMessagesByBookingId(booking.id);
       await markMessagesRead(booking.id, "guest");
       return { messages, guestName: booking.guestName };
     }),
-    sendByRef: publicProcedure.input(import_zod2.z.object({ ref: import_zod2.z.string(), content: import_zod2.z.string().min(1).max(2e3) })).mutation(async ({ input }) => {
+    sendByRef: publicProcedure.input(z2.object({ ref: z2.string(), content: z2.string().min(1).max(2e3) })).mutation(async ({ input }) => {
       const booking = await getBookingByRef(input.ref);
-      if (!booking) throw new import_server3.TRPCError({ code: "NOT_FOUND" });
+      if (!booking) throw new TRPCError3({ code: "NOT_FOUND" });
       await createMessage({
         bookingId: booking.id,
         senderRole: "guest",
@@ -1690,8 +1674,8 @@ async function createContext(opts) {
 }
 
 // api/index.ts
-var app = (0, import_express.default)();
-app.post("/api/stripe/webhook", import_express.default.raw({ type: "application/json" }), async (req, res) => {
+var app = express();
+app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), async (req, res) => {
   const sig = req.headers["stripe-signature"];
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
   if (!webhookSecret || !sig) {
@@ -1737,14 +1721,17 @@ app.post("/api/stripe/webhook", import_express.default.raw({ type: "application/
   }
   res.json({ received: true });
 });
-app.use(import_express.default.json({ limit: "50mb" }));
-app.use(import_express.default.urlencoded({ limit: "50mb", extended: true }));
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
 registerOAuthRoutes(app);
 app.use(
   "/api/trpc",
-  (0, import_express2.createExpressMiddleware)({
+  createExpressMiddleware({
     router: appRouter,
     createContext
   })
 );
 var index_default = app;
+export {
+  index_default as default
+};
