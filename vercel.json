@@ -1,5 +1,5 @@
 {
-  "buildCommand": "pnpm install && pnpm db:push && pnpm build",
+  "buildCommand": "pnpm build",
   "outputDirectory": "client/dist",
   "installCommand": "pnpm install",
   "functions": {
