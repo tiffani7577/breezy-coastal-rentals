@@ -1141,21 +1141,24 @@ var systemRouter = router({
 });
 
 // server/storage.ts
+import { put } from "@vercel/blob";
 function normalizeKey(relKey) {
   return relKey.replace(/^\/+/, "");
 }
-var fileStore = /* @__PURE__ */ new Map();
 async function storagePut(relKey, data, contentType = "application/octet-stream") {
   const key = normalizeKey(relKey);
-  let base64;
+  let buffer;
   if (typeof data === "string") {
-    base64 = Buffer.from(data).toString("base64");
+    buffer = Buffer.from(data, "base64");
   } else {
-    base64 = Buffer.from(data).toString("base64");
+    buffer = Buffer.from(data);
   }
-  const dataUrl = `data:${contentType};base64,${base64}`;
-  fileStore.set(key, { data: base64, contentType });
-  return { key, url: dataUrl };
+  const blob = await put(key, buffer, {
+    access: "public",
+    contentType,
+    token: process.env.BLOB_READ_WRITE_TOKEN
+  });
+  return { key, url: blob.url };
 }
 
 // server/routers.ts

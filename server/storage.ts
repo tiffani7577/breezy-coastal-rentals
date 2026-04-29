@@ -1,14 +1,8 @@
-// Storage helpers - stores files as base64 data URLs (no external service needed)
-// Files are stored directly in the database as data URLs
+import { put } from "@vercel/blob";
 
 function normalizeKey(relKey: string): string {
   return relKey.replace(/^\/+/, "");
 }
-
-// In-memory store for uploaded files (keyed by fileKey)
-// This persists within a single serverless function invocation
-// For production, files are stored as data URLs in the database
-const fileStore = new Map<string, { data: string; contentType: string }>();
 
 export async function storagePut(
   relKey: string,
@@ -17,36 +11,27 @@ export async function storagePut(
 ): Promise<{ key: string; url: string }> {
   const key = normalizeKey(relKey);
 
-  // Convert data to base64
-  let base64: string;
+  // Convert data to Buffer if needed
+  let buffer: Buffer;
   if (typeof data === "string") {
-    // Assume already base64 or text
-    base64 = Buffer.from(data).toString("base64");
+    // data is base64-encoded
+    buffer = Buffer.from(data, "base64");
   } else {
-    base64 = Buffer.from(data).toString("base64");
+    buffer = Buffer.from(data);
   }
 
-  // Create a data URL
-  const dataUrl = `data:${contentType};base64,${base64}`;
+  // Upload to Vercel Blob (files stored on Vercel's CDN, no size limit issues)
+  const blob = await put(key, buffer, {
+    access: "public",
+    contentType,
+    token: process.env.BLOB_READ_WRITE_TOKEN,
+  });
 
-  // Store in memory map (will be used if storageGet is called in same invocation)
-  fileStore.set(key, { data: base64, contentType });
-
-  // Return the data URL as the "url" - this gets stored in the database
-  return { key, url: dataUrl };
+  return { key, url: blob.url };
 }
 
 export async function storageGet(relKey: string): Promise<{ key: string; url: string }> {
   const key = normalizeKey(relKey);
-
-  const stored = fileStore.get(key);
-  if (stored) {
-    return {
-      key,
-      url: `data:${stored.contentType};base64,${stored.data}`,
-    };
-  }
-
-  // If not in memory, the URL was stored in the database - return a placeholder
+  // URL is stored in the database at upload time - just return the key
   return { key, url: "" };
 }
