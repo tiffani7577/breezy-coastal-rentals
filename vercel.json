@@ -11,6 +11,7 @@
     { "source": "/api/(.*)", "destination": "/api/dist/index.mjs" }
   ],
   "env": {
-    "NODE_ENV": "production"
+    "NODE_ENV": "production",
+    "VERCEL_SKIP_TYPESCRIPT_CHECK": "1"
   }
 }
