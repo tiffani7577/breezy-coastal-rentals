@@ -491,7 +491,7 @@ export default function Home() {
       </nav>
 
       {/* ── Hero ─────────────────────────────────────────────────── */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-screen flex items-end justify-center overflow-hidden pb-32">
         {/* Background image */}
         <div
           className="absolute inset-0 bg-cover"
