@@ -497,7 +497,8 @@ export default function Home() {
           className="absolute inset-0 bg-cover"
           style={{ 
             backgroundImage: `url(${HERO_IMG})`,
-            backgroundPosition: 'center 40%'
+            backgroundPosition: 'center center',
+            backgroundSize: 'cover'
           }}
         />
         {/* Gradient overlay */}
