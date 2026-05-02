@@ -6,12 +6,18 @@
 
 import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
+import https from 'https';
 
 dotenv.config();
 
+// Disable SSL certificate verification for development
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 const connection = await mysql.createConnection({
   uri: process.env.DATABASE_URL,
-  ssl: 'Amazon RDS',
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
 
 // Dates to block (last day available for evening checkout)

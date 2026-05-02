@@ -136,22 +136,61 @@ function CoastalCinemagraph() {
           </g>
         </g>
 
-        {/* Golf cart on sand */}
+        {/* Luxury Red Golf Cart with Diamond-Stitched Leather Seats */}
         <g transform="translate(300,295)" style={{animation:"cartFloat 4s ease-in-out infinite"}}>
-          {/* Cart body */}
-          <rect x="-45" y="-28" width="90" height="28" rx="6" fill="white" />
-          <rect x="-40" y="-38" width="80" height="14" rx="4" fill="#e8f4fd" />
-          {/* Roof */}
-          <rect x="-42" y="-52" width="84" height="16" rx="4" fill="#1a5c8a" />
-          {/* Windshield */}
-          <rect x="-30" y="-38" width="35" height="14" rx="2" fill="#b8e0f7" opacity="0.7" />
-          {/* Wheels */}
-          <circle cx="-28" cy="0" r="10" fill="#333" />
-          <circle cx="-28" cy="0" r="5" fill="#888" />
-          <circle cx="28" cy="0" r="10" fill="#333" />
-          <circle cx="28" cy="0" r="5" fill="#888" />
-          {/* Stripe */}
-          <rect x="-45" y="-16" width="90" height="4" rx="2" fill="#1a5c8a" opacity="0.4" />
+          {/* Cart body - Premium Red */}
+          <rect x="-50" y="-24" width="100" height="26" rx="5" fill="#c41e3a" />
+          
+          {/* Front bumper accent */}
+          <rect x="-50" y="-24" width="100" height="2" fill="#8b0000" />
+          
+          {/* Windshield frame - Black */}
+          <rect x="-45" y="-34" width="55" height="10" rx="2" fill="#1a1a1a" />
+          {/* Windshield glass */}
+          <rect x="-43" y="-32" width="51" height="8" rx="1" fill="#87ceeb" opacity="0.6" />
+          
+          {/* Canopy frame - Black */}
+          <rect x="-48" y="-42" width="96" height="10" rx="3" fill="#1a1a1a" />
+          {/* Canopy support posts */}
+          <rect x="-44" y="-34" width="2.5" height="8" fill="#333" />
+          <rect x="41.5" y="-34" width="2.5" height="8" fill="#333" />
+          
+          {/* LUXURY SEATS - 4 seats with diamond stitching */}
+          {/* Front left seat */}
+          <rect x="-42" y="-18" width="16" height="12" rx="1" fill="#1a1a1a" />
+          <g opacity="0.4"><line x1="-40" y1="-16" x2="-38" y2="-14" stroke="#666" strokeWidth="0.3" /><line x1="-38" y1="-16" x2="-40" y2="-14" stroke="#666" strokeWidth="0.3" /><line x1="-36" y1="-16" x2="-34" y2="-14" stroke="#666" strokeWidth="0.3" /><line x1="-34" y1="-16" x2="-36" y2="-14" stroke="#666" strokeWidth="0.3" /></g>
+          
+          {/* Front right seat */}
+          <rect x="-22" y="-18" width="16" height="12" rx="1" fill="#1a1a1a" />
+          <g opacity="0.4"><line x1="-20" y1="-16" x2="-18" y2="-14" stroke="#666" strokeWidth="0.3" /><line x1="-18" y1="-16" x2="-20" y2="-14" stroke="#666" strokeWidth="0.3" /><line x1="-16" y1="-16" x2="-14" y2="-14" stroke="#666" strokeWidth="0.3" /><line x1="-14" y1="-16" x2="-16" y2="-14" stroke="#666" strokeWidth="0.3" /></g>
+          
+          {/* Rear left seat */}
+          <rect x="-2" y="-18" width="16" height="12" rx="1" fill="#1a1a1a" />
+          <g opacity="0.4"><line x1="0" y1="-16" x2="2" y2="-14" stroke="#666" strokeWidth="0.3" /><line x1="2" y1="-16" x2="0" y2="-14" stroke="#666" strokeWidth="0.3" /><line x1="4" y1="-16" x2="6" y2="-14" stroke="#666" strokeWidth="0.3" /><line x1="6" y1="-16" x2="4" y2="-14" stroke="#666" strokeWidth="0.3" /></g>
+          
+          {/* Rear right seat */}
+          <rect x="18" y="-18" width="16" height="12" rx="1" fill="#1a1a1a" />
+          <g opacity="0.4"><line x1="20" y1="-16" x2="22" y2="-14" stroke="#666" strokeWidth="0.3" /><line x1="22" y1="-16" x2="20" y2="-14" stroke="#666" strokeWidth="0.3" /><line x1="24" y1="-16" x2="26" y2="-14" stroke="#666" strokeWidth="0.3" /><line x1="26" y1="-16" x2="24" y2="-14" stroke="#666" strokeWidth="0.3" /></g>
+          
+          {/* Yellow accent stripe */}
+          <rect x="-50" y="-6" width="100" height="2" fill="#ffc000" opacity="0.85" />
+          
+          {/* Premium alloy wheels */}
+          <circle cx="-35" cy="4" r="13" fill="#444" />
+          <circle cx="-35" cy="4" r="9" fill="#666" />
+          <circle cx="-35" cy="4" r="6" fill="#888" />
+          {/* Wheel details */}
+          <circle cx="-35" cy="4" r="4" fill="none" stroke="#999" strokeWidth="0.5" opacity="0.6" />
+          
+          <circle cx="35" cy="4" r="13" fill="#444" />
+          <circle cx="35" cy="4" r="9" fill="#666" />
+          <circle cx="35" cy="4" r="6" fill="#888" />
+          {/* Wheel details */}
+          <circle cx="35" cy="4" r="4" fill="none" stroke="#999" strokeWidth="0.5" opacity="0.6" />
+          
+          {/* LED Headlights */}
+          <circle cx="-48" cy="-20" r="2.5" fill="#ffeb3b" opacity="0.8" />
+          <circle cx="48" cy="-20" r="2.5" fill="#ffeb3b" opacity="0.8" />
         </g>
 
         {/* Caption overlay */}
