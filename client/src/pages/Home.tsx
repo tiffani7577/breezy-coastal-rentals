@@ -491,8 +491,8 @@ export default function Home() {
       </nav>
 
       {/* ── Hero ─────────────────────────────────────────────────── */}
-      <section className="relative min-h-screen flex items-end justify-center overflow-hidden pb-32">
-        {/* Background image */}
+      <section className="relative min-h-screen overflow-hidden">
+        {/* Background image - Cleared of content to showcase the photo */}
         <div
           className="absolute inset-0 bg-cover"
           style={{ 
@@ -501,41 +501,60 @@ export default function Home() {
             backgroundSize: 'cover'
           }}
         />
-        {/* Gradient overlay */}
+        
+        {/* Subtle gradient overlay to keep it feeling premium */}
         <div
           className="absolute inset-0"
           style={{
-            background:
-              "linear-gradient(180deg, rgba(10,28,60,0.55) 0%, rgba(10,28,60,0.35) 40%, rgba(10,28,60,0.65) 100%)",
+            background: "linear-gradient(180deg, rgba(10,28,60,0.15) 0%, rgba(10,28,60,0) 40%, rgba(10,28,60,0.35) 100%)",
           }}
         />
 
-        {/* Content */}
-        <div className="relative z-10 text-center px-4 max-w-2xl mx-auto pt-20">
+        {/* Scroll indicator */}
+        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
+          <div
+            className="w-6 h-10 rounded-full flex items-start justify-center pt-2"
+            style={{ border: "2px solid rgba(255,255,255,0.6)", background: "rgba(0,0,0,0.1)", backdropFilter: "blur(4px)" }}
+          >
+            <div
+              className="w-1 h-2 rounded-full"
+              style={{ background: "rgba(255,255,255,0.9)", animation: "bounce 2s infinite" }}
+            />
+          </div>
+        </div>
+
+        {/* Animated wave at bottom of hero */}
+        <div className="absolute bottom-0 left-0 right-0 z-10">
+          <AnimatedWave />
+        </div>
+      </section>
+
+      {/* ── Hero CTA Section ────────────────────────────────────────── */}
+      <section className="py-24 px-4 text-center" style={{ background: "white" }}>
+        <div className="max-w-2xl mx-auto">
           <Badge
             className="mb-6 text-xs tracking-widest uppercase font-semibold"
-            style={{ background: "rgba(255,255,255,0.18)", color: "white", border: "1px solid rgba(255,255,255,0.3)", backdropFilter: "blur(8px)" }}
+            style={{ background: "oklch(0.96 0.01 220)", color: "oklch(0.48 0.18 232)", border: "1px solid oklch(0.9 0.02 220)" }}
           >
-              Cape Canaveral, Florida
+            Cape Canaveral, Florida
           </Badge>
           <h1
-            className="text-white mb-5 leading-tight"
-            style={{ fontSize: "clamp(2.4rem, 7vw, 4rem)", fontFamily: "'Playfair Display', serif", fontWeight: 700, textShadow: "0 2px 20px rgba(0,0,0,0.3)" }}
+            className="text-foreground mb-6 leading-tight"
+            style={{ fontSize: "clamp(2.4rem, 7vw, 3.6rem)", fontFamily: "'Playfair Display', serif", fontWeight: 700 }}
           >
             The Easiest Way to<br />Explore Cape Canaveral
           </h1>
           <p
-            className="mb-10 leading-relaxed"
-            style={{ fontSize: "clamp(1rem, 3vw, 1.2rem)", color: "rgba(255,255,255,0.88)", textShadow: "0 1px 8px rgba(0,0,0,0.2)" }}
+            className="mb-10 leading-relaxed text-muted-foreground"
+            style={{ fontSize: "clamp(1rem, 3vw, 1.15rem)" }}
           >
             Your street-legal, private golf cart is already there — charged, ready, and waiting for you.
           </p>
 
-          {/* CTA */}
           <Link href="/booking">
             <Button
               size="lg"
-              className="w-full max-w-xs text-base font-semibold shadow-2xl h-14"
+              className="w-full max-w-xs text-base font-semibold shadow-xl h-14"
               style={{
                 background: "linear-gradient(135deg, oklch(0.48 0.18 232) 0%, oklch(0.38 0.16 240) 100%)",
                 color: "white",
@@ -550,36 +569,18 @@ export default function Home() {
           </Link>
 
           {/* Trust badges */}
-          <div className="flex items-center justify-center gap-6 mt-8">
+          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 mt-12">
             {[
               { icon: Clock, label: "60-sec booking" },
               { icon: ShieldCheck, label: "Street-legal LSV" },
               { icon: Star, label: "5-star experience" },
             ].map(({ icon: Icon, label }) => (
-              <div key={label} className="flex items-center gap-1.5" style={{ color: "rgba(255,255,255,0.8)" }}>
-                <Icon className="w-4 h-4" />
-                <span style={{ fontSize: "12px", fontWeight: 500 }}>{label}</span>
+              <div key={label} className="flex items-center gap-2 text-muted-foreground">
+                <Icon className="w-5 h-5 text-primary" />
+                <span style={{ fontSize: "14px", fontWeight: 500 }}>{label}</span>
               </div>
             ))}
           </div>
-        </div>
-
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
-          <div
-            className="w-6 h-10 rounded-full flex items-start justify-center pt-2"
-            style={{ border: "2px solid rgba(255,255,255,0.4)" }}
-          >
-            <div
-              className="w-1 h-2 rounded-full"
-              style={{ background: "rgba(255,255,255,0.7)", animation: "bounce 2s infinite" }}
-            />
-          </div>
-        </div>
-
-        {/* Animated wave at bottom of hero */}
-        <div className="absolute bottom-0 left-0 right-0 z-10">
-          <AnimatedWave />
         </div>
       </section>
 
