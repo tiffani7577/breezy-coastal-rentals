@@ -497,7 +497,7 @@ export default function Home() {
           className="absolute inset-0 bg-cover"
           style={{ 
             backgroundImage: `url(${HERO_IMG})`,
-            backgroundPosition: 'center center',
+            backgroundPosition: '25% center',
             backgroundSize: 'cover'
           }}
         />
