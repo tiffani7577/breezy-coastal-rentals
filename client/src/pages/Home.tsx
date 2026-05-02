@@ -16,6 +16,7 @@ import {
   Zap,
 } from "lucide-react";
 
+// Cache bust: 2026-05-02-luxury-cart-update
 const HERO_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/golf_cart_converted_0015b115.jpeg";
 // Original aerial beach (saved): https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/hero-beach_99596afc.jpg
 const BEACH_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/canaveral-coast-v2-BncqoUn3dE4qSpBSMm5UR6.webp";
