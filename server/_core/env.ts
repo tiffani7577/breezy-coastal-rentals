@@ -7,7 +7,7 @@ export const ENV = {
   isProduction: process.env.NODE_ENV === "production",
   forgeApiUrl: process.env.BUILT_IN_FORGE_API_URL ?? "",
   forgeApiKey: process.env.BUILT_IN_FORGE_API_KEY ?? "",
-  adminEmail: process.env.ADMIN_EMAIL ?? "",
-  adminPassword: process.env.ADMIN_PASSWORD ?? "",
+  adminEmail: process.env.ADMIN_EMAIL || "booking@breezycoastalrentals.com",
+  adminPassword: process.env.ADMIN_PASSWORD || "Ilovegrandmommy123$",
   stripeSecretKey: process.env.STRIPE_SECRET_KEY ?? "",
 };
