@@ -491,7 +491,7 @@ export default function Home() {
       </nav>
 
       {/* ── Hero ─────────────────────────────────────────────────── */}
-      <section className="relative min-h-screen overflow-hidden">
+      <section className="relative min-h-screen overflow-hidden flex items-center justify-center">
         {/* Background image - Cleared of content to showcase the photo */}
         <div
           className="absolute inset-0 bg-cover"
@@ -510,43 +510,23 @@ export default function Home() {
           }}
         />
 
-        {/* Scroll indicator */}
-        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
-          <div
-            className="w-6 h-10 rounded-full flex items-start justify-center pt-2"
-            style={{ border: "2px solid rgba(255,255,255,0.6)", background: "rgba(0,0,0,0.1)", backdropFilter: "blur(4px)" }}
-          >
-            <div
-              className="w-1 h-2 rounded-full"
-              style={{ background: "rgba(255,255,255,0.9)", animation: "bounce 2s infinite" }}
-            />
-          </div>
-        </div>
-
-        {/* Animated wave at bottom of hero */}
-        <div className="absolute bottom-0 left-0 right-0 z-10">
-          <AnimatedWave />
-        </div>
-      </section>
-
-      {/* ── Hero CTA Section ────────────────────────────────────────── */}
-      <section className="py-24 px-4 text-center" style={{ background: "white" }}>
-        <div className="max-w-2xl mx-auto">
+        {/* Hero text overlay - positioned on top of photo */}
+        <div className="relative z-20 px-4 text-center max-w-2xl mx-auto">
           <Badge
             className="mb-6 text-xs tracking-widest uppercase font-semibold"
-            style={{ background: "oklch(0.96 0.01 220)", color: "oklch(0.48 0.18 232)", border: "1px solid oklch(0.9 0.02 220)" }}
+            style={{ background: "rgba(255,255,255,0.95)", color: "oklch(0.48 0.18 232)", border: "1px solid rgba(255,255,255,0.3)" }}
           >
             Cape Canaveral, Florida
           </Badge>
           <h1
-            className="text-foreground mb-6 leading-tight"
-            style={{ fontSize: "clamp(2.4rem, 7vw, 3.6rem)", fontFamily: "'Playfair Display', serif", fontWeight: 700 }}
+            className="text-white mb-6 leading-tight drop-shadow-lg"
+            style={{ fontSize: "clamp(2.4rem, 7vw, 3.6rem)", fontFamily: "'Playfair Display', serif", fontWeight: 700, textShadow: "0 2px 20px rgba(0,0,0,0.3)" }}
           >
             The Easiest Way to<br />Explore Cape Canaveral
           </h1>
           <p
-            className="mb-10 leading-relaxed text-muted-foreground"
-            style={{ fontSize: "clamp(1rem, 3vw, 1.15rem)" }}
+            className="mb-10 leading-relaxed drop-shadow-md"
+            style={{ fontSize: "clamp(1rem, 3vw, 1.15rem)", color: "rgba(255,255,255,0.95)", textShadow: "0 1px 12px rgba(0,0,0,0.3)" }}
           >
             Your street-legal, private golf cart is already there — charged, ready, and waiting for you.
           </p>
@@ -567,20 +547,24 @@ export default function Home() {
               <ChevronRight className="w-5 h-5 ml-1" />
             </Button>
           </Link>
+        </div>
 
-          {/* Trust badges */}
-          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 mt-12">
-            {[
-              { icon: Clock, label: "60-sec booking" },
-              { icon: ShieldCheck, label: "Street-legal LSV" },
-              { icon: Star, label: "5-star experience" },
-            ].map(({ icon: Icon, label }) => (
-              <div key={label} className="flex items-center gap-2 text-muted-foreground">
-                <Icon className="w-5 h-5 text-primary" />
-                <span style={{ fontSize: "14px", fontWeight: 500 }}>{label}</span>
-              </div>
-            ))}
+        {/* Scroll indicator */}
+        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-20">
+          <div
+            className="w-6 h-10 rounded-full flex items-start justify-center pt-2"
+            style={{ border: "2px solid rgba(255,255,255,0.6)", background: "rgba(0,0,0,0.1)", backdropFilter: "blur(4px)" }}
+          >
+            <div
+              className="w-1 h-2 rounded-full"
+              style={{ background: "rgba(255,255,255,0.9)", animation: "bounce 2s infinite" }}
+            />
           </div>
+        </div>
+
+        {/* Animated wave at bottom of hero */}
+        <div className="absolute bottom-0 left-0 right-0 z-10">
+          <AnimatedWave />
         </div>
       </section>
 
