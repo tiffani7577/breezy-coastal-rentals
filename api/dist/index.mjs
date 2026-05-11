@@ -561,7 +561,7 @@ var init_schema = __esm({
       dailyRate: decimal("dailyRate", { precision: 10, scale: 2 }).notNull(),
       deliveryFee: decimal("deliveryFee", { precision: 10, scale: 2 }).notNull().default("0.00"),
       totalAmount: decimal("totalAmount", { precision: 10, scale: 2 }).notNull(),
-      originalAmount: decimal("originalAmount", { precision: 10, scale: 2 }),
+      // originalAmount: decimal("originalAmount", { precision: 10, scale: 2 }),
       // Status
       bookingStatus: mysqlEnum("bookingStatus", [
         "pending_payment",
@@ -854,9 +854,6 @@ async function updateBookingStripe(bookingRef, stripeSessionId, stripePaymentInt
     const existing = await db.select({ totalAmount: bookings.totalAmount }).from(bookings).where(eq(bookings.bookingRef, bookingRef)).limit(1);
     const currentTotal = existing[0]?.totalAmount;
     const paidFormatted = (amountPaid / 100).toFixed(2);
-    if (currentTotal && parseFloat(currentTotal.toString()) !== parseFloat(paidFormatted)) {
-      updateData.originalAmount = parseFloat(currentTotal.toString()).toFixed(2);
-    }
     updateData.totalAmount = paidFormatted;
   }
   await db.update(bookings).set(updateData).where(eq(bookings.bookingRef, bookingRef));

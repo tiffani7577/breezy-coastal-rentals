@@ -528,7 +528,7 @@ export default function Home() {
             className="mb-10 leading-relaxed drop-shadow-md"
             style={{ fontSize: "clamp(1rem, 3vw, 1.15rem)", color: "rgba(255,255,255,0.95)", textShadow: "0 1px 12px rgba(0,0,0,0.3)" }}
           >
-            Your street-legal, private golf cart is already there — charged, ready, and waiting for you.
+            Your street-legal, privategolf cart is already there — charged, ready, and waiting for you.
           </p>
 
           <Link href="/booking">
@@ -649,7 +649,7 @@ export default function Home() {
                 Your Ride Awaits
               </p>
               <h2 className="text-white mb-3" style={{ fontSize: "clamp(1.8rem, 5vw, 2.6rem)", fontFamily: "'Playfair Display', serif" }}>
-                Meet Your Golf Cart
+                Meet YourGolf Cart
               </h2>
               <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "15px", maxWidth: "420px", margin: "0 auto", lineHeight: 1.6 }}>
                 A premium 6-seat electric cart, ready and waiting at the property. Your ticket to effortless coastal living.

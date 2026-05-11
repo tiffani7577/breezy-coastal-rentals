@@ -149,7 +149,7 @@ export default function Availability() {
       case "booked":
         return { bg: "oklch(0.94 0.03 15)", text: "oklch(0.50 0.15 15)", border: "none", cursor: "default" };
       case "blocked":
-        return { bg: "oklch(0.94 0.02 50)", text: "oklch(0.55 0.10 50)", border: "none", cursor: "default" };
+        return { bg: "oklch(0.94 0.03 15)", text: "oklch(0.50 0.15 15)", border: "none", cursor: "default" };
       case "available":
         return {
           bg: isToday ? "oklch(0.93 0.06 215)" : "oklch(0.95 0.04 150)",
@@ -343,7 +343,7 @@ export default function Availability() {
           {[
             { color: "oklch(0.93 0.06 150)", text: "oklch(0.35 0.14 150)", label: "Available" },
             { color: "oklch(0.92 0.04 15)", text: "oklch(0.45 0.18 15)", label: "Booked" },
-            { color: "oklch(0.93 0.02 50)", text: "oklch(0.50 0.12 50)", label: "Unavailable" },
+            { color: "oklch(0.92 0.04 15)", text: "oklch(0.45 0.18 15)", label: "Reserved" },
             { color: "oklch(0.48 0.18 232)", text: "white", label: "Your stay" },
           ].map((item) => (
             <div key={item.label} className="flex items-center gap-1.5">
@@ -445,7 +445,7 @@ export default function Availability() {
             {[
               { icon: CheckCircle, color: "oklch(0.35 0.14 150)", bg: "oklch(0.93 0.06 150)", label: "Available", desc: "Tap to book" },
               { icon: XCircle, color: "oklch(0.45 0.18 15)", bg: "oklch(0.92 0.04 15)", label: "Booked", desc: "Already reserved" },
-              { icon: MinusCircle, color: "oklch(0.50 0.12 50)", bg: "oklch(0.93 0.02 50)", label: "Unavailable", desc: "Admin blocked" },
+              { icon: MinusCircle, color: "oklch(0.45 0.18 15)", bg: "oklch(0.92 0.04 15)", label: "Reserved", desc: "Already reserved" },
             ].map((item) => (
               <div key={item.label} className="rounded-xl p-3 text-center" style={{ background: item.bg }}>
                 <item.icon className="w-5 h-5 mx-auto mb-1" style={{ color: item.color }} />

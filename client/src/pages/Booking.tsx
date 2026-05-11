@@ -44,7 +44,7 @@ This Rental Agreement & Liability Waiver is entered into between Breezy Coastal 
 
 RENTAL TERMS
 • Rental period applies April 26 - May 2, 2026 and begins at 4:00 PM on the first day and ends at 10:00 AM on the final day.
-• The golf cart is provided at and must be returned to: 8720 Seashell Ln., Cape Canaveral, FL 32920
+• Thegolf cart is provided at and must be returned to: 8720 Seashell Ln., Cape Canaveral, FL 32920
 • The vehicle may be used off the property but must be returned to and stored at this address when not in use. Late returns will result in an additional charge of $160.
 
 SECURITY DEPOSIT & DAMAGES
@@ -627,7 +627,7 @@ export default function Booking() {
               <div className="p-5">
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <h2 className="font-bold text-foreground" style={{ fontSize: "20px", fontFamily: "'Playfair Display', serif" }}>{pricingData?.cartName ?? "Breezy Golf Cart"}</h2>
+                    <h2 className="font-bold text-foreground" style={{ fontSize: "20px", fontFamily: "'Playfair Display', serif" }}>{pricingData?.cartName ?? "BreezyGolf Cart"}</h2>
                     <p className="text-muted-foreground text-sm mt-0.5">{pricingData?.cartDescription ?? "6-passenger electric golf cart"}</p>
                   </div>
                   <div className="text-right">
