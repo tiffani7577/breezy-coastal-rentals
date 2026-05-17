@@ -73,11 +73,11 @@ export default function About() {
             Call or text Dorothy directly — no bots, no wait times.
           </p>
           <a
-            href="tel:3215441539"
+            href="tel:3214318333"
             className="inline-block px-6 py-3 rounded-full text-sm font-semibold"
             style={{ background: "oklch(0.48 0.18 232)", color: "white" }}
           >
-            📞 321-544-1539
+            📞 321-431-8333
           </a>
           <div className="mt-6">
             <Link href="/booking">
@@ -85,7 +85,7 @@ export default function About() {
                 className="px-8 py-3 rounded-full text-sm font-semibold"
                 style={{ background: "white", color: "oklch(0.15 0.025 232)" }}
               >
-                Reserve Your Cart
+                Reserve Your Carts
               </button>
             </Link>
           </div>

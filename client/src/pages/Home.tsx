@@ -467,6 +467,16 @@ export default function Home() {
                 About
               </Button>
             </Link>
+            <Link href="/contact">
+              <Button
+                size="sm"
+                variant="ghost"
+                className="shadow-sm hidden sm:flex"
+                style={{ background: "rgba(255,255,255,0.75)", color: "var(--primary)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.5)", fontWeight: 600 }}
+              >
+                Contact
+              </Button>
+            </Link>
             <Link href="/availability">
               <Button
                 size="sm"
@@ -491,14 +501,15 @@ export default function Home() {
       </nav>
 
       {/* ── Hero ─────────────────────────────────────────────────── */}
-      <section className="relative min-h-screen overflow-hidden flex items-center justify-center">
+      <section className="relative min-h-screen overflow-hidden">
         {/* Background image - Cleared of content to showcase the photo */}
         <div
           className="absolute inset-0 bg-cover"
           style={{ 
             backgroundImage: `url(${HERO_IMG})`,
             backgroundPosition: '25% center',
-            backgroundSize: 'cover'
+            backgroundSize: 'cover',
+            zIndex: 0
           }}
         />
         
@@ -510,47 +521,8 @@ export default function Home() {
           }}
         />
 
-        {/* Hero text overlay - positioned on top of photo */}
-        <div className="relative z-20 px-4 text-center max-w-2xl mx-auto">
-          <Badge
-            className="mb-6 text-xs tracking-widest uppercase font-semibold"
-            style={{ background: "rgba(255,255,255,0.95)", color: "oklch(0.48 0.18 232)", border: "1px solid rgba(255,255,255,0.3)" }}
-          >
-            Cape Canaveral, Florida
-          </Badge>
-          <h1
-            className="text-white mb-6 leading-tight drop-shadow-lg"
-            style={{ fontSize: "clamp(2.4rem, 7vw, 3.6rem)", fontFamily: "'Playfair Display', serif", fontWeight: 700, textShadow: "0 2px 20px rgba(0,0,0,0.3)" }}
-          >
-            The Easiest Way to<br />Explore Cape Canaveral
-          </h1>
-          <p
-            className="mb-10 leading-relaxed drop-shadow-md"
-            style={{ fontSize: "clamp(1rem, 3vw, 1.15rem)", color: "rgba(255,255,255,0.95)", textShadow: "0 1px 12px rgba(0,0,0,0.3)" }}
-          >
-            Your street-legal, privategolf cart is already there — charged, ready, and waiting for you.
-          </p>
-
-          <Link href="/booking">
-            <Button
-              size="lg"
-              className="w-full max-w-xs text-base font-semibold shadow-xl h-14"
-              style={{
-                background: "linear-gradient(135deg, oklch(0.48 0.18 232) 0%, oklch(0.38 0.16 240) 100%)",
-                color: "white",
-                border: "none",
-                borderRadius: "14px",
-                letterSpacing: "0.01em",
-              }}
-            >
-              Reserve Your Cart
-              <ChevronRight className="w-5 h-5 ml-1" />
-            </Button>
-          </Link>
-        </div>
-
         {/* Scroll indicator */}
-        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-20">
+        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
           <div
             className="w-6 h-10 rounded-full flex items-start justify-center pt-2"
             style={{ border: "2px solid rgba(255,255,255,0.6)", background: "rgba(0,0,0,0.1)", backdropFilter: "blur(4px)" }}
@@ -565,6 +537,61 @@ export default function Home() {
         {/* Animated wave at bottom of hero */}
         <div className="absolute bottom-0 left-0 right-0 z-10">
           <AnimatedWave />
+        </div>
+      </section>
+
+      {/* ── Hero CTA Section ────────────────────────────────────────── */}
+      <section className="py-24 px-4 text-center" style={{ background: "white" }}>
+        <div className="max-w-2xl mx-auto">
+          <Badge
+            className="mb-6 text-xs tracking-widest uppercase font-semibold"
+            style={{ background: "oklch(0.96 0.01 220)", color: "oklch(0.48 0.18 232)", border: "1px solid oklch(0.9 0.02 220)" }}
+          >
+            Cape Canaveral, Florida
+          </Badge>
+          <h1
+            className="text-foreground mb-6 leading-tight"
+            style={{ fontSize: "clamp(2.4rem, 7vw, 3.6rem)", fontFamily: "'Playfair Display', serif", fontWeight: 700 }}
+          >
+            The Easiest Way to<br />Explore Cape Canaveral
+          </h1>
+          <p
+            className="mb-10 leading-relaxed text-muted-foreground"
+            style={{ fontSize: "clamp(1rem, 3vw, 1.15rem)" }}
+          >
+            Your street-legal, private golf carts are already there — charged, ready, and waiting for you.
+          </p>
+
+          <Link href="/booking">
+            <Button
+              size="lg"
+              className="w-full max-w-xs text-base font-semibold shadow-xl h-14"
+              style={{
+                background: "linear-gradient(135deg, oklch(0.48 0.18 232) 0%, oklch(0.38 0.16 240) 100%)",
+                color: "white",
+                border: "none",
+                borderRadius: "14px",
+                letterSpacing: "0.01em",
+              }}
+            >
+              Reserve Your Carts
+              <ChevronRight className="w-5 h-5 ml-1" />
+            </Button>
+          </Link>
+
+          {/* Trust badges */}
+          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 mt-12">
+            {[
+              { icon: Clock, label: "60-sec booking" },
+              { icon: ShieldCheck, label: "Street-legal LSV" },
+              { icon: Star, label: "5-star experience" },
+            ].map(({ icon: Icon, label }) => (
+              <div key={label} className="flex items-center gap-2 text-muted-foreground">
+                <Icon className="w-5 h-5 text-primary" />
+                <span style={{ fontSize: "14px", fontWeight: 500 }}>{label}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -649,7 +676,7 @@ export default function Home() {
                 Your Ride Awaits
               </p>
               <h2 className="text-white mb-3" style={{ fontSize: "clamp(1.8rem, 5vw, 2.6rem)", fontFamily: "'Playfair Display', serif" }}>
-                Meet YourGolf Cart
+                Meet Your Golf Cart
               </h2>
               <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "15px", maxWidth: "420px", margin: "0 auto", lineHeight: 1.6 }}>
                 A premium 6-seat electric cart, ready and waiting at the property. Your ticket to effortless coastal living.
@@ -841,8 +868,8 @@ export default function Home() {
         <p className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>
           Cape Canaveral, Florida · Street-Legal Golf Cart Rental
         </p>
-        <a href="tel:3215441539" className="inline-block mt-3 text-sm font-semibold" style={{ color: "oklch(0.65 0.18 232)" }}>
-          📞 321-544-1539
+        <a href="tel:3214318333" className="inline-block mt-3 text-sm font-semibold" style={{ color: "oklch(0.65 0.18 232)" }}>
+          📞 321-431-8333
         </a>
         <div className="flex items-center justify-center gap-6 mt-4">
           <Link href="/terms" className="text-xs hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.4)" }}>

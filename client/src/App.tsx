@@ -13,6 +13,7 @@ import Admin from "./pages/Admin";
 import { TermsPage, PrivacyPage } from "./pages/Legal";
 import Availability from "./pages/Availability";
 import About from "./pages/About";
+import Contact from "./pages/Contact";
 
 function Router() {
   return (
@@ -24,6 +25,7 @@ function Router() {
       <Route path="/admin" component={Admin} />
       <Route path="/availability" component={Availability} />
       <Route path="/about" component={About} />
+      <Route path="/contact" component={Contact} />
       <Route path="/terms" component={TermsPage} />
       <Route path="/privacy" component={PrivacyPage} />
       <Route path="/404" component={NotFound} />
