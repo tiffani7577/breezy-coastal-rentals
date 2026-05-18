@@ -109,8 +109,8 @@ var require_package = __commonJS({
 // node_modules/.pnpm/dotenv@17.2.3/node_modules/dotenv/lib/main.js
 var require_main = __commonJS({
   "node_modules/.pnpm/dotenv@17.2.3/node_modules/dotenv/lib/main.js"(exports, module) {
-    var fs = __require("fs");
-    var path = __require("path");
+    var fs2 = __require("fs");
+    var path2 = __require("path");
     var os = __require("os");
     var crypto3 = __require("crypto");
     var packageJson = require_package();
@@ -251,7 +251,7 @@ var require_main = __commonJS({
       if (options && options.path && options.path.length > 0) {
         if (Array.isArray(options.path)) {
           for (const filepath of options.path) {
-            if (fs.existsSync(filepath)) {
+            if (fs2.existsSync(filepath)) {
               possibleVaultPath = filepath.endsWith(".vault") ? filepath : `${filepath}.vault`;
             }
           }
@@ -259,15 +259,15 @@ var require_main = __commonJS({
           possibleVaultPath = options.path.endsWith(".vault") ? options.path : `${options.path}.vault`;
         }
       } else {
-        possibleVaultPath = path.resolve(process.cwd(), ".env.vault");
+        possibleVaultPath = path2.resolve(process.cwd(), ".env.vault");
       }
-      if (fs.existsSync(possibleVaultPath)) {
+      if (fs2.existsSync(possibleVaultPath)) {
         return possibleVaultPath;
       }
       return null;
     }
     function _resolveHome(envPath) {
-      return envPath[0] === "~" ? path.join(os.homedir(), envPath.slice(1)) : envPath;
+      return envPath[0] === "~" ? path2.join(os.homedir(), envPath.slice(1)) : envPath;
     }
     function _configVault(options) {
       const debug2 = parseBoolean(process.env.DOTENV_CONFIG_DEBUG || options && options.debug);
@@ -284,7 +284,7 @@ var require_main = __commonJS({
       return { parsed };
     }
     function configDotenv(options) {
-      const dotenvPath = path.resolve(process.cwd(), ".env");
+      const dotenvPath = path2.resolve(process.cwd(), ".env");
       let encoding = "utf8";
       let processEnv = process.env;
       if (options && options.processEnv != null) {
@@ -312,13 +312,13 @@ var require_main = __commonJS({
       }
       let lastError;
       const parsedAll = {};
-      for (const path2 of optionPaths) {
+      for (const path3 of optionPaths) {
         try {
-          const parsed = DotenvModule.parse(fs.readFileSync(path2, { encoding }));
+          const parsed = DotenvModule.parse(fs2.readFileSync(path3, { encoding }));
           DotenvModule.populate(parsedAll, parsed, options);
         } catch (e) {
           if (debug2) {
-            _debug(`Failed to load ${path2} ${e.message}`);
+            _debug(`Failed to load ${path3} ${e.message}`);
           }
           lastError = e;
         }
@@ -331,7 +331,7 @@ var require_main = __commonJS({
         const shortPaths = [];
         for (const filePath of optionPaths) {
           try {
-            const relative = path.relative(process.cwd(), filePath);
+            const relative = path2.relative(process.cwd(), filePath);
             shortPaths.push(relative);
           } catch (e) {
             if (debug2) {
@@ -10329,11 +10329,11 @@ var require_mime_types = __commonJS({
       }
       return exts[0];
     }
-    function lookup(path) {
-      if (!path || typeof path !== "string") {
+    function lookup(path2) {
+      if (!path2 || typeof path2 !== "string") {
         return false;
       }
-      var extension2 = extname("x." + path).toLowerCase().substr(1);
+      var extension2 = extname("x." + path2).toLowerCase().substr(1);
       if (!extension2) {
         return false;
       }
@@ -11438,11 +11438,11 @@ var require_form_data = __commonJS({
     "use strict";
     var CombinedStream = require_combined_stream();
     var util3 = __require("util");
-    var path = __require("path");
+    var path2 = __require("path");
     var http2 = __require("http");
     var https2 = __require("https");
     var parseUrl = __require("url").parse;
-    var fs = __require("fs");
+    var fs2 = __require("fs");
     var Stream = __require("stream").Stream;
     var crypto3 = __require("crypto");
     var mime = require_mime_types();
@@ -11509,7 +11509,7 @@ var require_form_data = __commonJS({
         if (value.end != void 0 && value.end != Infinity && value.start != void 0) {
           callback(null, value.end + 1 - (value.start ? value.start : 0));
         } else {
-          fs.stat(value.path, function(err, stat) {
+          fs2.stat(value.path, function(err, stat) {
             if (err) {
               callback(err);
               return;
@@ -11566,11 +11566,11 @@ var require_form_data = __commonJS({
     FormData3.prototype._getContentDisposition = function(value, options) {
       var filename;
       if (typeof options.filepath === "string") {
-        filename = path.normalize(options.filepath).replace(/\\/g, "/");
+        filename = path2.normalize(options.filepath).replace(/\\/g, "/");
       } else if (options.filename || value && (value.name || value.path)) {
-        filename = path.basename(options.filename || value && (value.name || value.path));
+        filename = path2.basename(options.filename || value && (value.name || value.path));
       } else if (value && value.readable && hasOwn(value, "httpVersion")) {
-        filename = path.basename(value.client._httpMessage.path || "");
+        filename = path2.basename(value.client._httpMessage.path || "");
       }
       if (filename) {
         return 'filename="' + filename + '"';
@@ -11767,9 +11767,9 @@ function isVisitable(thing) {
 function removeBrackets(key) {
   return utils_default.endsWith(key, "[]") ? key.slice(0, -2) : key;
 }
-function renderKey(path, key, dots) {
-  if (!path) return key;
-  return path.concat(key).map(function each(token, i) {
+function renderKey(path2, key, dots) {
+  if (!path2) return key;
+  return path2.concat(key).map(function each(token, i) {
     token = removeBrackets(token);
     return !dots && i ? "[" + token + "]" : token;
   }).join(dots ? "." : "");
@@ -11814,9 +11814,9 @@ function toFormData(obj, formData, options) {
     }
     return value;
   }
-  function defaultVisitor(value, key, path) {
+  function defaultVisitor(value, key, path2) {
     let arr = value;
-    if (value && !path && typeof value === "object") {
+    if (value && !path2 && typeof value === "object") {
       if (utils_default.endsWith(key, "{}")) {
         key = metaTokens ? key : key.slice(0, -2);
         value = JSON.stringify(value);
@@ -11835,7 +11835,7 @@ function toFormData(obj, formData, options) {
     if (isVisitable(value)) {
       return true;
     }
-    formData.append(renderKey(path, key, dots), convertValue(value));
+    formData.append(renderKey(path2, key, dots), convertValue(value));
     return false;
   }
   const stack = [];
@@ -11844,10 +11844,10 @@ function toFormData(obj, formData, options) {
     convertValue,
     isVisitable
   });
-  function build(value, path) {
+  function build(value, path2) {
     if (utils_default.isUndefined(value)) return;
     if (stack.indexOf(value) !== -1) {
-      throw Error("Circular reference detected in " + path.join("."));
+      throw Error("Circular reference detected in " + path2.join("."));
     }
     stack.push(value);
     utils_default.forEach(value, function each(el, key) {
@@ -11855,11 +11855,11 @@ function toFormData(obj, formData, options) {
         formData,
         el,
         utils_default.isString(key) ? key.trim() : key,
-        path,
+        path2,
         exposedHelpers
       );
       if (result === true) {
-        build(el, path ? path.concat(key) : [key]);
+        build(el, path2 ? path2.concat(key) : [key]);
       }
     });
     stack.pop();
@@ -12133,7 +12133,7 @@ var init_platform = __esm({
 // node_modules/.pnpm/axios@1.12.2/node_modules/axios/lib/helpers/toURLEncodedForm.js
 function toURLEncodedForm(data, options) {
   return toFormData_default(data, new platform_default.classes.URLSearchParams(), {
-    visitor: function(value, key, path, helpers) {
+    visitor: function(value, key, path2, helpers) {
       if (platform_default.isNode && utils_default.isBuffer(value)) {
         this.append(key, value.toString("base64"));
         return false;
@@ -12171,11 +12171,11 @@ function arrayToObject(arr) {
   return obj;
 }
 function formDataToJSON(formData) {
-  function buildPath(path, value, target, index) {
-    let name = path[index++];
+  function buildPath(path2, value, target, index) {
+    let name = path2[index++];
     if (name === "__proto__") return true;
     const isNumericKey = Number.isFinite(+name);
-    const isLast = index >= path.length;
+    const isLast = index >= path2.length;
     name = !name && utils_default.isArray(target) ? target.length : name;
     if (isLast) {
       if (utils_default.hasOwnProp(target, name)) {
@@ -12188,7 +12188,7 @@ function formDataToJSON(formData) {
     if (!target[name] || !utils_default.isObject(target[name])) {
       target[name] = [];
     }
-    const result = buildPath(path, value, target[name], index);
+    const result = buildPath(path2, value, target[name], index);
     if (result && utils_default.isArray(target[name])) {
       target[name] = arrayToObject(target[name]);
     }
@@ -13176,8 +13176,8 @@ var require_node = __commonJS({
           }
           break;
         case "FILE":
-          var fs = __require("fs");
-          stream5 = new fs.SyncWriteStream(fd2, { autoClose: false });
+          var fs2 = __require("fs");
+          stream5 = new fs2.SyncWriteStream(fd2, { autoClose: false });
           stream5._type = "fs";
           break;
         case "PIPE":
@@ -14562,9 +14562,9 @@ var init_http = __esm({
           auth = urlUsername + ":" + urlPassword;
         }
         auth && headers.delete("authorization");
-        let path;
+        let path2;
         try {
-          path = buildURL(
+          path2 = buildURL(
             parsed.pathname + parsed.search,
             config.params,
             config.paramsSerializer
@@ -14582,7 +14582,7 @@ var init_http = __esm({
           false
         );
         const options = {
-          path,
+          path: path2,
           method,
           headers: headers.toJSON(),
           agents: { http: config.httpAgent, https: config.httpsAgent },
@@ -14825,10 +14825,10 @@ var init_cookies = __esm({
     cookies_default = platform_default.hasStandardBrowserEnv ? (
       // Standard browser envs support document.cookie
       {
-        write(name, value, expires, path, domain, secure) {
+        write(name, value, expires, path2, domain, secure) {
           const cookie = [name + "=" + encodeURIComponent(value)];
           utils_default.isNumber(expires) && cookie.push("expires=" + new Date(expires).toGMTString());
-          utils_default.isString(path) && cookie.push("path=" + path);
+          utils_default.isString(path2) && cookie.push("path=" + path2);
           utils_default.isString(domain) && cookie.push("domain=" + domain);
           secure === true && cookie.push("secure");
           document.cookie = cookie.join("; ");
@@ -18432,8 +18432,8 @@ var require_pathstringifier = __commonJS({
       return key.replace(/\./g, "\\.");
     };
     exports.escapeKey = escapeKey;
-    var stringifyPath = function(path) {
-      return path.map(String).map(exports.escapeKey).join(".");
+    var stringifyPath = function(path2) {
+      return path2.map(String).map(exports.escapeKey).join(".");
     };
     exports.stringifyPath = stringifyPath;
     var parsePath = function(string) {
@@ -18760,26 +18760,26 @@ var require_accessDeep = __commonJS({
       }
       return keys.next().value;
     };
-    function validatePath(path) {
-      if (util_1.includes(path, "__proto__")) {
+    function validatePath(path2) {
+      if (util_1.includes(path2, "__proto__")) {
         throw new Error("__proto__ is not allowed as a property");
       }
-      if (util_1.includes(path, "prototype")) {
+      if (util_1.includes(path2, "prototype")) {
         throw new Error("prototype is not allowed as a property");
       }
-      if (util_1.includes(path, "constructor")) {
+      if (util_1.includes(path2, "constructor")) {
         throw new Error("constructor is not allowed as a property");
       }
     }
-    var getDeep = function(object, path) {
-      validatePath(path);
-      for (var i = 0; i < path.length; i++) {
-        var key = path[i];
+    var getDeep = function(object, path2) {
+      validatePath(path2);
+      for (var i = 0; i < path2.length; i++) {
+        var key = path2[i];
         if (is_1.isSet(object)) {
           object = getNthKey(object, +key);
         } else if (is_1.isMap(object)) {
           var row = +key;
-          var type = +path[++i] === 0 ? "key" : "value";
+          var type = +path2[++i] === 0 ? "key" : "value";
           var keyOfRow = getNthKey(object, row);
           switch (type) {
             case "key":
@@ -18796,14 +18796,14 @@ var require_accessDeep = __commonJS({
       return object;
     };
     exports.getDeep = getDeep;
-    var setDeep = function(object, path, mapper) {
-      validatePath(path);
-      if (path.length === 0) {
+    var setDeep = function(object, path2, mapper) {
+      validatePath(path2);
+      if (path2.length === 0) {
         return mapper(object);
       }
       var parent = object;
-      for (var i = 0; i < path.length - 1; i++) {
-        var key = path[i];
+      for (var i = 0; i < path2.length - 1; i++) {
+        var key = path2[i];
         if (is_1.isArray(parent)) {
           var index = +key;
           parent = parent[index];
@@ -18813,12 +18813,12 @@ var require_accessDeep = __commonJS({
           var row = +key;
           parent = getNthKey(parent, row);
         } else if (is_1.isMap(parent)) {
-          var isEnd = i === path.length - 2;
+          var isEnd = i === path2.length - 2;
           if (isEnd) {
             break;
           }
           var row = +key;
-          var type = +path[++i] === 0 ? "key" : "value";
+          var type = +path2[++i] === 0 ? "key" : "value";
           var keyOfRow = getNthKey(parent, row);
           switch (type) {
             case "key":
@@ -18830,7 +18830,7 @@ var require_accessDeep = __commonJS({
           }
         }
       }
-      var lastKey = path[path.length - 1];
+      var lastKey = path2[path2.length - 1];
       if (is_1.isArray(parent)) {
         parent[+lastKey] = mapper(parent[+lastKey]);
       } else if (is_1.isPlainObject(parent)) {
@@ -18845,7 +18845,7 @@ var require_accessDeep = __commonJS({
         }
       }
       if (is_1.isMap(parent)) {
-        var row = +path[path.length - 2];
+        var row = +path2[path2.length - 2];
         var keyToRow = getNthKey(parent, row);
         var type = +lastKey === 0 ? "key" : "value";
         switch (type) {
@@ -18925,8 +18925,8 @@ var require_plainer = __commonJS({
       walker2(nodeValue, origin2);
     }
     function applyValueAnnotations(plain, annotations, superJson) {
-      traverse(annotations, function(type, path) {
-        plain = accessDeep_1.setDeep(plain, path, function(v) {
+      traverse(annotations, function(type, path2) {
+        plain = accessDeep_1.setDeep(plain, path2, function(v) {
           return transformer_1.untransformValue(v, type, superJson);
         });
       });
@@ -18934,8 +18934,8 @@ var require_plainer = __commonJS({
     }
     exports.applyValueAnnotations = applyValueAnnotations;
     function applyReferentialEqualityAnnotations(plain, annotations) {
-      function apply(identicalPaths, path) {
-        var object = accessDeep_1.getDeep(plain, pathstringifier_2.parsePath(path));
+      function apply(identicalPaths, path2) {
+        var object = accessDeep_1.getDeep(plain, pathstringifier_2.parsePath(path2));
         identicalPaths.map(pathstringifier_2.parsePath).forEach(function(identicalObjectPath) {
           plain = accessDeep_1.setDeep(plain, identicalObjectPath, function() {
             return object;
@@ -18961,12 +18961,12 @@ var require_plainer = __commonJS({
     var isDeep = function(object, superJson) {
       return is_1.isPlainObject(object) || is_1.isArray(object) || is_1.isMap(object) || is_1.isSet(object) || transformer_1.isInstanceOfRegisteredClass(object, superJson);
     };
-    function addIdentity(object, path, identities) {
+    function addIdentity(object, path2, identities) {
       var existingSet = identities.get(object);
       if (existingSet) {
-        existingSet.push(path);
+        existingSet.push(path2);
       } else {
-        identities.set(object, [path]);
+        identities.set(object, [path2]);
       }
     }
     function generateReferentialEqualityAnnotations(identitites, dedupe) {
@@ -18977,8 +18977,8 @@ var require_plainer = __commonJS({
           return;
         }
         if (!dedupe) {
-          paths = paths.map(function(path) {
-            return path.map(String);
+          paths = paths.map(function(path2) {
+            return path2.map(String);
           }).sort(function(a, b) {
             return a.length - b.length;
           });
@@ -19001,10 +19001,10 @@ var require_plainer = __commonJS({
       }
     }
     exports.generateReferentialEqualityAnnotations = generateReferentialEqualityAnnotations;
-    var walker = function(object, identities, superJson, dedupe, path, objectsInThisPath, seenObjects) {
+    var walker = function(object, identities, superJson, dedupe, path2, objectsInThisPath, seenObjects) {
       var _a3;
-      if (path === void 0) {
-        path = [];
+      if (path2 === void 0) {
+        path2 = [];
       }
       if (objectsInThisPath === void 0) {
         objectsInThisPath = [];
@@ -19014,7 +19014,7 @@ var require_plainer = __commonJS({
       }
       var primitive = is_1.isPrimitive(object);
       if (!primitive) {
-        addIdentity(object, path, identities);
+        addIdentity(object, path2, identities);
         var seen = seenObjects.get(object);
         if (seen) {
           return dedupe ? {
@@ -19045,7 +19045,7 @@ var require_plainer = __commonJS({
       var transformedValue = is_1.isArray(transformed) ? [] : {};
       var innerAnnotations = {};
       util_1.forEach(transformed, function(value, index) {
-        var recursiveResult = exports.walker(value, identities, superJson, dedupe, __spreadArray(__spreadArray([], __read(path)), [index]), __spreadArray(__spreadArray([], __read(objectsInThisPath)), [object]), seenObjects);
+        var recursiveResult = exports.walker(value, identities, superJson, dedupe, __spreadArray(__spreadArray([], __read(path2)), [index]), __spreadArray(__spreadArray([], __read(objectsInThisPath)), [object]), seenObjects);
         transformedValue[index] = recursiveResult.transformedValue;
         if (is_1.isArray(recursiveResult.annotations)) {
           innerAnnotations[index] = recursiveResult.annotations;
@@ -20506,14 +20506,14 @@ var require_util2 = __commonJS({
         }
         const port = url2.port != null ? url2.port : url2.protocol === "https:" ? 443 : 80;
         let origin2 = url2.origin != null ? url2.origin : `${url2.protocol || ""}//${url2.hostname || ""}:${port}`;
-        let path = url2.path != null ? url2.path : `${url2.pathname || ""}${url2.search || ""}`;
+        let path2 = url2.path != null ? url2.path : `${url2.pathname || ""}${url2.search || ""}`;
         if (origin2[origin2.length - 1] === "/") {
           origin2 = origin2.slice(0, origin2.length - 1);
         }
-        if (path && path[0] !== "/") {
-          path = `/${path}`;
+        if (path2 && path2[0] !== "/") {
+          path2 = `/${path2}`;
         }
-        return new URL(`${origin2}${path}`);
+        return new URL(`${origin2}${path2}`);
       }
       if (!isHttpOrHttpsPrefixed(url2.origin || url2.protocol)) {
         throw new InvalidArgumentError("Invalid URL protocol: the URL must start with `http:` or `https:`.");
@@ -20964,39 +20964,39 @@ var require_diagnostics = __commonJS({
       });
       diagnosticsChannel.channel("undici:client:sendHeaders").subscribe((evt) => {
         const {
-          request: { method, path, origin: origin2 }
+          request: { method, path: path2, origin: origin2 }
         } = evt;
-        debuglog("sending request to %s %s/%s", method, origin2, path);
+        debuglog("sending request to %s %s/%s", method, origin2, path2);
       });
       diagnosticsChannel.channel("undici:request:headers").subscribe((evt) => {
         const {
-          request: { method, path, origin: origin2 },
+          request: { method, path: path2, origin: origin2 },
           response: { statusCode }
         } = evt;
         debuglog(
           "received response to %s %s/%s - HTTP %d",
           method,
           origin2,
-          path,
+          path2,
           statusCode
         );
       });
       diagnosticsChannel.channel("undici:request:trailers").subscribe((evt) => {
         const {
-          request: { method, path, origin: origin2 }
+          request: { method, path: path2, origin: origin2 }
         } = evt;
-        debuglog("trailers received from %s %s/%s", method, origin2, path);
+        debuglog("trailers received from %s %s/%s", method, origin2, path2);
       });
       diagnosticsChannel.channel("undici:request:error").subscribe((evt) => {
         const {
-          request: { method, path, origin: origin2 },
+          request: { method, path: path2, origin: origin2 },
           error
         } = evt;
         debuglog(
           "request to %s %s/%s errored - %s",
           method,
           origin2,
-          path,
+          path2,
           error.message
         );
       });
@@ -21045,9 +21045,9 @@ var require_diagnostics = __commonJS({
         });
         diagnosticsChannel.channel("undici:client:sendHeaders").subscribe((evt) => {
           const {
-            request: { method, path, origin: origin2 }
+            request: { method, path: path2, origin: origin2 }
           } = evt;
-          debuglog("sending request to %s %s/%s", method, origin2, path);
+          debuglog("sending request to %s %s/%s", method, origin2, path2);
         });
       }
       diagnosticsChannel.channel("undici:websocket:open").subscribe((evt) => {
@@ -21110,7 +21110,7 @@ var require_request = __commonJS({
     var kHandler = Symbol("handler");
     var Request2 = class {
       constructor(origin2, {
-        path,
+        path: path2,
         method,
         body,
         headers,
@@ -21125,11 +21125,11 @@ var require_request = __commonJS({
         expectContinue,
         servername
       }, handler) {
-        if (typeof path !== "string") {
+        if (typeof path2 !== "string") {
           throw new InvalidArgumentError("path must be a string");
-        } else if (path[0] !== "/" && !(path.startsWith("http://") || path.startsWith("https://")) && method !== "CONNECT") {
+        } else if (path2[0] !== "/" && !(path2.startsWith("http://") || path2.startsWith("https://")) && method !== "CONNECT") {
           throw new InvalidArgumentError("path must be an absolute URL or start with a slash");
-        } else if (invalidPathRegex.test(path)) {
+        } else if (invalidPathRegex.test(path2)) {
           throw new InvalidArgumentError("invalid request path");
         }
         if (typeof method !== "string") {
@@ -21195,7 +21195,7 @@ var require_request = __commonJS({
         this.completed = false;
         this.aborted = false;
         this.upgrade = upgrade || null;
-        this.path = query ? buildURL2(path, query) : path;
+        this.path = query ? buildURL2(path2, query) : path2;
         this.origin = origin2;
         this.idempotent = idempotent == null ? method === "HEAD" || method === "GET" : idempotent;
         this.blocking = blocking == null ? false : blocking;
@@ -25721,7 +25721,7 @@ var require_client_h1 = __commonJS({
       return method !== "GET" && method !== "HEAD" && method !== "OPTIONS" && method !== "TRACE" && method !== "CONNECT";
     }
     function writeH1(client, request) {
-      const { method, path, host, upgrade, blocking, reset } = request;
+      const { method, path: path2, host, upgrade, blocking, reset } = request;
       let { body, headers, contentLength } = request;
       const expectsPayload = method === "PUT" || method === "POST" || method === "PATCH" || method === "QUERY" || method === "PROPFIND" || method === "PROPPATCH";
       if (util3.isFormDataLike(body)) {
@@ -25787,7 +25787,7 @@ var require_client_h1 = __commonJS({
       if (blocking) {
         socket[kBlocking] = true;
       }
-      let header = `${method} ${path} HTTP/1.1\r
+      let header = `${method} ${path2} HTTP/1.1\r
 `;
       if (typeof host === "string") {
         header += `host: ${host}\r
@@ -26313,7 +26313,7 @@ var require_client_h2 = __commonJS({
     }
     function writeH2(client, request) {
       const session = client[kHTTP2Session];
-      const { method, path, host, upgrade, expectContinue, signal, headers: reqHeaders } = request;
+      const { method, path: path2, host, upgrade, expectContinue, signal, headers: reqHeaders } = request;
       let { body } = request;
       if (upgrade) {
         util3.errorRequest(client, request, new Error("Upgrade not supported for H2"));
@@ -26380,7 +26380,7 @@ var require_client_h2 = __commonJS({
         });
         return true;
       }
-      headers[HTTP2_HEADER_PATH] = path;
+      headers[HTTP2_HEADER_PATH] = path2;
       headers[HTTP2_HEADER_SCHEME] = "https";
       const expectsPayload = method === "PUT" || method === "POST" || method === "PATCH";
       if (body && typeof body.read === "function") {
@@ -26733,9 +26733,9 @@ var require_redirect_handler = __commonJS({
           return this.handler.onHeaders(statusCode, headers, resume, statusText);
         }
         const { origin: origin2, pathname, search } = util3.parseURL(new URL(this.location, this.opts.origin && new URL(this.opts.path, this.opts.origin)));
-        const path = search ? `${pathname}${search}` : pathname;
+        const path2 = search ? `${pathname}${search}` : pathname;
         this.opts.headers = cleanRequestHeaders(this.opts.headers, statusCode === 303, this.opts.origin !== origin2);
-        this.opts.path = path;
+        this.opts.path = path2;
         this.opts.origin = origin2;
         this.opts.maxRedirections = 0;
         this.opts.query = null;
@@ -27970,10 +27970,10 @@ var require_proxy_agent = __commonJS({
         };
         const {
           origin: origin2,
-          path = "/",
+          path: path2 = "/",
           headers = {}
         } = opts;
-        opts.path = origin2 + path;
+        opts.path = origin2 + path2;
         if (!("host" in headers) && !("Host" in headers)) {
           const { host } = new URL2(origin2);
           headers.host = host;
@@ -29894,20 +29894,20 @@ var require_mock_utils = __commonJS({
       }
       return true;
     }
-    function safeUrl(path) {
-      if (typeof path !== "string") {
-        return path;
+    function safeUrl(path2) {
+      if (typeof path2 !== "string") {
+        return path2;
       }
-      const pathSegments = path.split("?");
+      const pathSegments = path2.split("?");
       if (pathSegments.length !== 2) {
-        return path;
+        return path2;
       }
       const qp = new URLSearchParams(pathSegments.pop());
       qp.sort();
       return [...pathSegments, qp.toString()].join("?");
     }
-    function matchKey(mockDispatch2, { path, method, body, headers }) {
-      const pathMatch = matchValue(mockDispatch2.path, path);
+    function matchKey(mockDispatch2, { path: path2, method, body, headers }) {
+      const pathMatch = matchValue(mockDispatch2.path, path2);
       const methodMatch = matchValue(mockDispatch2.method, method);
       const bodyMatch = typeof mockDispatch2.body !== "undefined" ? matchValue(mockDispatch2.body, body) : true;
       const headersMatch = matchHeaders(mockDispatch2, headers);
@@ -29929,7 +29929,7 @@ var require_mock_utils = __commonJS({
     function getMockDispatch(mockDispatches, key) {
       const basePath = key.query ? buildURL2(key.path, key.query) : key.path;
       const resolvedPath = typeof basePath === "string" ? safeUrl(basePath) : basePath;
-      let matchedMockDispatches = mockDispatches.filter(({ consumed }) => !consumed).filter(({ path }) => matchValue(safeUrl(path), resolvedPath));
+      let matchedMockDispatches = mockDispatches.filter(({ consumed }) => !consumed).filter(({ path: path2 }) => matchValue(safeUrl(path2), resolvedPath));
       if (matchedMockDispatches.length === 0) {
         throw new MockNotMatchedError(`Mock dispatch not matched for path '${resolvedPath}'`);
       }
@@ -29967,9 +29967,9 @@ var require_mock_utils = __commonJS({
       }
     }
     function buildKey(opts) {
-      const { path, method, body, headers, query } = opts;
+      const { path: path2, method, body, headers, query } = opts;
       return {
-        path,
+        path: path2,
         method,
         body,
         headers,
@@ -30432,10 +30432,10 @@ var require_pending_interceptors_formatter = __commonJS({
       }
       format(pendingInterceptors) {
         const withPrettyHeaders = pendingInterceptors.map(
-          ({ method, path, data: { statusCode }, persist, times, timesInvoked, origin: origin2 }) => ({
+          ({ method, path: path2, data: { statusCode }, persist, times, timesInvoked, origin: origin2 }) => ({
             Method: method,
             Origin: origin2,
-            Path: path,
+            Path: path2,
             "Status code": statusCode,
             Persistent: persist ? PERSISTENT : NOT_PERSISTENT,
             Invocations: timesInvoked,
@@ -35316,9 +35316,9 @@ var require_util7 = __commonJS({
         }
       }
     }
-    function validateCookiePath(path) {
-      for (let i = 0; i < path.length; ++i) {
-        const code = path.charCodeAt(i);
+    function validateCookiePath(path2) {
+      for (let i = 0; i < path2.length; ++i) {
+        const code = path2.charCodeAt(i);
         if (code < 32 || // exclude CTLs (0-31)
         code === 127 || // DEL
         code === 59) {
@@ -37995,11 +37995,11 @@ var require_undici = __commonJS({
           if (typeof opts.path !== "string") {
             throw new InvalidArgumentError("invalid opts.path");
           }
-          let path = opts.path;
+          let path2 = opts.path;
           if (!opts.path.startsWith("/")) {
-            path = `/${path}`;
+            path2 = `/${path2}`;
           }
-          url2 = new URL(util3.parseOrigin(url2).origin + path);
+          url2 = new URL(util3.parseOrigin(url2).origin + path2);
         } else {
           if (!opts) {
             opts = typeof url2 === "object" ? url2 : {};
@@ -38375,7 +38375,7 @@ init_const();
 init_db();
 import { TRPCError as TRPCError3 } from "@trpc/server";
 import { nanoid } from "nanoid";
-import { z as z2 } from "zod";
+import { z as z3 } from "zod";
 
 // server/_core/systemRouter.ts
 import { z } from "zod";
@@ -39879,6 +39879,320 @@ async function storagePut(relKey, data, contentType = "application/octet-stream"
 init_email();
 init_env();
 import Stripe from "stripe";
+
+// shared/pageContent.ts
+import { z as z2 } from "zod";
+var PAGE_MODULE_TYPES = [
+  "hero_image",
+  "hero_cta",
+  "benefits_header",
+  "benefit_card",
+  "lifestyle_header",
+  "lifestyle_photo",
+  "faq_header",
+  "faq_item"
+];
+var pageModuleSchema = z2.object({
+  id: z2.string(),
+  type: z2.enum(PAGE_MODULE_TYPES),
+  data: z2.record(z2.string(), z2.string())
+});
+var pageContentSchema = z2.object({
+  version: z2.literal(1),
+  updatedAt: z2.string().optional(),
+  modules: z2.array(pageModuleSchema)
+});
+var LIVE_CONTENT_PATH = "content/home-content.json";
+var DRAFT_CONTENT_PATH = "content/home-content.draft.json";
+var LIFESTYLE_FAMILY = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/lifestyle-family-red-cart-34RZSKBssW4hJLcAMPiYNo.webp";
+var LIFESTYLE_GIRLS = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/lifestyle-girls-trip-red-cart-bTPTVVKBzyvgsyewtHGH9F.webp";
+var LIFESTYLE_SUNSET = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/lifestyle-sunset-red-cart-KuxovWgnr7jqwNNWMMWaWB.webp";
+var LIFESTYLE_SENIORS = "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/lifestyle-seniors-v3_8fd8ef29.png";
+function createDefaultPageContent() {
+  return {
+    version: 1,
+    updatedAt: (/* @__PURE__ */ new Date()).toISOString(),
+    modules: [
+      {
+        id: "hero-image",
+        type: "hero_image",
+        data: { imageUrl: "/assets/hero_golf_cart_final.jpg" }
+      },
+      {
+        id: "hero-cta",
+        type: "hero_cta",
+        data: {
+          badge: "Cape Canaveral, Florida",
+          heading: "The Easiest Way to\nExplore Cape Canaveral",
+          subtitle: "Your street-legal, private golf carts are already there \u2014 charged, ready, and waiting for you.",
+          buttonLabel: "Reserve Your Carts"
+        }
+      },
+      {
+        id: "benefits-header",
+        type: "benefits_header",
+        data: {
+          eyebrow: "Why Add Breezy to Your Stay",
+          title: "The Easiest Upgrade to Your Stay",
+          subtitle: "Turn every quick trip into part of the vacation. With your own golf cart, the beach, restaurants, and everything in between are just a relaxed ride away\u2014no planning, no hassle, just go."
+        }
+      },
+      {
+        id: "benefit-1",
+        type: "benefit_card",
+        data: {
+          title: "It's Just More Fun",
+          description: "Cruising to the beach in a golf cart beats sitting in traffic every single time. Wind in your hair, no stress, pure vacation mode."
+        }
+      },
+      {
+        id: "benefit-2",
+        type: "benefit_card",
+        data: {
+          title: "Park Like a Car",
+          description: "As a street-legal vehicle, the golf cart parks in regular parking spots just like a car. No special permits needed \u2014 just find a spot and go."
+        }
+      },
+      {
+        id: "benefit-3",
+        type: "benefit_card",
+        data: {
+          title: "Explore the Whole Area",
+          description: "Peacock Beach is a 2-minute ride. Restaurants, shops, and the waterfront are all within easy cart distance. See more, spend less time in the car."
+        }
+      },
+      {
+        id: "benefit-4",
+        type: "benefit_card",
+        data: {
+          title: "Street-Legal & Ready to Go",
+          description: "This is a fully street-legal low-speed vehicle (LSV) \u2014 licensed for roads with speed limits of 35 mph or less throughout Cape Canaveral. No special permit needed."
+        }
+      },
+      {
+        id: "lifestyle-header",
+        type: "lifestyle_header",
+        data: {
+          eyebrow: "Your Ride Awaits",
+          title: "Meet Your Golf Cart",
+          subtitle: "A premium 6-seat electric cart, ready and waiting at the property. Your ticket to effortless coastal living."
+        }
+      },
+      {
+        id: "lifestyle-1",
+        type: "lifestyle_photo",
+        data: { imageUrl: LIFESTYLE_FAMILY, label: "Family Fun", alt: "Family heading to the beach in a golf cart" }
+      },
+      {
+        id: "lifestyle-2",
+        type: "lifestyle_photo",
+        data: { imageUrl: LIFESTYLE_GIRLS, label: "Girls Trip", alt: "Girls trip on a golf cart by the ocean" }
+      },
+      {
+        id: "lifestyle-3",
+        type: "lifestyle_photo",
+        data: { imageUrl: LIFESTYLE_SUNSET, label: "Sunset Rides", alt: "Couple watching sunset from a golf cart" }
+      },
+      {
+        id: "lifestyle-4",
+        type: "lifestyle_photo",
+        data: {
+          imageUrl: LIFESTYLE_SENIORS,
+          label: "Any Age, Any Vibe",
+          alt: "Silver-haired couple laughing in a golf cart"
+        }
+      },
+      {
+        id: "faq-header",
+        type: "faq_header",
+        data: {
+          eyebrow: "Got Questions?",
+          title: "Frequently Asked Questions"
+        }
+      },
+      {
+        id: "faq-1",
+        type: "faq_item",
+        data: {
+          question: "Who can rent the golf cart?",
+          answer: "You must be 25 or older with a valid driver's license and proof of insurance. The cart is available to vacation rental guests and visitors staying in the Cape Canaveral area."
+        }
+      },
+      {
+        id: "faq-2",
+        type: "faq_item",
+        data: {
+          question: "Do I need insurance to rent?",
+          answer: "Yes. You'll need to upload a photo of your current auto insurance card during the booking process. This is required before your booking can be approved."
+        }
+      },
+      {
+        id: "faq-3",
+        type: "faq_item",
+        data: {
+          question: "How does the booking process work?",
+          answer: "Select your dates, provide your details, upload your driver's license and insurance card, sign the digital waiver, and pay. Your booking is then reviewed by our team \u2014 you'll receive an email once it's approved."
+        }
+      }
+    ]
+  };
+}
+function parsePageContent(raw) {
+  const parsed = JSON.parse(raw);
+  return pageContentSchema.parse(parsed);
+}
+
+// server/pageContentStore.ts
+import fs from "node:fs/promises";
+import path from "node:path";
+var GITHUB_REPO = process.env.GITHUB_REPO ?? "tiffani7577/breezy-coastal-rentals";
+var GITHUB_BRANCH = process.env.GITHUB_BRANCH ?? "main";
+function getLocalPath(filePath) {
+  return path.resolve(process.cwd(), filePath);
+}
+function serializeContent(content) {
+  return JSON.stringify(
+    { ...content, updatedAt: (/* @__PURE__ */ new Date()).toISOString() },
+    null,
+    2
+  );
+}
+async function readLocalFile(filePath) {
+  try {
+    return await fs.readFile(getLocalPath(filePath), "utf-8");
+  } catch {
+    return null;
+  }
+}
+async function writeLocalFile(filePath, body) {
+  const fullPath = getLocalPath(filePath);
+  await fs.mkdir(path.dirname(fullPath), { recursive: true });
+  await fs.writeFile(fullPath, body, "utf-8");
+}
+async function readGitHubFile(filePath) {
+  const token = process.env.GITHUB_TOKEN;
+  if (!token) return null;
+  const res = await fetch(
+    `https://api.github.com/repos/${GITHUB_REPO}/contents/${filePath}?ref=${GITHUB_BRANCH}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28"
+      }
+    }
+  );
+  if (res.status === 404) return null;
+  if (!res.ok) {
+    const text2 = await res.text();
+    throw new Error(`Could not read ${filePath} from GitHub. Please try again. (${text2.slice(0, 120)})`);
+  }
+  const data = await res.json();
+  if (!data.content) return null;
+  const content = Buffer.from(data.content, "base64").toString("utf-8");
+  return { content, sha: data.sha };
+}
+async function writeGitHubFile(filePath, body, message2, sha) {
+  const token = process.env.GITHUB_TOKEN;
+  if (!token) {
+    throw new Error(
+      "GitHub is not connected yet. Ask your developer to add GITHUB_TOKEN in Vercel settings."
+    );
+  }
+  const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${filePath}`, {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/vnd.github+json",
+      "Content-Type": "application/json",
+      "X-GitHub-Api-Version": "2022-11-28"
+    },
+    body: JSON.stringify({
+      message: message2,
+      content: Buffer.from(body, "utf-8").toString("base64"),
+      branch: GITHUB_BRANCH,
+      ...sha ? { sha } : {}
+    })
+  });
+  if (!res.ok) {
+    const text2 = await res.text();
+    throw new Error(`Could not save to GitHub. Please try again. (${text2.slice(0, 160)})`);
+  }
+  const data = await res.json();
+  return { commitUrl: data.commit?.html_url ?? `https://github.com/${GITHUB_REPO}` };
+}
+async function readFileContent(filePath) {
+  const fromGitHub = await readGitHubFile(filePath);
+  if (fromGitHub) return fromGitHub;
+  const local = await readLocalFile(filePath);
+  if (local) return { content: local };
+  return null;
+}
+async function writeFileContent(filePath, body, message2, sha) {
+  if (process.env.GITHUB_TOKEN) {
+    const result = await writeGitHubFile(filePath, body, message2, sha);
+    await writeLocalFile(filePath, body).catch(() => void 0);
+    return { commitUrl: result.commitUrl, savedLocally: false };
+  }
+  await writeLocalFile(filePath, body);
+  return { savedLocally: true };
+}
+async function loadLivePageContent() {
+  const file = await readFileContent(LIVE_CONTENT_PATH);
+  if (!file?.content) return createDefaultPageContent();
+  try {
+    return parsePageContent(file.content);
+  } catch {
+    return createDefaultPageContent();
+  }
+}
+async function loadDraftPageContent() {
+  const draft = await readFileContent(DRAFT_CONTENT_PATH);
+  if (draft?.content) {
+    try {
+      return parsePageContent(draft.content);
+    } catch {
+    }
+  }
+  return loadLivePageContent();
+}
+async function saveDraftPageContent(content) {
+  const body = serializeContent(content);
+  const existing = await readFileContent(DRAFT_CONTENT_PATH);
+  return writeFileContent(
+    DRAFT_CONTENT_PATH,
+    body,
+    "Save page editor draft",
+    existing?.sha
+  );
+}
+async function deployPageContent(content) {
+  const body = serializeContent(content);
+  const liveExisting = await readFileContent(LIVE_CONTENT_PATH);
+  const draftExisting = await readFileContent(DRAFT_CONTENT_PATH);
+  if (process.env.GITHUB_TOKEN) {
+    const liveResult = await writeGitHubFile(
+      LIVE_CONTENT_PATH,
+      body,
+      "Publish homepage content from Page Editor",
+      liveExisting?.sha
+    );
+    await writeGitHubFile(
+      DRAFT_CONTENT_PATH,
+      body,
+      "Sync draft with published homepage content",
+      draftExisting?.sha
+    ).catch(() => void 0);
+    await writeLocalFile(LIVE_CONTENT_PATH, body).catch(() => void 0);
+    await writeLocalFile(DRAFT_CONTENT_PATH, body).catch(() => void 0);
+    return { commitUrl: liveResult.commitUrl, savedLocally: false };
+  }
+  await writeLocalFile(LIVE_CONTENT_PATH, body);
+  await writeLocalFile(DRAFT_CONTENT_PATH, body);
+  return { savedLocally: true };
+}
+
+// server/routers.ts
 var adminProcedure2 = protectedProcedure.use(({ ctx, next }) => {
   if (ctx.user.role !== "admin") {
     throw new TRPCError3({ code: "FORBIDDEN", message: "Admin access required" });
@@ -39899,7 +40213,7 @@ var appRouter = router({
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
       return { success: true };
     }),
-    adminLogin: publicProcedure.input(z2.object({ email: z2.string(), password: z2.string() })).mutation(async ({ ctx, input }) => {
+    adminLogin: publicProcedure.input(z3.object({ email: z3.string(), password: z3.string() })).mutation(async ({ ctx, input }) => {
       const { adminEmail, adminPassword } = ENV;
       if (!adminEmail || !adminPassword) {
         throw new TRPCError3({ code: "INTERNAL_SERVER_ERROR", message: "Admin credentials not configured" });
@@ -39932,12 +40246,12 @@ var appRouter = router({
       return getPricing();
     }),
     update: adminProcedure2.input(
-      z2.object({
-        dailyRate: z2.string().optional(),
-        deliveryFee: z2.string().optional(),
-        cartName: z2.string().optional(),
-        cartDescription: z2.string().optional(),
-        cartImageUrl: z2.string().optional()
+      z3.object({
+        dailyRate: z3.string().optional(),
+        deliveryFee: z3.string().optional(),
+        cartName: z3.string().optional(),
+        cartDescription: z3.string().optional(),
+        cartImageUrl: z3.string().optional()
       })
     ).mutation(async ({ input }) => {
       await updatePricing(input);
@@ -39951,11 +40265,11 @@ var appRouter = router({
       const approved = await getApprovedBookingDates();
       return { blocks, approvedRanges: approved };
     }),
-    addBlock: adminProcedure2.input(z2.object({ date: z2.string(), reason: z2.string().optional() })).mutation(async ({ input }) => {
+    addBlock: adminProcedure2.input(z3.object({ date: z3.string(), reason: z3.string().optional() })).mutation(async ({ input }) => {
       await addBlockedDate(input.date, input.reason);
       return { success: true };
     }),
-    removeBlock: adminProcedure2.input(z2.object({ id: z2.number() })).mutation(async ({ input }) => {
+    removeBlock: adminProcedure2.input(z3.object({ id: z3.number() })).mutation(async ({ input }) => {
       await removeBlockedDate(input.id);
       return { success: true };
     })
@@ -39963,21 +40277,21 @@ var appRouter = router({
   // ─── Bookings ──────────────────────────────────────────────────────────────
   bookings: router({
     create: publicProcedure.input(
-      z2.object({
-        guestName: z2.string().min(2),
-        guestEmail: z2.string().email(),
-        guestPhone: z2.string().min(10),
-        airbnbBookingName: z2.string().optional().default(""),
-        startDate: z2.string(),
-        endDate: z2.string(),
-        totalDays: z2.number().min(1),
-        dailyRate: z2.string(),
-        deliveryFee: z2.string(),
-        totalAmount: z2.string(),
-        waiverLegalName: z2.string().min(2),
-        waiverAgreed: z2.boolean(),
-        waiverIp: z2.string().optional(),
-        waiverUserAgent: z2.string().optional()
+      z3.object({
+        guestName: z3.string().min(2),
+        guestEmail: z3.string().email(),
+        guestPhone: z3.string().min(10),
+        airbnbBookingName: z3.string().optional().default(""),
+        startDate: z3.string(),
+        endDate: z3.string(),
+        totalDays: z3.number().min(1),
+        dailyRate: z3.string(),
+        deliveryFee: z3.string(),
+        totalAmount: z3.string(),
+        waiverLegalName: z3.string().min(2),
+        waiverAgreed: z3.boolean(),
+        waiverIp: z3.string().optional(),
+        waiverUserAgent: z3.string().optional()
       })
     ).mutation(async ({ input }) => {
       const bookingRef = nanoid(10).toUpperCase();
@@ -40005,7 +40319,7 @@ var appRouter = router({
       });
       return { bookingRef, bookingId: booking.id };
     }),
-    getByRef: publicProcedure.input(z2.object({ ref: z2.string() })).query(async ({ input }) => {
+    getByRef: publicProcedure.input(z3.object({ ref: z3.string() })).query(async ({ input }) => {
       const booking = await getBookingByRef(input.ref);
       if (!booking) throw new TRPCError3({ code: "NOT_FOUND" });
       const docs = await getDocumentsByBookingId(booking.id);
@@ -40013,9 +40327,9 @@ var appRouter = router({
       return { booking, documents: docs, waiver };
     }),
     createCheckout: publicProcedure.input(
-      z2.object({
-        bookingRef: z2.string(),
-        origin: z2.string()
+      z3.object({
+        bookingRef: z3.string(),
+        origin: z3.string()
       })
     ).mutation(async ({ input }) => {
       const booking = await getBookingByRef(input.bookingRef);
@@ -40055,7 +40369,7 @@ var appRouter = router({
       });
       return { url: session.url, sessionId: session.id };
     }),
-    confirmPayment: publicProcedure.input(z2.object({ bookingRef: z2.string(), sessionId: z2.string() })).mutation(async ({ input }) => {
+    confirmPayment: publicProcedure.input(z3.object({ bookingRef: z3.string(), sessionId: z3.string() })).mutation(async ({ input }) => {
       const booking = await getBookingByRef(input.bookingRef);
       if (!booking) throw new TRPCError3({ code: "NOT_FOUND" });
       if (booking.bookingStatus === "pending_payment") {
@@ -40088,13 +40402,13 @@ var appRouter = router({
   // ─── Documents ─────────────────────────────────────────────────────────────
   documents: router({
     upload: publicProcedure.input(
-      z2.object({
-        bookingId: z2.number(),
-        documentType: z2.enum(["drivers_license", "proof_of_insurance"]),
-        fileName: z2.string(),
-        mimeType: z2.string(),
-        fileSize: z2.number(),
-        fileBase64: z2.string()
+      z3.object({
+        bookingId: z3.number(),
+        documentType: z3.enum(["drivers_license", "proof_of_insurance"]),
+        fileName: z3.string(),
+        mimeType: z3.string(),
+        fileSize: z3.number(),
+        fileBase64: z3.string()
       })
     ).mutation(async ({ input }) => {
       const maxSize = 10 * 1024 * 1024;
@@ -40127,7 +40441,7 @@ var appRouter = router({
     getAllBookings: adminProcedure2.query(async () => {
       return getAllBookings();
     }),
-    getBookingDetail: adminProcedure2.input(z2.object({ id: z2.number() })).query(async ({ input }) => {
+    getBookingDetail: adminProcedure2.input(z3.object({ id: z3.number() })).query(async ({ input }) => {
       const booking = await getBookingById(input.id);
       if (!booking) throw new TRPCError3({ code: "NOT_FOUND" });
       const docs = await getDocumentsByBookingId(booking.id);
@@ -40135,11 +40449,11 @@ var appRouter = router({
       return { booking, documents: docs, waiver };
     }),
     updateBookingStatus: adminProcedure2.input(
-      z2.object({
-        id: z2.number(),
-        status: z2.enum(["submitted", "under_review", "approved", "rejected", "completed", "cancelled"]),
-        adminNotes: z2.string().optional(),
-        rejectionReason: z2.string().optional()
+      z3.object({
+        id: z3.number(),
+        status: z3.enum(["submitted", "under_review", "approved", "rejected", "completed", "cancelled"]),
+        adminNotes: z3.string().optional(),
+        rejectionReason: z3.string().optional()
       })
     ).mutation(async ({ input }) => {
       await updateBookingStatus(input.id, input.status, {
@@ -40160,11 +40474,11 @@ var appRouter = router({
       }
       return { success: true };
     }),
-    updateDocumentStatus: adminProcedure2.input(z2.object({ bookingId: z2.number(), status: z2.enum(["pending", "received", "needs_update", "approved"]) })).mutation(async ({ input }) => {
+    updateDocumentStatus: adminProcedure2.input(z3.object({ bookingId: z3.number(), status: z3.enum(["pending", "received", "needs_update", "approved"]) })).mutation(async ({ input }) => {
       await updateDocumentStatus(input.bookingId, input.status);
       return { success: true };
     }),
-    getBookingDetailWithMessages: adminProcedure2.input(z2.object({ id: z2.number() })).query(async ({ input, ctx }) => {
+    getBookingDetailWithMessages: adminProcedure2.input(z3.object({ id: z3.number() })).query(async ({ input, ctx }) => {
       const booking = await getBookingById(input.id);
       if (!booking) throw new TRPCError3({ code: "NOT_FOUND" });
       const docs = await getDocumentsByBookingId(booking.id);
@@ -40173,7 +40487,7 @@ var appRouter = router({
       await markMessagesRead(booking.id, "admin");
       return { booking, documents: docs, waiver, messages };
     }),
-    sendMessage: adminProcedure2.input(z2.object({ bookingId: z2.number(), content: z2.string().min(1).max(2e3) })).mutation(async ({ input, ctx }) => {
+    sendMessage: adminProcedure2.input(z3.object({ bookingId: z3.number(), content: z3.string().min(1).max(2e3) })).mutation(async ({ input, ctx }) => {
       const booking = await getBookingById(input.bookingId);
       if (!booking) throw new TRPCError3({ code: "NOT_FOUND" });
       await createMessage({
@@ -40193,22 +40507,22 @@ var appRouter = router({
       return getUnreadCountForAdmin();
     }),
     // ─ Inspection Checklist ───────────────────────────────────────────────────────────────────
-    getInspection: adminProcedure2.input(z2.object({ bookingId: z2.number() })).query(async ({ input }) => {
+    getInspection: adminProcedure2.input(z3.object({ bookingId: z3.number() })).query(async ({ input }) => {
       return getInspectionByBookingId(input.bookingId);
     }),
-    saveInspection: adminProcedure2.input(z2.object({
-      bookingId: z2.number(),
-      batteryCharged: z2.boolean(),
-      tiresInflated: z2.boolean(),
-      brakesWorking: z2.boolean(),
-      steeringWorking: z2.boolean(),
-      signalLightsWorking: z2.boolean(),
-      brakeLightsWorking: z2.boolean(),
-      headlightsWorking: z2.boolean(),
-      bodyFrameOk: z2.boolean(),
-      seatbeltsOk: z2.boolean(),
-      cleanAndReady: z2.boolean(),
-      notes: z2.string().max(1e3).optional()
+    saveInspection: adminProcedure2.input(z3.object({
+      bookingId: z3.number(),
+      batteryCharged: z3.boolean(),
+      tiresInflated: z3.boolean(),
+      brakesWorking: z3.boolean(),
+      steeringWorking: z3.boolean(),
+      signalLightsWorking: z3.boolean(),
+      brakeLightsWorking: z3.boolean(),
+      headlightsWorking: z3.boolean(),
+      bodyFrameOk: z3.boolean(),
+      seatbeltsOk: z3.boolean(),
+      cleanAndReady: z3.boolean(),
+      notes: z3.string().max(1e3).optional()
     })).mutation(async ({ input, ctx }) => {
       await upsertInspection({
         ...input,
@@ -40217,11 +40531,36 @@ var appRouter = router({
       });
       return { success: true };
     }),
+    // ─ Page Editor ─────────────────────────────────────────────────────────────────────────
+    pageEditorLoad: adminProcedure2.query(async () => {
+      const [live, draft] = await Promise.all([loadLivePageContent(), loadDraftPageContent()]);
+      return { live, draft };
+    }),
+    pageEditorSaveDraft: adminProcedure2.input(pageContentSchema).mutation(async ({ input }) => {
+      const result = await saveDraftPageContent(input);
+      return { success: true, ...result };
+    }),
+    pageEditorDeploy: adminProcedure2.input(pageContentSchema).mutation(async ({ input }) => {
+      const result = await deployPageContent(input);
+      return { success: true, ...result };
+    }),
+    pageEditorUploadImage: adminProcedure2.input(
+      z3.object({
+        fileName: z3.string(),
+        mimeType: z3.string(),
+        fileBase64: z3.string()
+      })
+    ).mutation(async ({ input }) => {
+      const buffer = Buffer.from(input.fileBase64, "base64");
+      const key = `page-content/${Date.now()}-${input.fileName}`;
+      const { url: url2 } = await storagePut(key, buffer, input.mimeType);
+      return { url: url2 };
+    }),
     // ─ Cart Image Upload ────────────────────────────────────────────────────────────────────
-    uploadCartImage: adminProcedure2.input(z2.object({
-      fileName: z2.string(),
-      mimeType: z2.string(),
-      fileBase64: z2.string()
+    uploadCartImage: adminProcedure2.input(z3.object({
+      fileName: z3.string(),
+      mimeType: z3.string(),
+      fileBase64: z3.string()
     })).mutation(async ({ input }) => {
       const buffer = Buffer.from(input.fileBase64, "base64");
       const key = `cart-images/${Date.now()}-${input.fileName}`;
@@ -40231,12 +40570,12 @@ var appRouter = router({
     }),
     // ─── Inspection Photos ────────────────────────────────────────────────────────
     uploadInspectionPhoto: adminProcedure2.input(
-      z2.object({
-        bookingId: z2.number(),
-        photoType: z2.enum(["before", "after"]),
-        fileName: z2.string(),
-        mimeType: z2.string(),
-        fileBase64: z2.string()
+      z3.object({
+        bookingId: z3.number(),
+        photoType: z3.enum(["before", "after"]),
+        fileName: z3.string(),
+        mimeType: z3.string(),
+        fileBase64: z3.string()
       })
     ).mutation(async ({ input }) => {
       const buffer = Buffer.from(input.fileBase64, "base64");
@@ -40250,16 +40589,16 @@ var appRouter = router({
       });
       return { url: url2, fileKey };
     }),
-    getInspectionPhotos: adminProcedure2.input(z2.object({ bookingId: z2.number() })).query(async ({ input }) => {
+    getInspectionPhotos: adminProcedure2.input(z3.object({ bookingId: z3.number() })).query(async ({ input }) => {
       return getInspectionPhotosByBooking(input.bookingId);
     }),
     // ─── SMS Notifications ────────────────────────────────────────────────────────
     sendSmsNotification: adminProcedure2.input(
-      z2.object({
-        bookingId: z2.number(),
-        phoneNumber: z2.string(),
-        notificationType: z2.enum(["approval_confirmation", "reminder_24h"]),
-        messageContent: z2.string()
+      z3.object({
+        bookingId: z3.number(),
+        phoneNumber: z3.string(),
+        notificationType: z3.enum(["approval_confirmation", "reminder_24h"]),
+        messageContent: z3.string()
       })
     ).mutation(async ({ input }) => {
       await createSmsNotification({
@@ -40271,18 +40610,18 @@ var appRouter = router({
       });
       return { success: true };
     }),
-    getSmsNotifications: adminProcedure2.input(z2.object({ bookingId: z2.number() })).query(async ({ input }) => {
+    getSmsNotifications: adminProcedure2.input(z3.object({ bookingId: z3.number() })).query(async ({ input }) => {
       return getSmsNotificationsByBooking(input.bookingId);
     }),
     // ─── Revenue Report ───────────────────────────────────────────────────────────
-    getMonthlyReport: adminProcedure2.input(z2.object({ year: z2.number(), month: z2.number() })).query(async ({ input }) => {
+    getMonthlyReport: adminProcedure2.input(z3.object({ year: z3.number(), month: z3.number() })).query(async ({ input }) => {
       return getMonthlyRevenue(input.year, input.month);
     }),
     // ─── Update Promo Codes ───────────────────────────────────────────────────────────
-    updatePromos: adminProcedure2.input(z2.object({
-      promo7: z2.object({ name: z2.string(), price: z2.number() }),
-      promo6: z2.object({ name: z2.string(), price: z2.number() }),
-      promo5: z2.object({ name: z2.string(), price: z2.number() })
+    updatePromos: adminProcedure2.input(z3.object({
+      promo7: z3.object({ name: z3.string(), price: z3.number() }),
+      promo6: z3.object({ name: z3.string(), price: z3.number() }),
+      promo5: z3.object({ name: z3.string(), price: z3.number() })
     })).mutation(async ({ input }) => {
       const stripe = new Stripe(ENV.stripeSecretKey);
       try {
@@ -40315,14 +40654,14 @@ var appRouter = router({
   }),
   // ─── Guest Messaging (public, by booking ref) ──────────────────────────────────
   messages: router({
-    getByRef: publicProcedure.input(z2.object({ ref: z2.string() })).query(async ({ input }) => {
+    getByRef: publicProcedure.input(z3.object({ ref: z3.string() })).query(async ({ input }) => {
       const booking = await getBookingByRef(input.ref);
       if (!booking) throw new TRPCError3({ code: "NOT_FOUND" });
       const messages = await getMessagesByBookingId(booking.id);
       await markMessagesRead(booking.id, "guest");
       return { messages, guestName: booking.guestName };
     }),
-    sendByRef: publicProcedure.input(z2.object({ ref: z2.string(), content: z2.string().min(1).max(2e3) })).mutation(async ({ input }) => {
+    sendByRef: publicProcedure.input(z3.object({ ref: z3.string(), content: z3.string().min(1).max(2e3) })).mutation(async ({ input }) => {
       const booking = await getBookingByRef(input.ref);
       if (!booking) throw new TRPCError3({ code: "NOT_FOUND" });
       await createMessage({

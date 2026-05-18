@@ -40,6 +40,13 @@ import { storagePut } from "./storage";
 import { sendEmail } from "./email";
 import Stripe from "stripe";
 import { ENV } from "./_core/env";
+import { pageContentSchema } from "../shared/pageContent";
+import {
+  deployPageContent,
+  loadDraftPageContent,
+  loadLivePageContent,
+  saveDraftPageContent,
+} from "./pageContentStore";
 
 // ─── Admin guard ─────────────────────────────────────────────────────────────
 const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
@@ -449,6 +456,41 @@ export const appRouter = router({
           completedAt: new Date(),
         });
         return { success: true };
+      }),
+
+    // ─ Page Editor ─────────────────────────────────────────────────────────────────────────
+    pageEditorLoad: adminProcedure.query(async () => {
+      const [live, draft] = await Promise.all([loadLivePageContent(), loadDraftPageContent()]);
+      return { live, draft };
+    }),
+
+    pageEditorSaveDraft: adminProcedure
+      .input(pageContentSchema)
+      .mutation(async ({ input }) => {
+        const result = await saveDraftPageContent(input);
+        return { success: true as const, ...result };
+      }),
+
+    pageEditorDeploy: adminProcedure
+      .input(pageContentSchema)
+      .mutation(async ({ input }) => {
+        const result = await deployPageContent(input);
+        return { success: true as const, ...result };
+      }),
+
+    pageEditorUploadImage: adminProcedure
+      .input(
+        z.object({
+          fileName: z.string(),
+          mimeType: z.string(),
+          fileBase64: z.string(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const buffer = Buffer.from(input.fileBase64, "base64");
+        const key = `page-content/${Date.now()}-${input.fileName}`;
+        const { url } = await storagePut(key, buffer, input.mimeType);
+        return { url };
       }),
 
     // ─ Cart Image Upload ────────────────────────────────────────────────────────────────────

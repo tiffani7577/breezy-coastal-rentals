@@ -35,7 +35,10 @@ import {
   Eye,
   Camera,
   ClipboardCheck,
+  LayoutTemplate,
 } from "lucide-react";
+import PageEditor from "./admin/PageEditor";
+import AdminLoginForm from "./admin/AdminLoginForm";
 import { format } from "date-fns";
 import { toast } from "sonner";
 
@@ -50,7 +53,7 @@ const STATUS_CONFIG: Record<string, { label: string; emoji: string; color: strin
   cancelled:        { label: "Cancelled",            emoji: "🚫", color: "#6b7280", bg: "#f9fafb", border: "#e5e7eb" },
 };
 
-type AdminView = "list" | "detail" | "calendar" | "settings" | "dashboard";
+type AdminView = "list" | "detail" | "calendar" | "settings" | "dashboard" | "pageEditor";
 
 // ─── Quick Message Modal ────────────────────────────────────────────────────────────────────
 function QuickMessageModal({ bookingId, guestName, onClose }: { bookingId: number; guestName: string; onClose: () => void }) {
@@ -558,67 +561,15 @@ function BookingDetail({ bookingId, onBack }: { bookingId: number; onBack: () =>
   );
 }
 
-// ─── Admin Login Form ────────────────────────────────────────────────────────
-function AdminLoginForm({ onSuccess }: { onSuccess: () => void }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const adminLogin = trpc.auth.adminLogin.useMutation({
-    onSuccess: () => onSuccess(),
-    onError: (e) => setError(e.message || "Invalid email or password"),
-  });
-  return (
-    <div className="min-h-screen flex items-center justify-center px-6" style={{ background: "#f0f9ff" }}>
-      <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
-          <div className="w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-4" style={{ background: "#0284c7" }}>
-            <Waves className="w-10 h-10 text-white" />
-          </div>
-          <h1 style={{ fontSize: "28px", fontWeight: 800, color: "#0f172a", fontFamily: "'Playfair Display', serif", marginBottom: "6px" }}>Breezy Admin</h1>
-          <p className="text-gray-500" style={{ fontSize: "15px" }}>Sign in to manage your bookings</p>
-        </div>
-        <div className="bg-white rounded-3xl p-8 shadow-lg">
-          <div className="mb-4">
-            <Label className="text-gray-700 font-semibold mb-2 block">Email</Label>
-            <Input
-              type="email"
-              placeholder="booking@breezycoastalrentals.com"
-              value={email}
-              onChange={e => { setEmail(e.target.value); setError(""); }}
-              className="h-12 rounded-xl"
-              autoComplete="email"
-            />
-          </div>
-          <div className="mb-6">
-            <Label className="text-gray-700 font-semibold mb-2 block">Password</Label>
-            <Input
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={e => { setPassword(e.target.value); setError(""); }}
-              className="h-12 rounded-xl"
-              autoComplete="current-password"
-              onKeyDown={e => e.key === "Enter" && adminLogin.mutate({ email, password })}
-            />
-          </div>
-          {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
-          <Button
-            className="w-full h-12 rounded-xl font-bold text-white"
-            style={{ background: "#0284c7", border: "none", fontSize: "16px" }}
-            onClick={() => adminLogin.mutate({ email, password })}
-            disabled={adminLogin.isPending || !email || !password}
-          >
-            {adminLogin.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : "Sign In"}
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 // ─── Main Admin Page ──────────────────────────────────────────────────────────
 export default function Admin() {
   const { user, loading, isAuthenticated, logout } = useAuth();
+  const isAdminSession = Boolean(isAuthenticated && user?.role === "admin");
+  const hasResolvedAuth = useRef(false);
+  if (!loading) {
+    hasResolvedAuth.current = true;
+  }
   const [adminAuthed, setAdminAuthed] = useState(false);
   const [view, setView] = useState<AdminView>("list");
   const [selectedBookingId, setSelectedBookingId] = useState<number | null>(null);
@@ -669,10 +620,20 @@ export default function Admin() {
     } catch { setIsUploadingImage(false); }
   };
 
-  const { data: bookingsList, refetch: refetchBookings } = trpc.admin.getAllBookings.useQuery();
-  const { data: unreadCounts } = trpc.admin.getUnreadCounts.useQuery();
-  const { data: availData, refetch: refetchAvail } = trpc.availability.getBlockedDates.useQuery();
-  const { data: pricingData, refetch: refetchPricing } = trpc.pricing.get.useQuery();
+  const { data: bookingsList, refetch: refetchBookings } = trpc.admin.getAllBookings.useQuery(
+    undefined,
+    { enabled: isAdminSession }
+  );
+  const { data: unreadCounts } = trpc.admin.getUnreadCounts.useQuery(undefined, {
+    enabled: isAdminSession,
+  });
+  const { data: availData, refetch: refetchAvail } = trpc.availability.getBlockedDates.useQuery(
+    undefined,
+    { enabled: isAdminSession }
+  );
+  const { data: pricingData, refetch: refetchPricing } = trpc.pricing.get.useQuery(undefined, {
+    enabled: isAdminSession,
+  });
 
   // Calculate approved booking dates for calendar
   const approvedBookingDates = (bookingsList ?? [])
@@ -737,7 +698,7 @@ export default function Admin() {
   const updatePricing = trpc.pricing.update.useMutation();
 
   // Auth guard — use new admin email/password login
-  if (loading) {
+  if (loading && !hasResolvedAuth.current) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="w-10 h-10 animate-spin" style={{ color: "#0284c7" }} />
@@ -833,6 +794,7 @@ export default function Admin() {
           { id: "calendar" as AdminView, icon: Calendar, label: "Calendar", badge: 0 },
         { id: "dashboard" as AdminView, icon: DollarSign, label: "Revenue", badge: 0 },
           { id: "settings" as AdminView, icon: Settings, label: "Settings", badge: 0 },
+          { id: "pageEditor" as AdminView, icon: LayoutTemplate, label: "Page Editor", badge: 0 },
         ].map(({ id, icon: Icon, label, badge }) => (
           <button
             key={id}
@@ -1193,6 +1155,9 @@ export default function Admin() {
             </div>
           </div>
         )}
+
+        {/* ── Page Editor Tab ─────────────────────────────────────────── */}
+        {!selectedBookingId && view === "pageEditor" && <PageEditor />}
 
         {/* ── Settings Tab ────────────────────────────────────────────── */}
         {!selectedBookingId && view === "settings" && (
