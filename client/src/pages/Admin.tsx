@@ -708,10 +708,13 @@ export default function Admin() {
 
   // Show login form if not authenticated OR not admin role
   if (!isAuthenticated || user?.role !== "admin") {
-    if (adminAuthed) {
-      // Just logged in — reload to pick up session
-      window.location.reload();
-      return null;
+    if (adminAuthed && !loading) {
+      // Auth state has resolved — refetch to pick up new session
+      return (
+        <div className="min-h-screen flex items-center justify-center">
+          <Loader2 className="w-10 h-10 animate-spin" style={{ color: "#0284c7" }} />
+        </div>
+      );
     }
     return <AdminLoginForm onSuccess={() => setAdminAuthed(true)} />;
   }
