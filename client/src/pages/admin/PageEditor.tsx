@@ -527,13 +527,14 @@ export default function PageEditor() {
               disabled={isBusy}
               className="flex-1 h-14 rounded-xl font-bold"
               style={{ background: "#16a34a", color: "white", border: "none", fontSize: "16px" }}
+              title="Publishes your changes to GitHub and updates your live website"
             >
               {deploy.isPending ? (
                 <Loader2 className="w-5 h-5 animate-spin mr-2" />
               ) : (
                 <Upload className="w-5 h-5 mr-2" />
               )}
-              Deploy to Live Site
+              Publish to Website
             </Button>
             {hasUnsavedChanges && (
               <Button
@@ -547,9 +548,14 @@ export default function PageEditor() {
             )}
           </div>
 
-          <p className="text-gray-500 mb-3 px-1" style={{ fontSize: "14px" }}>
-            Drag the ⋮⋮ handle to reorder sections. Tap any field to change the words.
-          </p>
+            <div className="mb-3 px-1 space-y-2">
+              <p className="text-gray-500" style={{ fontSize: "14px" }}>
+                <strong>Workflow:</strong> Edit → Save Draft → Publish to Website
+              </p>
+              <p className="text-gray-500" style={{ fontSize: "14px" }}>
+                Drag the ⋮⋮ handle to reorder sections. Tap any field to change the words.
+              </p>
+            </div>
 
           <DragDropContext onDragEnd={onDragEnd}>
             <Droppable droppableId="page-modules">
