@@ -281,14 +281,24 @@ function MessageThread({ bookingId, guestName }: { bookingId: number; guestName:
 }
 
 // ─── Booking Detail View ──────────────────────────────────────────────────────
-function BookingDetail({ bookingId, onBack }: { bookingId: number; onBack: () => void }) {
+function BookingDetail({
+  bookingId,
+  onBack,
+  onRemoved,
+}: {
+  bookingId: number;
+  onBack: () => void;
+  onRemoved: () => void;
+}) {
   const [activeTab, setActiveTab] = useState<"info" | "messages" | "docs" | "inspection">("info");
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isRemoving, setIsRemoving] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
   const [showRejectInput, setShowRejectInput] = useState(false);
 
   const { data, refetch } = trpc.admin.getBookingDetailWithMessages.useQuery({ id: bookingId });
   const updateStatus = trpc.admin.updateBookingStatus.useMutation();
+  const removeBooking = trpc.admin.removeBooking.useMutation();
   const utils = trpc.useUtils();
 
   const booking = data?.booking;
@@ -328,6 +338,26 @@ function BookingDetail({ bookingId, onBack }: { bookingId: number; onBack: () =>
 
   const cfg = STATUS_CONFIG[booking.bookingStatus] ?? STATUS_CONFIG.submitted;
   const isSubmitted = booking.bookingStatus === "submitted" || booking.bookingStatus === "under_review";
+  const canRemove =
+    booking.bookingStatus !== "approved" && booking.bookingStatus !== "completed";
+
+  const handleRemove = async () => {
+    const ok = window.confirm(
+      `Remove the booking for ${booking.guestName}? This cannot be undone. Only remove test or mistaken bookings.`
+    );
+    if (!ok) return;
+    setIsRemoving(true);
+    try {
+      await removeBooking.mutateAsync({ id: booking.id });
+      toast.success("Booking removed.");
+      utils.admin.getAllBookings.invalidate();
+      onRemoved();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not remove this booking.");
+    } finally {
+      setIsRemoving(false);
+    }
+  };
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6">
@@ -557,6 +587,26 @@ function BookingDetail({ bookingId, onBack }: { bookingId: number; onBack: () =>
           )}
         </div>
       )}
+
+      {canRemove && (
+        <div className="mt-10 rounded-2xl p-5" style={{ background: "#fef2f2", border: "1px solid #fecaca" }}>
+          <p className="font-bold text-gray-800 mb-2" style={{ fontSize: "16px" }}>
+            Test or mistaken booking?
+          </p>
+          <p className="text-gray-600 mb-4" style={{ fontSize: "14px", lineHeight: 1.5 }}>
+            Remove entries that were only for testing. This permanently deletes the booking from your list.
+          </p>
+          <Button
+            onClick={() => void handleRemove()}
+            disabled={isRemoving || isUpdating}
+            className="w-full h-12 rounded-xl font-bold"
+            style={{ background: "#dc2626", color: "white", border: "none", fontSize: "15px" }}
+          >
+            {isRemoving ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <Trash2 className="w-5 h-5 mr-2" />}
+            Remove This Booking
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
@@ -695,6 +745,26 @@ export default function Admin() {
   const addBlock = trpc.availability.addBlock.useMutation();
   const removeBlock = trpc.availability.removeBlock.useMutation();
   const updatePricing = trpc.pricing.update.useMutation();
+  const removeBooking = trpc.admin.removeBooking.useMutation();
+  const utils = trpc.useUtils();
+
+  const handleRemoveBooking = async (bookingId: number, guestName: string) => {
+    const ok = window.confirm(
+      `Remove the booking for ${guestName}? This cannot be undone. Only remove test or mistaken bookings.`
+    );
+    if (!ok) return;
+    try {
+      await removeBooking.mutateAsync({ id: bookingId });
+      toast.success("Booking removed.");
+      if (selectedBookingId === bookingId) {
+        setSelectedBookingId(null);
+      }
+      utils.admin.getAllBookings.invalidate();
+      utils.admin.getUnreadCounts.invalidate();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not remove this booking.");
+    }
+  };
 
   // Auth guard — use new admin email/password login
   if (loading && !hasResolvedAuth.current) {
@@ -820,6 +890,7 @@ export default function Admin() {
           <BookingDetail
             bookingId={selectedBookingId}
             onBack={() => setSelectedBookingId(null)}
+            onRemoved={() => setSelectedBookingId(null)}
           />
         )}
 
@@ -902,6 +973,7 @@ export default function Admin() {
                 style={{ borderColor: "#e5e7eb", background: "white", fontSize: "15px", color: "#374151" }}
               >
                 <option value="all">Show All Bookings</option>
+                <option value="pending_payment">Waiting for Payment</option>
                 <option value="submitted">New — Needs Review</option>
                 <option value="under_review">Under Review</option>
                 <option value="approved">Approved</option>
@@ -920,6 +992,8 @@ export default function Admin() {
                 filteredBookings.map((b) => {
                   const cfg = STATUS_CONFIG[b.bookingStatus] ?? STATUS_CONFIG.submitted;
                   const unread = (unreadCounts ?? {})[b.id] ?? 0;
+                  const canRemove =
+                    b.bookingStatus !== "approved" && b.bookingStatus !== "completed";
                   return (
                     <div
                       key={b.id}
@@ -968,6 +1042,20 @@ export default function Admin() {
                             <Send className="w-3.5 h-3.5" />
                             Message
                           </button>
+                          {canRemove && (
+                            <button
+                              onClick={e => {
+                                e.stopPropagation();
+                                void handleRemoveBooking(b.id, b.guestName);
+                              }}
+                              disabled={removeBooking.isPending}
+                              className="flex items-center gap-1.5 px-3 py-2 rounded-xl font-semibold"
+                              style={{ background: "#fee2e2", color: "#b91c1c", fontSize: "13px" }}
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                              Remove
+                            </button>
+                          )}
                         </div>
                       </div>
                     </div>

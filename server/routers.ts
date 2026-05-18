@@ -10,6 +10,7 @@ import {
   createMessage,
   createSmsNotification,
   createWaiverSignature,
+  deleteBooking,
   getAllBookings,
   getApprovedBookingDates,
   getBlockedDates,
@@ -361,6 +362,24 @@ export const appRouter = router({
         const docs = await getDocumentsByBookingId(booking.id);
         const waiver = await getWaiverByBookingId(booking.id);
         return { booking, documents: docs, waiver };
+      }),
+
+    removeBooking: adminProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        const booking = await getBookingById(input.id);
+        if (!booking) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Booking not found" });
+        }
+        if (booking.bookingStatus === "approved" || booking.bookingStatus === "completed") {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message:
+              "This booking was already approved. You cannot remove it — use Reject or Mark as Completed instead.",
+          });
+        }
+        await deleteBooking(input.id);
+        return { success: true as const };
       }),
 
     updateBookingStatus: adminProcedure

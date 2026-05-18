@@ -190,6 +190,19 @@ export async function updateBookingStatus(
     .where(eq(bookings.id, id));
 }
 
+/** Permanently delete a booking and related records (admin cleanup for test entries). */
+export async function deleteBooking(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("DB unavailable");
+  await db.delete(bookingMessages).where(eq(bookingMessages.bookingId, id));
+  await db.delete(documents).where(eq(documents.bookingId, id));
+  await db.delete(waiverSignatures).where(eq(waiverSignatures.bookingId, id));
+  await db.delete(inspectionChecklists).where(eq(inspectionChecklists.bookingId, id));
+  await db.delete(inspectionPhotos).where(eq(inspectionPhotos.bookingId, id));
+  await db.delete(smsNotifications).where(eq(smsNotifications.bookingId, id));
+  await db.delete(bookings).where(eq(bookings.id, id));
+}
+
 export async function updateDocumentStatus(id: number, documentStatus: string) {
   const db = await getDb();
   if (!db) return;
