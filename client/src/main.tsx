@@ -18,6 +18,9 @@ const redirectToLoginIfUnauthorized = (error: unknown) => {
 
   if (!isUnauthorized) return;
 
+  // On /admin login screen: show errors in the form, never redirect/reload the page
+  if (window.location.pathname === "/admin") return;
+
   window.location.href = getLoginUrl();
 };
 

@@ -564,20 +564,12 @@ function BookingDetail({ bookingId, onBack }: { bookingId: number; onBack: () =>
 
 // ─── Main Admin Page ──────────────────────────────────────────────────────────
 export default function Admin() {
-  const { user, loading, isAuthenticated, logout, refresh } = useAuth();
+  const { user, loading, isAuthenticated, logout } = useAuth();
   const isAdminSession = Boolean(isAuthenticated && user?.role === "admin");
   const hasResolvedAuth = useRef(false);
   if (!loading) {
     hasResolvedAuth.current = true;
   }
-  const [adminAuthed, setAdminAuthed] = useState(false);
-
-  // After successful admin login, refetch auth state
-  useEffect(() => {
-    if (adminAuthed && !loading && !isAuthenticated) {
-      refresh();
-    }
-  }, [adminAuthed, loading, isAuthenticated, refresh]);
   const [view, setView] = useState<AdminView>("list");
   const [selectedBookingId, setSelectedBookingId] = useState<number | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -715,7 +707,7 @@ export default function Admin() {
 
   // Show login form if not authenticated OR not admin role
   if (!isAuthenticated || user?.role !== "admin") {
-    return <AdminLoginForm onSuccess={() => setAdminAuthed(true)} />;
+    return <AdminLoginForm />;
   }
 
   const filteredBookings = (bookingsList ?? [])

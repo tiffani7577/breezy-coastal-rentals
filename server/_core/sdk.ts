@@ -272,6 +272,9 @@ class SDKServer {
 
     // If user not in DB, sync from OAuth server automatically
     if (!user) {
+      if (sessionUserId === "admin-local") {
+        throw ForbiddenError("Admin account not found in database");
+      }
       try {
         const userInfo = await this.getUserInfoWithJwt(sessionCookie ?? "");
         await db.upsertUser({

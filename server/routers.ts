@@ -23,6 +23,7 @@ import {
   getPricing,
   getSmsNotificationsByBooking,
   getUnreadCountForAdmin,
+  getUserByOpenId,
   getWaiverByBookingId,
   markMessagesRead,
   removeBlockedDate,
@@ -93,15 +94,23 @@ export const appRouter = router({
           role: "admin",
           lastSignedIn: new Date(),
         });
+        const adminUser = await getUserByOpenId(ADMIN_OPEN_ID);
+        if (!adminUser) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Could not connect to the database. Please try again in a moment.",
+          });
+        }
         const { sdk } = await import("./_core/sdk");
         const { ONE_YEAR_MS } = await import("@shared/const");
+        const sessionAppId = ENV.appId || "breezy-coastal-rentals";
         const sessionToken = await sdk.signSession(
-          { openId: ADMIN_OPEN_ID, appId: ENV.appId, name: "Admin" },
+          { openId: ADMIN_OPEN_ID, appId: sessionAppId, name: "Admin" },
           { expiresInMs: ONE_YEAR_MS }
         );
         const cookieOptions = getSessionCookieOptions(ctx.req);
         ctx.res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
-        return { success: true } as const;
+        return { success: true as const, user: adminUser };
       }),
   }),
 

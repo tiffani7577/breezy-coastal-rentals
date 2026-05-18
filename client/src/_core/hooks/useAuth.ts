@@ -16,6 +16,8 @@ export function useAuth(options?: UseAuthOptions) {
   const meQuery = trpc.auth.me.useQuery(undefined, {
     retry: false,
     refetchOnWindowFocus: false,
+    // Keep showing logged-in state while auth.me refetches (prevents /admin login twitch)
+    placeholderData: (previous) => previous,
   });
 
   const logoutMutation = trpc.auth.logout.useMutation({
