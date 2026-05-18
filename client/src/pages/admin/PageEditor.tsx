@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useState, useCallback, useRef, useMemo, useEffect } from "react";
 import {
   DragDropContext,
   Draggable,
@@ -20,6 +20,11 @@ import {
   Save,
   Upload,
   AlertCircle,
+  Plus,
+  Trash2,
+  RotateCcw,
+  Smartphone,
+  Monitor,
 } from "lucide-react";
 import {
   MODULE_LABELS,
@@ -28,6 +33,7 @@ import {
   type PageModuleType,
 } from "@shared/pageContent";
 import { buildPagePreviewHtml } from "@shared/pagePreviewHtml";
+import { nanoid } from "nanoid";
 
 const SITE_URL =
   (import.meta.env.VITE_SITE_URL as string | undefined)?.replace(/\/$/, "") ||
@@ -38,6 +44,21 @@ function reorderModules(modules: PageModule[], from: number, to: number): PageMo
   const [removed] = next.splice(from, 1);
   next.splice(to, 0, removed);
   return next;
+}
+
+function createDefaultModule(type: PageModuleType): PageModule {
+  const id = `${type}-${nanoid(8)}`;
+  const baseData: Record<PageModuleType, Record<string, string>> = {
+    hero_image: { imageUrl: "" },
+    hero_cta: { badge: "", heading: "", subtitle: "", buttonLabel: "Learn More" },
+    benefits_header: { eyebrow: "", title: "", subtitle: "" },
+    benefit_card: { title: "New Benefit", description: "" },
+    lifestyle_header: { eyebrow: "", title: "", subtitle: "" },
+    lifestyle_photo: { imageUrl: "", label: "", alt: "" },
+    faq_header: { eyebrow: "", title: "" },
+    faq_item: { question: "New Question", answer: "" },
+  };
+  return { id, type, data: baseData[type] };
 }
 
 function ModuleFields({
@@ -172,9 +193,12 @@ export default function PageEditor() {
     message: string;
   } | null>(null);
   const [uploadingModuleId, setUploadingModuleId] = useState<string | null>(null);
+  const [previewMode, setPreviewMode] = useState<"desktop" | "mobile">("desktop");
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const pendingImageModuleId = useRef<string | null>(null);
   const previewFrameRef = useRef<HTMLIFrameElement>(null);
+  const originalContentRef = useRef<PageContent | null>(null);
 
   const { data, isLoading, refetch } = trpc.admin.pageEditorLoad.useQuery();
   const saveDraft = trpc.admin.pageEditorSaveDraft.useMutation();
@@ -184,6 +208,8 @@ export default function PageEditor() {
   useEffect(() => {
     if (data?.draft) {
       setContent(data.draft);
+      originalContentRef.current = JSON.parse(JSON.stringify(data.draft));
+      setHasUnsavedChanges(false);
     }
   }, [data?.draft]);
 
@@ -201,6 +227,7 @@ export default function PageEditor() {
   const updateModule = useCallback((id: string, data: Record<string, string>) => {
     setContent((prev) => {
       if (!prev) return prev;
+      setHasUnsavedChanges(true);
       return {
         ...prev,
         modules: prev.modules.map((m) => (m.id === id ? { ...m, data } : m)),
@@ -208,8 +235,42 @@ export default function PageEditor() {
     });
   }, []);
 
+  const deleteModule = useCallback((id: string) => {
+    setContent((prev) => {
+      if (!prev) return prev;
+      setHasUnsavedChanges(true);
+      return {
+        ...prev,
+        modules: prev.modules.filter((m) => m.id !== id),
+      };
+    });
+    toast.success("Module removed");
+  }, []);
+
+  const addModule = useCallback((type: PageModuleType) => {
+    setContent((prev) => {
+      if (!prev) return prev;
+      setHasUnsavedChanges(true);
+      const newModule = createDefaultModule(type);
+      return {
+        ...prev,
+        modules: [...prev.modules, newModule],
+      };
+    });
+    toast.success(`${MODULE_LABELS[type]} added`);
+  }, []);
+
+  const resetChanges = useCallback(() => {
+    if (originalContentRef.current) {
+      setContent(JSON.parse(JSON.stringify(originalContentRef.current)));
+      setHasUnsavedChanges(false);
+      toast.info("Changes discarded");
+    }
+  }, []);
+
   const onDragEnd = (result: DropResult) => {
     if (!result.destination || !content) return;
+    setHasUnsavedChanges(true);
     setContent({
       ...content,
       modules: reorderModules(content.modules, result.source.index, result.destination.index),
@@ -221,6 +282,8 @@ export default function PageEditor() {
     setDeployStatus(null);
     try {
       const result = await saveDraft.mutateAsync(content);
+      setHasUnsavedChanges(false);
+      originalContentRef.current = JSON.parse(JSON.stringify(content));
       toast.success("Draft saved! Your live site has not changed yet.");
       if (result.commitUrl) {
         setDeployStatus({
@@ -242,6 +305,8 @@ export default function PageEditor() {
     setDeployStatus(null);
     try {
       const result = await deploy.mutateAsync(content);
+      setHasUnsavedChanges(false);
+      originalContentRef.current = JSON.parse(JSON.stringify(content));
       toast.success("Published! Your site will update in a minute or two.");
       setDeployStatus({
         type: "success",
@@ -311,6 +376,8 @@ export default function PageEditor() {
     );
   }
 
+  const addableModuleTypes: PageModuleType[] = ["benefit_card", "lifestyle_photo", "faq_item"];
+
   return (
     <div className="max-w-[1600px] mx-auto px-3 py-4 pb-28">
       <input
@@ -322,20 +389,29 @@ export default function PageEditor() {
       />
 
       <div className="mb-4 px-1">
-        <h1
-          style={{
-            fontSize: "26px",
-            fontWeight: 800,
-            color: "#0f172a",
-            fontFamily: "'Playfair Display', serif",
-          }}
-        >
-          Page Editor
-        </h1>
-        <p className="text-gray-500 mt-1" style={{ fontSize: "15px" }}>
-          Edit your homepage text and photos. Drag cards to reorder. Save a draft first, then
-          Deploy when you are happy.
-        </p>
+        <div className="flex items-start justify-between gap-3 mb-2">
+          <div>
+            <h1
+              style={{
+                fontSize: "26px",
+                fontWeight: 800,
+                color: "#0f172a",
+                fontFamily: "'Playfair Display', serif",
+              }}
+            >
+              Page Editor
+            </h1>
+            <p className="text-gray-500 mt-1" style={{ fontSize: "15px" }}>
+              Edit your homepage text and photos. Drag cards to reorder. Save a draft first, then
+              Deploy when you are happy.
+            </p>
+          </div>
+          {hasUnsavedChanges && (
+            <div className="px-3 py-2 rounded-lg" style={{ background: "#fef3c7", border: "1px solid #fde68a" }}>
+              <p className="text-sm font-semibold text-yellow-800">Unsaved changes</p>
+            </div>
+          )}
+        </div>
       </div>
 
       {deployStatus && (
@@ -370,26 +446,64 @@ export default function PageEditor() {
             <p className="font-bold text-gray-800" style={{ fontSize: "15px" }}>
               Live Preview
             </p>
-            {SITE_URL && (
-              <a
-                href={SITE_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1 text-sm font-semibold"
-                style={{ color: "#0284c7" }}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setPreviewMode("desktop")}
+                className="p-2 rounded-lg transition-colors"
+                style={{
+                  background: previewMode === "desktop" ? "#dbeafe" : "#f1f5f9",
+                  color: previewMode === "desktop" ? "#0284c7" : "#6b7280",
+                }}
+                title="Desktop preview"
               >
-                Open current live site
-                <ExternalLink className="w-4 h-4" />
-              </a>
-            )}
+                <Monitor className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setPreviewMode("mobile")}
+                className="p-2 rounded-lg transition-colors"
+                style={{
+                  background: previewMode === "mobile" ? "#dbeafe" : "#f1f5f9",
+                  color: previewMode === "mobile" ? "#0284c7" : "#6b7280",
+                }}
+                title="Mobile preview"
+              >
+                <Smartphone className="w-4 h-4" />
+              </button>
+              {SITE_URL && (
+                <a
+                  href={SITE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 text-sm font-semibold ml-2"
+                  style={{ color: "#0284c7" }}
+                >
+                  Open live site
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+              )}
+            </div>
           </div>
-          <iframe
-            ref={previewFrameRef}
-            title="Page preview"
-            className="flex-1 w-full bg-white"
-            style={{ minHeight: "480px", border: "none" }}
-            sandbox="allow-same-origin"
-          />
+          <div
+            className="flex-1 flex items-center justify-center"
+            style={{
+              minHeight: "480px",
+              background: "#f9fafb",
+              overflow: "auto",
+            }}
+          >
+            <iframe
+              ref={previewFrameRef}
+              title="Page preview"
+              className="bg-white"
+              style={{
+                minHeight: "480px",
+                border: "none",
+                width: previewMode === "mobile" ? "375px" : "100%",
+                maxWidth: "100%",
+              }}
+              sandbox="allow-same-origin"
+            />
+          </div>
         </div>
 
         {/* Editor */}
@@ -397,7 +511,7 @@ export default function PageEditor() {
           <div className="flex flex-col sm:flex-row gap-3 mb-4">
             <Button
               onClick={handleSaveDraft}
-              disabled={isBusy}
+              disabled={isBusy || !hasUnsavedChanges}
               className="flex-1 h-14 rounded-xl font-bold"
               style={{ background: "#0284c7", color: "white", border: "none", fontSize: "16px" }}
             >
@@ -421,6 +535,16 @@ export default function PageEditor() {
               )}
               Deploy to Live Site
             </Button>
+            {hasUnsavedChanges && (
+              <Button
+                onClick={resetChanges}
+                disabled={isBusy}
+                className="h-14 rounded-xl font-bold"
+                style={{ background: "#f1f5f9", color: "#6b7280", border: "1px solid #e5e7eb", fontSize: "16px" }}
+              >
+                <RotateCcw className="w-5 h-5" />
+              </Button>
+            )}
           </div>
 
           <p className="text-gray-500 mb-3 px-1" style={{ fontSize: "14px" }}>
@@ -464,9 +588,17 @@ export default function PageEditor() {
                             >
                               <GripVertical className="w-5 h-5 text-gray-500" />
                             </button>
-                            <p className="font-bold text-gray-900" style={{ fontSize: "16px" }}>
+                            <p className="font-bold text-gray-900 flex-1" style={{ fontSize: "16px" }}>
                               {MODULE_LABELS[module.type as PageModuleType]}
                             </p>
+                            <button
+                              onClick={() => deleteModule(module.id)}
+                              className="p-2 rounded-lg hover:bg-red-50 transition-colors"
+                              style={{ color: "#ef4444" }}
+                              title="Delete module"
+                            >
+                              <Trash2 className="w-5 h-5" />
+                            </button>
                           </div>
                           <ModuleFields
                             module={module}
@@ -483,6 +615,29 @@ export default function PageEditor() {
               )}
             </Droppable>
           </DragDropContext>
+
+          {/* Add Module Buttons */}
+          <div className="mt-4 pt-4 border-t" style={{ borderColor: "#e5e7eb" }}>
+            <p className="text-sm font-semibold text-gray-700 mb-3">Add a new section:</p>
+            <div className="grid grid-cols-3 gap-2">
+              {addableModuleTypes.map((type) => (
+                <Button
+                  key={type}
+                  onClick={() => addModule(type)}
+                  disabled={isBusy}
+                  className="h-12 rounded-xl font-semibold text-sm"
+                  style={{
+                    background: "#f0f9ff",
+                    color: "#0284c7",
+                    border: "1px solid #7dd3fc",
+                  }}
+                >
+                  <Plus className="w-4 h-4 mr-1" />
+                  {MODULE_LABELS[type]}
+                </Button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>
