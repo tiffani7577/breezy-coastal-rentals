@@ -1,22 +1,22 @@
 {
   "version": 1,
-  "updatedAt": "2026-05-25T13:55:42.642Z",
+  "updatedAt": "2026-05-25T14:03:06.012Z",
   "modules": [
+    {
+      "id": "hero-cta",
+      "type": "hero_cta",
+      "data": {
+        "badge": "Book Your Street Legal Carts Today!",
+        "heading": "The Easiest Way to Explore The Space Coast!",
+        "subtitle": "Your street-legal, private golf carts are already there — charged, ready, and waiting for you.",
+        "buttonLabel": "Reserve Your Carts!"
+      }
+    },
     {
       "id": "hero-image",
       "type": "hero_image",
       "data": {
         "imageUrl": "/assets/hero_golf_cart_final.jpg"
-      }
-    },
-    {
-      "id": "hero-cta",
-      "type": "hero_cta",
-      "data": {
-        "badge": "",
-        "heading": "The Easiest Way to\nExplore The Space Coast!",
-        "subtitle": "Your street-legal, private golf carts are already there — charged, ready, and waiting for you.",
-        "buttonLabel": "Reserve Your Carts"
       }
     },
     {
