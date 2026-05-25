@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-05-25T13:52:02.568Z",
+  "updatedAt": "2026-05-25T13:55:39.645Z",
   "modules": [
     {
       "id": "hero-image",
@@ -14,7 +14,7 @@
       "type": "hero_cta",
       "data": {
         "badge": "",
-        "heading": "The Easiest Way to\nExplore Cape Canaveral",
+        "heading": "The Easiest Way to\nExplore The Space Coast!",
         "subtitle": "Your street-legal, private golf carts are already there — charged, ready, and waiting for you.",
         "buttonLabel": "Reserve Your Carts"
       }
@@ -25,7 +25,7 @@
       "data": {
         "eyebrow": "Why Add Breezy to Your Stay",
         "title": "The Easiest Upgrade to Your Stay",
-        "subtitle": "Turn every quick trip into part of the vacation. With your own golf cart, the beach, restaurants, and everything in between are just a relaxed ride away—no planning, no hassle, just go."
+        "subtitle": "Turn every quick trip into part of the vacation. With your own golf cart, the beach, restaurants, ice cream shop and everything in between are just a relaxed ride away—no planning, no hassle, just go."
       }
     },
     {
@@ -118,7 +118,7 @@
       "type": "faq_item",
       "data": {
         "question": "Who can rent the golf cart?",
-        "answer": "You must be 25 or older with a valid driver's license and proof of insurance. The cart is available to vacation rental guests and visitors staying in the Cape Canaveral area."
+        "answer": "You must be 25 or older with a valid driver's license and proof of insurance. The cart is available to vacation rental guests and visitors staying in the Cape Canaveral/Cocoa Beach area."
       }
     },
     {
