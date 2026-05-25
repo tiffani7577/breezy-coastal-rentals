@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-05-17T23:55:28.460Z",
+  "updatedAt": "2026-05-25T13:51:49.863Z",
   "modules": [
     {
       "id": "hero-image",
@@ -13,7 +13,7 @@
       "id": "hero-cta",
       "type": "hero_cta",
       "data": {
-        "badge": "Cape Canaveral, Florida",
+        "badge": "",
         "heading": "The Easiest Way to\nExplore Cape Canaveral",
         "subtitle": "Your street-legal, private golf carts are already there — charged, ready, and waiting for you.",
         "buttonLabel": "Reserve Your Carts"
