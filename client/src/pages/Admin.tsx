@@ -1373,18 +1373,19 @@ export default function Admin() {
                 <Button
                   onClick={async () => {
                     setIsSavingPromos(true);
-                    try {
-                      await trpc.admin.updatePromos.mutate({
-                        promo7: { name: promo7Name, price: parseInt(promo7) || 950 },
-                        promo6: { name: promo6Name, price: parseInt(promo6) || 850 },
-                        promo5: { name: promo5Name, price: parseInt(promo5) || 750 }
-                      });
-                      toast.success("Promo codes updated in Stripe!");
-                    } catch (error) {
-                      toast.error("Failed to update promo codes");
-                    } finally {
-                      setIsSavingPromos(false);
-                    }
+                     try {
+                       await trpc.admin.updatePromos.mutate({
+                         promo7: { name: promo7Name, price: parseInt(promo7) || 950 },
+                         promo6: { name: promo6Name, price: parseInt(promo6) || 850 },
+                         promo5: { name: promo5Name, price: parseInt(promo5) || 750 }
+                       });
+                       toast.success("Promo codes updated in Stripe!");
+                     } catch (error: any) {
+                       const msg = error?.message || "Failed to update promo codes";
+                       toast.error(msg);
+                     } finally {
+                       setIsSavingPromos(false);
+                     }
                   }}
                   disabled={isSavingPromos}
                   className="w-full h-12 rounded-xl font-bold text-white mt-4"
