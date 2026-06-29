@@ -637,9 +637,10 @@ export const appRouter = router({
           }
 
           return { success: true, coupons: results };
-        } catch (error) {
+        } catch (error: any) {
           console.error('Error updating promos:', error);
-          throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Failed to update promo codes' });
+          const message = error?.message || 'Failed to update promo codes';
+          throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message });
         }
       }),
   }),
