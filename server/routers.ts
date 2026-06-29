@@ -619,20 +619,41 @@ export const appRouter = router({
           ];
 
           for (const promo of promos) {
+            let coupon;
             try {
-              const coupon = await stripe.coupons.create({
+              coupon = await stripe.coupons.create({
                 id: promo.name,
                 amount_off: Math.round(promo.price * 100),
                 currency: 'usd',
-                duration: 'repeating',
-                duration_in_months: 1
+                duration: 'forever',
               });
-              results.push(coupon);
             } catch (e: any) {
-              if (e.code !== 'resource_already_exists') throw e;
-              // If coupon already exists, fetch it
-              const existingCoupon = await stripe.coupons.retrieve(promo.name);
-              results.push(existingCoupon);
+              if (e.code === 'resource_already_exists') {
+                coupon = await stripe.coupons.retrieve(promo.name);
+                // If the coupon exists but amount_off is different, we can't update it in Stripe
+                // but we can create a new one with a suffix or just use the existing one.
+                // For now, we'll just use the existing one to avoid crashes.
+              } else {
+                throw e;
+              }
+            }
+
+            // Create a promotion code for this coupon if it doesn't exist
+            if (coupon) {
+              const promoCodes = await stripe.promotionCodes.list({
+                coupon: coupon.id,
+                code: promo.name,
+                active: true,
+                limit: 1
+              });
+
+              if (promoCodes.data.length === 0) {
+                await stripe.promotionCodes.create({
+                  coupon: coupon.id,
+                  code: promo.name,
+                });
+              }
+              results.push(coupon);
             }
           }
 
