@@ -608,7 +608,7 @@ export const appRouter = router({
         promo5: z.object({ name: z.string(), price: z.number() })
       }))
       .mutation(async ({ input }) => {
-        const stripe = new Stripe(ENV.stripeSecretKey);
+        const stripe = getStripe();
         
         try {
           const results = [];
@@ -622,7 +622,7 @@ export const appRouter = router({
             try {
               const coupon = await stripe.coupons.create({
                 id: promo.name,
-                amount_off: promo.price * 100,
+                amount_off: Math.round(promo.price * 100),
                 currency: 'usd',
                 duration: 'repeating',
                 duration_in_months: 1
@@ -630,6 +630,9 @@ export const appRouter = router({
               results.push(coupon);
             } catch (e: any) {
               if (e.code !== 'resource_already_exists') throw e;
+              // If coupon already exists, fetch it
+              const existingCoupon = await stripe.coupons.retrieve(promo.name);
+              results.push(existingCoupon);
             }
           }
 
