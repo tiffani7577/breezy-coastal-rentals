@@ -62,7 +62,8 @@ const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
 function getStripe() {
   const key = process.env.STRIPE_SECRET_KEY;
   if (!key) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Stripe not configured" });
-  return new Stripe(key, { apiVersion: "2026-03-25.dahlia" });
+  // Using a more standard API version to avoid potential "dahlia" version issues if not supported
+  return new Stripe(key, { apiVersion: "2025-02-24.acacia" as any });
 }
 
 // ─── App Router ───────────────────────────────────────────────────────────────
@@ -619,39 +620,48 @@ export const appRouter = router({
           ];
 
           for (const promo of promos) {
+            if (!promo.name) continue;
+            
             let coupon;
             try {
-              coupon = await stripe.coupons.create({
-                id: promo.name,
-                amount_off: Math.round(promo.price * 100),
-                currency: 'usd',
-                duration: 'forever',
-              });
-            } catch (e: any) {
-              if (e.code === 'resource_already_exists') {
+              // First check if coupon exists to avoid unnecessary create attempts
+              try {
                 coupon = await stripe.coupons.retrieve(promo.name);
-                // If the coupon exists but amount_off is different, we can't update it in Stripe
-                // but we can create a new one with a suffix or just use the existing one.
-                // For now, we'll just use the existing one to avoid crashes.
-              } else {
-                throw e;
+              } catch (err: any) {
+                if (err.status !== 404) throw err;
+                
+                // Not found, create it
+                coupon = await stripe.coupons.create({
+                  id: promo.name,
+                  amount_off: Math.round(promo.price * 100),
+                  currency: 'usd',
+                  duration: 'forever',
+                });
               }
+            } catch (e: any) {
+              console.error(`Error handling coupon ${promo.name}:`, e);
+              throw new Error(`Stripe Coupon Error (${promo.name}): ${e.message}`);
             }
 
             // Create a promotion code for this coupon if it doesn't exist
             if (coupon) {
-              const promoCodes = await stripe.promotionCodes.list({
-                coupon: coupon.id,
-                code: promo.name,
-                active: true,
-                limit: 1
-              });
-
-              if (promoCodes.data.length === 0) {
-                await stripe.promotionCodes.create({
+              try {
+                const promoCodes = await stripe.promotionCodes.list({
                   coupon: coupon.id,
                   code: promo.name,
+                  active: true,
+                  limit: 1
                 });
+
+                if (promoCodes.data.length === 0) {
+                  await stripe.promotionCodes.create({
+                    coupon: coupon.id,
+                    code: promo.name,
+                  });
+                }
+              } catch (e: any) {
+                console.error(`Error handling promo code for ${promo.name}:`, e);
+                // Don't throw here, if coupon exists but promo code fails, we still want to continue
               }
               results.push(coupon);
             }
