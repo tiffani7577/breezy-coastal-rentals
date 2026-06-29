@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-06-29T20:00:25.516Z",
+  "updatedAt": "2026-06-29T20:00:56.829Z",
   "modules": [
     {
       "id": "hero-cta",
@@ -16,7 +16,7 @@
       "id": "hero-image",
       "type": "hero_image",
       "data": {
-        "imageUrl": "https://r8kmakxju5pzcvap.private.blob.vercel-storage.com/page-content/1782763215806-2%20golf%20carts.jpg"
+        "imageUrl": "https://r8kmakxju5pzcvap.private.blob.vercel-storage.com/page-content/1782763250847-2%20golf%20carts.jpg"
       }
     },
     {
