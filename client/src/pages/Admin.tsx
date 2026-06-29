@@ -653,6 +653,10 @@ export default function Admin() {
     onSuccess: () => { toast.success("Cart photo updated!"); refetchPricing(); },
     onError: () => toast.error("Could not upload photo. Please try again."),
   });
+  const updatePromos = trpc.admin.updatePromos.useMutation({
+    onSuccess: () => { toast.success("Promo codes updated in Stripe!"); },
+    onError: (err) => { toast.error(err.message || "Failed to update promo codes"); },
+  });
   const handleCartImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -1374,15 +1378,11 @@ export default function Admin() {
                   onClick={async () => {
                     setIsSavingPromos(true);
                      try {
-                       await trpc.admin.updatePromos.mutate({
+                       await updatePromos.mutateAsync({
                          promo7: { name: promo7Name, price: parseInt(promo7) || 950 },
                          promo6: { name: promo6Name, price: parseInt(promo6) || 850 },
                          promo5: { name: promo5Name, price: parseInt(promo5) || 750 }
                        });
-                       toast.success("Promo codes updated in Stripe!");
-                     } catch (error: any) {
-                       const msg = error?.message || "Failed to update promo codes";
-                       toast.error(msg);
                      } finally {
                        setIsSavingPromos(false);
                      }
