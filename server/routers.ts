@@ -685,6 +685,62 @@ export const appRouter = router({
           throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message });
         }
       }),
+
+    // ─── List Active Promo Codes ──────────────────────────────────────────────────
+    getPromoCodes: adminProcedure
+      .query(async () => {
+        const stripe = getStripe();
+        try {
+          // Fetch all active promotion codes (up to 100)
+          const promoCodes = await stripe.promotionCodes.list({
+            active: true,
+            limit: 100,
+          });
+          // Also fetch the associated coupons so we can show percent_off
+          const results = await Promise.all(
+            promoCodes.data.map(async (pc) => {
+              let percentOff: number | null = null;
+              let amountOff: number | null = null;
+              try {
+                const couponRef = pc.promotion?.coupon;
+                const couponId = typeof couponRef === 'string' ? couponRef : (couponRef as any)?.id;
+                if (couponId) {
+                  const coupon = await stripe.coupons.retrieve(couponId);
+                  percentOff = coupon.percent_off ?? null;
+                  amountOff = coupon.amount_off ?? null;
+                }
+              } catch {}
+              return {
+                id: pc.id,
+                code: pc.code,
+                active: pc.active,
+                percentOff,
+                amountOff,
+                timesRedeemed: pc.times_redeemed,
+                expiresAt: pc.expires_at ?? null,
+              };
+            })
+          );
+          return results;
+        } catch (error: any) {
+          console.error('Error fetching promo codes:', error);
+          throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: error?.message || 'Failed to fetch promo codes' });
+        }
+      }),
+
+    // ─── Deactivate a Promo Code ──────────────────────────────────────────────────
+    deactivatePromoCode: adminProcedure
+      .input(z.object({ promoCodeId: z.string() }))
+      .mutation(async ({ input }) => {
+        const stripe = getStripe();
+        try {
+          await stripe.promotionCodes.update(input.promoCodeId, { active: false });
+          return { success: true };
+        } catch (error: any) {
+          console.error('Error deactivating promo code:', error);
+          throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: error?.message || 'Failed to deactivate promo code' });
+        }
+      }),
   }),
 
   // ─── Guest Messaging (public, by booking ref) ──────────────────────────────────

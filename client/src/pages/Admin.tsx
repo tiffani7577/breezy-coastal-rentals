@@ -650,12 +650,22 @@ export default function Admin() {
     onSuccess: () => { toast.success("Cart photo updated!"); refetchPricing(); },
     onError: () => toast.error("Could not upload photo. Please try again."),
   });
+  const { data: activePromoCodes, refetch: refetchPromoCodes, isFetching: isFetchingCodes } =
+    trpc.admin.getPromoCodes.useQuery(undefined, { enabled: isAdminSession });
+
   const updatePromos = trpc.admin.updatePromos.useMutation({
     onSuccess: (data) => {
       toast.success(`${data.coupons.length} promo code${data.coupons.length !== 1 ? 's' : ''} saved to Stripe!`);
+      refetchPromoCodes();
     },
     onError: (err) => { toast.error(err.message || "Failed to update promo codes"); },
   });
+
+  const deactivatePromoCode = trpc.admin.deactivatePromoCode.useMutation({
+    onSuccess: () => { toast.success("Code deactivated — guests can no longer use it."); refetchPromoCodes(); },
+    onError: (err) => { toast.error(err.message || "Failed to deactivate code"); },
+  });
+  const [confirmDeactivate, setConfirmDeactivate] = useState<{ id: string; code: string } | null>(null);
 
   const addPromoCode = () => setPromoCodes(prev => [...prev, { name: "", percent: "" }]);
   const removePromoCode = (idx: number) => setPromoCodes(prev => prev.filter((_, i) => i !== idx));
@@ -1432,6 +1442,105 @@ export default function Admin() {
                   {isSavingPromos ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : null}
                   Save Discount Codes to Stripe
                 </Button>
+
+                {/* ─── Active Codes from Stripe ─── */}
+                <div className="mt-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="font-semibold text-gray-700" style={{ fontSize: "14px" }}>Active Codes in Stripe</p>
+                    <button
+                      onClick={() => refetchPromoCodes()}
+                      className="text-xs text-blue-500 flex items-center gap-1"
+                      disabled={isFetchingCodes}
+                    >
+                      {isFetchingCodes ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
+                      Refresh
+                    </button>
+                  </div>
+
+                  {isFetchingCodes && !activePromoCodes && (
+                    <p className="text-center text-gray-400 text-sm py-4">Loading...</p>
+                  )}
+
+                  {!isFetchingCodes && activePromoCodes?.length === 0 && (
+                    <p className="text-center text-gray-400 text-sm py-4">No active codes in Stripe yet.</p>
+                  )}
+
+                  {activePromoCodes && activePromoCodes.length > 0 && (
+                    <div className="rounded-xl overflow-hidden" style={{ border: "1px solid #e5e7eb" }}>
+                      {activePromoCodes.map((pc, idx) => (
+                        <div
+                          key={pc.id}
+                          className="flex items-center justify-between px-4 py-3"
+                          style={{
+                            background: idx % 2 === 0 ? "#f9fafb" : "white",
+                            borderBottom: idx < activePromoCodes.length - 1 ? "1px solid #f3f4f6" : "none",
+                          }}
+                        >
+                          <div>
+                            <span className="font-bold text-gray-800" style={{ fontSize: "14px" }}>{pc.code}</span>
+                            <span className="ml-2 text-sm" style={{ color: "#10b981" }}>
+                              {pc.percentOff != null
+                                ? `${pc.percentOff}% off`
+                                : pc.amountOff != null
+                                ? `$${(pc.amountOff / 100).toFixed(2)} off`
+                                : ""}
+                            </span>
+                            {pc.timesRedeemed > 0 && (
+                              <span className="ml-2 text-xs text-gray-400">{pc.timesRedeemed} use{pc.timesRedeemed !== 1 ? "s" : ""}</span>
+                            )}
+                          </div>
+                          <button
+                            onClick={() => setConfirmDeactivate({ id: pc.id, code: pc.code })}
+                            className="text-xs font-semibold px-3 py-1.5 rounded-lg"
+                            style={{ background: "#fef2f2", color: "#dc2626", border: "1px solid #fecaca" }}
+                          >
+                            Deactivate
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Confirm deactivate dialog */}
+                {confirmDeactivate && (
+                  <div
+                    className="fixed inset-0 z-50 flex items-center justify-center"
+                    style={{ background: "rgba(0,0,0,0.4)" }}
+                    onClick={() => setConfirmDeactivate(null)}
+                  >
+                    <div
+                      className="rounded-2xl p-6 mx-4 max-w-sm w-full"
+                      style={{ background: "white", boxShadow: "0 20px 60px rgba(0,0,0,0.2)" }}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <h3 className="font-bold text-gray-900 mb-2" style={{ fontSize: "17px" }}>Deactivate Code?</h3>
+                      <p className="text-gray-600 text-sm mb-5">
+                        <strong>{confirmDeactivate.code}</strong> will be immediately disabled. Guests who already redeemed it are unaffected, but no new redemptions will be allowed.
+                      </p>
+                      <div className="flex gap-3">
+                        <Button
+                          onClick={() => setConfirmDeactivate(null)}
+                          className="flex-1 h-11 rounded-xl font-semibold"
+                          style={{ background: "#f3f4f6", color: "#374151", border: "none" }}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          onClick={async () => {
+                            await deactivatePromoCode.mutateAsync({ promoCodeId: confirmDeactivate.id });
+                            setConfirmDeactivate(null);
+                          }}
+                          disabled={deactivatePromoCode.isPending}
+                          className="flex-1 h-11 rounded-xl font-bold text-white"
+                          style={{ background: "#dc2626", border: "none" }}
+                        >
+                          {deactivatePromoCode.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Yes, Deactivate"}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
