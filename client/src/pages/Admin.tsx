@@ -633,8 +633,8 @@ export default function Admin() {
   const [deliveryFee, setDeliveryFee] = useState("");
   const [cartName, setCartName] = useState("");
   const [cartDesc, setCartDesc] = useState("");
-  const [promoCodes, setPromoCodes] = useState<{ name: string; percent: string }[]>([
-    { name: "SEASHELL10", percent: "10" },
+  const [promoCodes, setPromoCodes] = useState<{ name: string; percent: string; days: string }[]>([
+    { name: "SEASHELL10", percent: "10", days: "" },
   ]);
   const [searchGuest, setSearchGuest] = useState("");
   const [isSavingPromos, setIsSavingPromos] = useState(false);
@@ -667,9 +667,9 @@ export default function Admin() {
   });
   const [confirmDeactivate, setConfirmDeactivate] = useState<{ id: string; code: string } | null>(null);
 
-  const addPromoCode = () => setPromoCodes(prev => [...prev, { name: "", percent: "" }]);
+  const addPromoCode = () => setPromoCodes(prev => [...prev, { name: "", percent: "", days: "" }]);
   const removePromoCode = (idx: number) => setPromoCodes(prev => prev.filter((_, i) => i !== idx));
-  const updatePromoCode = (idx: number, field: "name" | "percent", value: string) =>
+  const updatePromoCode = (idx: number, field: "name" | "percent" | "days", value: string) =>
     setPromoCodes(prev => prev.map((p, i) => i === idx ? { ...p, [field]: field === "name" ? value.toUpperCase() : value } : p));
   const handleCartImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -1374,7 +1374,7 @@ export default function Admin() {
                     <Plus className="w-4 h-4" /> Add Code
                   </button>
                 </div>
-                <p className="text-gray-500 text-sm mb-4">Create any code with a custom % off. Guests enter it at Stripe checkout.</p>
+                <p className="text-gray-500 text-sm mb-4">Create any code with a custom % off. Optionally lock it to a specific number of days. Guests enter it at Stripe checkout.</p>
 
                 {promoCodes.length === 0 && (
                   <p className="text-center text-gray-400 py-6 text-sm">No codes yet — click "Add Code" to create one.</p>
@@ -1394,7 +1394,7 @@ export default function Admin() {
                           style={{ fontSize: "15px", textTransform: "uppercase" }}
                         />
                       </div>
-                      <div style={{ width: "110px" }}>
+                      <div style={{ width: "100px" }}>
                         {idx === 0 && <Label className="font-semibold text-gray-600 mb-1 block" style={{ fontSize: "13px" }}>% Off</Label>}
                         <div className="relative">
                           <Input
@@ -1404,11 +1404,23 @@ export default function Admin() {
                             max={100}
                             value={code.percent}
                             onChange={(e) => updatePromoCode(idx, "percent", e.target.value)}
-                            className="h-11 rounded-xl pr-8"
+                            className="h-11 rounded-xl pr-7"
                             style={{ fontSize: "15px" }}
                           />
-                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-sm pointer-events-none">%</span>
+                          <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-sm pointer-events-none">%</span>
                         </div>
+                      </div>
+                      <div style={{ width: "80px" }}>
+                        {idx === 0 && <Label className="font-semibold text-gray-600 mb-1 block" style={{ fontSize: "13px" }}>Days</Label>}
+                        <Input
+                          type="number"
+                          placeholder="Any"
+                          min={1}
+                          value={code.days}
+                          onChange={(e) => updatePromoCode(idx, "days", e.target.value)}
+                          className="h-11 rounded-xl"
+                          style={{ fontSize: "15px" }}
+                        />
                       </div>
                       <button
                         onClick={() => removePromoCode(idx)}
@@ -1429,7 +1441,7 @@ export default function Admin() {
                     setIsSavingPromos(true);
                     try {
                       await updatePromos.mutateAsync({
-                        codes: valid.map(c => ({ name: c.name.trim(), percent: Number(c.percent) }))
+                        codes: valid.map(c => ({ name: c.name.trim(), percent: Number(c.percent), ...(c.days ? { days: Number(c.days) } : {}) }))
                       });
                     } finally {
                       setIsSavingPromos(false);
@@ -1485,6 +1497,9 @@ export default function Admin() {
                                 ? `$${(pc.amountOff / 100).toFixed(2)} off`
                                 : ""}
                             </span>
+                            {pc.days != null && (
+                              <span className="ml-2 text-xs text-gray-400">{pc.days} day{pc.days !== 1 ? "s" : ""}</span>
+                            )}
                             {pc.timesRedeemed > 0 && (
                               <span className="ml-2 text-xs text-gray-400">{pc.timesRedeemed} use{pc.timesRedeemed !== 1 ? "s" : ""}</span>
                             )}

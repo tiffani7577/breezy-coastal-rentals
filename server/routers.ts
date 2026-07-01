@@ -607,6 +607,7 @@ export const appRouter = router({
         codes: z.array(z.object({
           name: z.string().min(1),
           percent: z.number().min(1).max(100),
+          days: z.number().int().min(1).optional(),
         }))
       }))
       .mutation(async ({ input }) => {
@@ -623,9 +624,11 @@ export const appRouter = router({
               // Check if a coupon with this ID already exists
               try {
                 coupon = await stripe.coupons.retrieve(promo.name);
-                // If the existing coupon has a different percent_off, we must delete and recreate
+                // If the existing coupon has a different percent_off or days, we must delete and recreate
                 // (Stripe does not allow updating percent_off on an existing coupon)
-                if (coupon.percent_off !== promo.percent) {
+                const existingDays = coupon.metadata?.days ? parseInt(coupon.metadata.days) : undefined;
+                const daysChanged = promo.days !== existingDays;
+                if (coupon.percent_off !== promo.percent || daysChanged) {
                   // Deactivate any active promotion codes first
                   const existingCodes = await stripe.promotionCodes.list({
                     coupon: coupon.id,
@@ -640,6 +643,7 @@ export const appRouter = router({
                     id: promo.name,
                     percent_off: promo.percent,
                     duration: 'forever',
+                    metadata: promo.days ? { days: String(promo.days) } : {},
                   });
                 }
               } catch (err: any) {
@@ -649,6 +653,7 @@ export const appRouter = router({
                   id: promo.name,
                   percent_off: promo.percent,
                   duration: 'forever',
+                  metadata: promo.days ? { days: String(promo.days) } : {},
                 });
               }
             } catch (e: any) {
@@ -710,12 +715,22 @@ export const appRouter = router({
                   amountOff = coupon.amount_off ?? null;
                 }
               } catch {}
+              let days: number | null = null;
+              try {
+                const couponRef2 = pc.promotion?.coupon;
+                const couponId2 = typeof couponRef2 === 'string' ? couponRef2 : (couponRef2 as any)?.id;
+                if (couponId2) {
+                  const c2 = await stripe.coupons.retrieve(couponId2);
+                  days = c2.metadata?.days ? parseInt(c2.metadata.days) : null;
+                }
+              } catch {}
               return {
                 id: pc.id,
                 code: pc.code,
                 active: pc.active,
                 percentOff,
                 amountOff,
+                days,
                 timesRedeemed: pc.times_redeemed,
                 expiresAt: pc.expires_at ?? null,
               };
