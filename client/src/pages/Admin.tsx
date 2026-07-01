@@ -633,12 +633,9 @@ export default function Admin() {
   const [deliveryFee, setDeliveryFee] = useState("");
   const [cartName, setCartName] = useState("");
   const [cartDesc, setCartDesc] = useState("");
-  const [promo7, setPromo7] = useState("");
-  const [promo6, setPromo6] = useState("");
-  const [promo5, setPromo5] = useState("");
-  const [promo7Name, setPromo7Name] = useState("SEASHELL7");
-  const [promo6Name, setPromo6Name] = useState("SEASHELL6");
-  const [promo5Name, setPromo5Name] = useState("SEASHELL5");
+  const [promoCodes, setPromoCodes] = useState<{ name: string; percent: string }[]>([
+    { name: "SEASHELL10", percent: "10" },
+  ]);
   const [searchGuest, setSearchGuest] = useState("");
   const [isSavingPromos, setIsSavingPromos] = useState(false);
   const [calendarSaved, setCalendarSaved] = useState(false);
@@ -654,9 +651,16 @@ export default function Admin() {
     onError: () => toast.error("Could not upload photo. Please try again."),
   });
   const updatePromos = trpc.admin.updatePromos.useMutation({
-    onSuccess: () => { toast.success("Promo codes updated in Stripe!"); },
+    onSuccess: (data) => {
+      toast.success(`${data.coupons.length} promo code${data.coupons.length !== 1 ? 's' : ''} saved to Stripe!`);
+    },
     onError: (err) => { toast.error(err.message || "Failed to update promo codes"); },
   });
+
+  const addPromoCode = () => setPromoCodes(prev => [...prev, { name: "", percent: "" }]);
+  const removePromoCode = (idx: number) => setPromoCodes(prev => prev.filter((_, i) => i !== idx));
+  const updatePromoCode = (idx: number, field: "name" | "percent", value: string) =>
+    setPromoCodes(prev => prev.map((p, i) => i === idx ? { ...p, [field]: field === "name" ? value.toUpperCase() : value } : p));
   const handleCartImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -1350,49 +1354,83 @@ export default function Admin() {
 
             <div className="mt-8 rounded-2xl overflow-hidden" style={{ background: "white", border: "1px solid #e5e7eb" }}>
               <div className="p-5">
-                <h2 className="font-bold text-gray-900 mb-4" style={{ fontSize: "18px" }}>Promo Codes</h2>
-                <div className="space-y-4">
-                  <div>
-                    <Label className="font-bold text-gray-700 mb-2 block" style={{ fontSize: "15px" }}>Code Name</Label>
-                    <Input type="text" placeholder="SEASHELL7" value={promo7Name} onChange={(e) => setPromo7Name(e.target.value.toUpperCase())} className="h-12 rounded-xl" style={{ fontSize: "16px" }} />
-                    <Label className="font-bold text-gray-700 mb-2 block mt-3" style={{ fontSize: "15px" }}>Price ($)</Label>
-                    <Input type="number" placeholder="950" value={promo7} onChange={(e) => setPromo7(e.target.value)} className="h-12 rounded-xl" style={{ fontSize: "16px" }} />
-                    <p className="text-gray-500 text-sm mt-1">7 nights</p>
-                  </div>
-                  <div>
-                    <Label className="font-bold text-gray-700 mb-2 block" style={{ fontSize: "15px" }}>Code Name</Label>
-                    <Input type="text" placeholder="SEASHELL6" value={promo6Name} onChange={(e) => setPromo6Name(e.target.value.toUpperCase())} className="h-12 rounded-xl" style={{ fontSize: "16px" }} />
-                    <Label className="font-bold text-gray-700 mb-2 block mt-3" style={{ fontSize: "15px" }}>Price ($)</Label>
-                    <Input type="number" placeholder="850" value={promo6} onChange={(e) => setPromo6(e.target.value)} className="h-12 rounded-xl" style={{ fontSize: "16px" }} />
-                    <p className="text-gray-500 text-sm mt-1">6 nights</p>
-                  </div>
-                  <div>
-                    <Label className="font-bold text-gray-700 mb-2 block" style={{ fontSize: "15px" }}>Code Name</Label>
-                    <Input type="text" placeholder="SEASHELL5" value={promo5Name} onChange={(e) => setPromo5Name(e.target.value.toUpperCase())} className="h-12 rounded-xl" style={{ fontSize: "16px" }} />
-                    <Label className="font-bold text-gray-700 mb-2 block mt-3" style={{ fontSize: "15px" }}>Price ($)</Label>
-                    <Input type="number" placeholder="750" value={promo5} onChange={(e) => setPromo5(e.target.value)} className="h-12 rounded-xl" style={{ fontSize: "16px" }} />
-                    <p className="text-gray-500 text-sm mt-1">5 nights</p>
-                  </div>
+                <div className="flex items-center justify-between mb-1">
+                  <h2 className="font-bold text-gray-900" style={{ fontSize: "18px" }}>Discount Codes</h2>
+                  <button
+                    onClick={addPromoCode}
+                    className="flex items-center gap-1 text-sm font-semibold rounded-lg px-3 py-1.5"
+                    style={{ background: "#eff6ff", color: "#2563eb", border: "1px solid #bfdbfe" }}
+                  >
+                    <Plus className="w-4 h-4" /> Add Code
+                  </button>
                 </div>
+                <p className="text-gray-500 text-sm mb-4">Create any code with a custom % off. Guests enter it at Stripe checkout.</p>
+
+                {promoCodes.length === 0 && (
+                  <p className="text-center text-gray-400 py-6 text-sm">No codes yet — click "Add Code" to create one.</p>
+                )}
+
+                <div className="space-y-3">
+                  {promoCodes.map((code, idx) => (
+                    <div key={idx} className="flex gap-2 items-end">
+                      <div className="flex-1">
+                        {idx === 0 && <Label className="font-semibold text-gray-600 mb-1 block" style={{ fontSize: "13px" }}>Code Name</Label>}
+                        <Input
+                          type="text"
+                          placeholder="e.g. SUMMER20"
+                          value={code.name}
+                          onChange={(e) => updatePromoCode(idx, "name", e.target.value)}
+                          className="h-11 rounded-xl"
+                          style={{ fontSize: "15px", textTransform: "uppercase" }}
+                        />
+                      </div>
+                      <div style={{ width: "110px" }}>
+                        {idx === 0 && <Label className="font-semibold text-gray-600 mb-1 block" style={{ fontSize: "13px" }}>% Off</Label>}
+                        <div className="relative">
+                          <Input
+                            type="number"
+                            placeholder="10"
+                            min={1}
+                            max={100}
+                            value={code.percent}
+                            onChange={(e) => updatePromoCode(idx, "percent", e.target.value)}
+                            className="h-11 rounded-xl pr-8"
+                            style={{ fontSize: "15px" }}
+                          />
+                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-sm pointer-events-none">%</span>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => removePromoCode(idx)}
+                        className="h-11 w-11 flex items-center justify-center rounded-xl flex-shrink-0"
+                        style={{ background: "#fef2f2", color: "#dc2626", border: "1px solid #fecaca" }}
+                        title="Remove"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
                 <Button
                   onClick={async () => {
+                    const valid = promoCodes.filter(c => c.name.trim() && Number(c.percent) >= 1 && Number(c.percent) <= 100);
+                    if (valid.length === 0) { toast.error("Add at least one code with a name and a % between 1–100."); return; }
                     setIsSavingPromos(true);
-                     try {
-                       await updatePromos.mutateAsync({
-                         promo7: { name: promo7Name, price: parseInt(promo7) || 950 },
-                         promo6: { name: promo6Name, price: parseInt(promo6) || 850 },
-                         promo5: { name: promo5Name, price: parseInt(promo5) || 750 }
-                       });
-                     } finally {
-                       setIsSavingPromos(false);
-                     }
+                    try {
+                      await updatePromos.mutateAsync({
+                        codes: valid.map(c => ({ name: c.name.trim(), percent: Number(c.percent) }))
+                      });
+                    } finally {
+                      setIsSavingPromos(false);
+                    }
                   }}
                   disabled={isSavingPromos}
-                  className="w-full h-12 rounded-xl font-bold text-white mt-4"
+                  className="w-full h-12 rounded-xl font-bold text-white mt-5"
                   style={{ background: "#10b981", border: "none", fontSize: "16px" }}
                 >
                   {isSavingPromos ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : null}
-                  Save Promo Codes
+                  Save Discount Codes to Stripe
                 </Button>
               </div>
             </div>

@@ -604,37 +604,50 @@ export const appRouter = router({
     // ─── Update Promo Codes ───────────────────────────────────────────────────────────
     updatePromos: adminProcedure
       .input(z.object({
-        promo7: z.object({ name: z.string(), price: z.number() }),
-        promo6: z.object({ name: z.string(), price: z.number() }),
-        promo5: z.object({ name: z.string(), price: z.number() })
+        codes: z.array(z.object({
+          name: z.string().min(1),
+          percent: z.number().min(1).max(100),
+        }))
       }))
       .mutation(async ({ input }) => {
         const stripe = getStripe();
-        
+
         try {
           const results = [];
-          const promos = [
-            { name: input.promo7.name, price: input.promo7.price },
-            { name: input.promo6.name, price: input.promo6.price },
-            { name: input.promo5.name, price: input.promo5.price }
-          ];
 
-          for (const promo of promos) {
+          for (const promo of input.codes) {
             if (!promo.name) continue;
-            
+
             let coupon;
             try {
-              // First check if coupon exists to avoid unnecessary create attempts
+              // Check if a coupon with this ID already exists
               try {
                 coupon = await stripe.coupons.retrieve(promo.name);
+                // If the existing coupon has a different percent_off, we must delete and recreate
+                // (Stripe does not allow updating percent_off on an existing coupon)
+                if (coupon.percent_off !== promo.percent) {
+                  // Deactivate any active promotion codes first
+                  const existingCodes = await stripe.promotionCodes.list({
+                    coupon: coupon.id,
+                    active: true,
+                    limit: 100,
+                  });
+                  for (const pc of existingCodes.data) {
+                    await stripe.promotionCodes.update(pc.id, { active: false });
+                  }
+                  await stripe.coupons.del(coupon.id);
+                  coupon = await stripe.coupons.create({
+                    id: promo.name,
+                    percent_off: promo.percent,
+                    duration: 'forever',
+                  });
+                }
               } catch (err: any) {
                 if (err.status !== 404) throw err;
-                
-                // Not found, create it
+                // Not found — create fresh
                 coupon = await stripe.coupons.create({
                   id: promo.name,
-                  amount_off: Math.round(promo.price * 100),
-                  currency: 'usd',
+                  percent_off: promo.percent,
                   duration: 'forever',
                 });
               }
@@ -643,25 +656,23 @@ export const appRouter = router({
               throw new Error(`Stripe Coupon Error (${promo.name}): ${e.message}`);
             }
 
-            // Create a promotion code for this coupon if it doesn't exist
+            // Ensure a promotion code exists for this coupon
             if (coupon) {
               try {
                 const promoCodes = await stripe.promotionCodes.list({
                   coupon: coupon.id,
                   code: promo.name,
                   active: true,
-                  limit: 1
+                  limit: 1,
                 });
-
                 if (promoCodes.data.length === 0) {
                   await stripe.promotionCodes.create({
-                    coupon: coupon.id,
+                    promotion: { type: 'coupon', coupon: coupon.id },
                     code: promo.name,
                   });
                 }
               } catch (e: any) {
                 console.error(`Error handling promo code for ${promo.name}:`, e);
-                // Don't throw here, if coupon exists but promo code fails, we still want to continue
               }
               results.push(coupon);
             }
