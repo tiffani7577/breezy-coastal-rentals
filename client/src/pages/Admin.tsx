@@ -633,8 +633,8 @@ export default function Admin() {
   const [deliveryFee, setDeliveryFee] = useState("");
   const [cartName, setCartName] = useState("");
   const [cartDesc, setCartDesc] = useState("");
-  const [promoCodes, setPromoCodes] = useState<{ name: string; percent: string; days: string }[]>([
-    { name: "SEASHELL10", percent: "10", days: "" },
+  const [promoCodes, setPromoCodes] = useState<{ name: string; type: 'percent' | 'fixed'; value: string; days: string }[]>([
+    { name: "SEASHELL10", type: "percent", value: "10", days: "" },
   ]);
   const [searchGuest, setSearchGuest] = useState("");
   const [isSavingPromos, setIsSavingPromos] = useState(false);
@@ -667,10 +667,10 @@ export default function Admin() {
   });
   const [confirmDeactivate, setConfirmDeactivate] = useState<{ id: string; code: string } | null>(null);
 
-  const addPromoCode = () => setPromoCodes(prev => [...prev, { name: "", percent: "", days: "" }]);
+  const addPromoCode = () => setPromoCodes(prev => [...prev, { name: "", type: "percent", value: "", days: "" }]);
   const removePromoCode = (idx: number) => setPromoCodes(prev => prev.filter((_, i) => i !== idx));
-  const updatePromoCode = (idx: number, field: "name" | "percent" | "days", value: string) =>
-    setPromoCodes(prev => prev.map((p, i) => i === idx ? { ...p, [field]: field === "name" ? value.toUpperCase() : value } : p));
+  const updatePromoCode = (idx: number, field: "name" | "type" | "value" | "days", fieldValue: string) =>
+    setPromoCodes(prev => prev.map((p, i) => i === idx ? { ...p, [field]: field === "name" ? fieldValue.toUpperCase() : fieldValue } : p));
   const handleCartImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -1374,7 +1374,7 @@ export default function Admin() {
                     <Plus className="w-4 h-4" /> Add Code
                   </button>
                 </div>
-                <p className="text-gray-500 text-sm mb-4">Create any code with a custom % off. Optionally lock it to a specific number of days. Guests enter it at Stripe checkout.</p>
+                <p className="text-gray-500 text-sm mb-4">Create any code with either a % off or a fixed $ amount. Optionally lock it to a specific number of days. Guests enter it at Stripe checkout.</p>
 
                 {promoCodes.length === 0 && (
                   <p className="text-center text-gray-400 py-6 text-sm">No codes yet — click "Add Code" to create one.</p>
@@ -1394,20 +1394,32 @@ export default function Admin() {
                           style={{ fontSize: "15px", textTransform: "uppercase" }}
                         />
                       </div>
+                      <div style={{ width: "65px" }}>
+                        {idx === 0 && <Label className="font-semibold text-gray-600 mb-1 block" style={{ fontSize: "13px" }}>Type</Label>}
+                        <select
+                          value={code.type}
+                          onChange={(e) => updatePromoCode(idx, "type", e.target.value)}
+                          className="h-11 w-full rounded-xl px-2 text-sm"
+                          style={{ fontSize: "14px", border: "1px solid #e5e7eb", background: "white" }}
+                        >
+                          <option value="percent">%</option>
+                          <option value="fixed">$</option>
+                        </select>
+                      </div>
                       <div style={{ width: "100px" }}>
-                        {idx === 0 && <Label className="font-semibold text-gray-600 mb-1 block" style={{ fontSize: "13px" }}>% Off</Label>}
+                        {idx === 0 && <Label className="font-semibold text-gray-600 mb-1 block" style={{ fontSize: "13px" }}>Amount</Label>}
                         <div className="relative">
                           <Input
                             type="number"
-                            placeholder="10"
+                            placeholder={code.type === "percent" ? "10" : "175"}
                             min={1}
-                            max={100}
-                            value={code.percent}
-                            onChange={(e) => updatePromoCode(idx, "percent", e.target.value)}
+                            max={code.type === "percent" ? 100 : undefined}
+                            value={code.value}
+                            onChange={(e) => updatePromoCode(idx, "value", e.target.value)}
                             className="h-11 rounded-xl pr-7"
                             style={{ fontSize: "15px" }}
                           />
-                          <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-sm pointer-events-none">%</span>
+                          <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-sm pointer-events-none">{code.type === "percent" ? "%" : "$"}</span>
                         </div>
                       </div>
                       <div style={{ width: "80px" }}>
@@ -1436,12 +1448,21 @@ export default function Admin() {
 
                 <Button
                   onClick={async () => {
-                    const valid = promoCodes.filter(c => c.name.trim() && Number(c.percent) >= 1 && Number(c.percent) <= 100);
-                    if (valid.length === 0) { toast.error("Add at least one code with a name and a % between 1–100."); return; }
+                    const valid = promoCodes.filter(c => {
+                      if (!c.name.trim() || !c.value) return false;
+                      if (c.type === "percent") return Number(c.value) >= 1 && Number(c.value) <= 100;
+                      return Number(c.value) >= 0.01;
+                    });
+                    if (valid.length === 0) { toast.error("Add at least one code with a name and a valid amount."); return; }
                     setIsSavingPromos(true);
                     try {
                       await updatePromos.mutateAsync({
-                        codes: valid.map(c => ({ name: c.name.trim(), percent: Number(c.percent), ...(c.days ? { days: Number(c.days) } : {}) }))
+                        codes: valid.map(c => ({
+                          name: c.name.trim(),
+                          type: c.type,
+                          value: Number(c.value),
+                          ...(c.days ? { days: Number(c.days) } : {})
+                        }))
                       });
                     } finally {
                       setIsSavingPromos(false);

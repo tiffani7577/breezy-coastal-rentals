@@ -606,7 +606,8 @@ export const appRouter = router({
       .input(z.object({
         codes: z.array(z.object({
           name: z.string().min(1),
-          percent: z.number().min(1).max(100),
+          type: z.enum(['percent', 'fixed']),
+          value: z.number().min(0.01),
           days: z.number().int().min(1).optional(),
         }))
       }))
@@ -624,11 +625,14 @@ export const appRouter = router({
               // Check if a coupon with this ID already exists
               try {
                 coupon = await stripe.coupons.retrieve(promo.name);
-                // If the existing coupon has a different percent_off or days, we must delete and recreate
-                // (Stripe does not allow updating percent_off on an existing coupon)
+                // Check if we need to recreate (type/value/days changed)
                 const existingDays = coupon.metadata?.days ? parseInt(coupon.metadata.days) : undefined;
+                const existingType = coupon.metadata?.type || (coupon.percent_off != null ? 'percent' : 'fixed');
                 const daysChanged = promo.days !== existingDays;
-                if (coupon.percent_off !== promo.percent || daysChanged) {
+                const typeOrValueChanged = existingType !== promo.type ||
+                  (promo.type === 'percent' ? coupon.percent_off !== promo.value : coupon.amount_off !== Math.round(promo.value * 100));
+
+                if (typeOrValueChanged || daysChanged) {
                   // Deactivate any active promotion codes first
                   const existingCodes = await stripe.promotionCodes.list({
                     coupon: coupon.id,
@@ -639,22 +643,34 @@ export const appRouter = router({
                     await stripe.promotionCodes.update(pc.id, { active: false });
                   }
                   await stripe.coupons.del(coupon.id);
-                  coupon = await stripe.coupons.create({
+                  const couponData: any = {
                     id: promo.name,
-                    percent_off: promo.percent,
                     duration: 'forever',
-                    metadata: promo.days ? { days: String(promo.days) } : {},
-                  });
+                    metadata: { type: promo.type, ...(promo.days ? { days: String(promo.days) } : {}) },
+                  };
+                  if (promo.type === 'percent') {
+                    couponData.percent_off = promo.value;
+                  } else {
+                    couponData.amount_off = Math.round(promo.value * 100);
+                    couponData.currency = 'usd';
+                  }
+                  coupon = await stripe.coupons.create(couponData);
                 }
               } catch (err: any) {
                 if (err.status !== 404) throw err;
                 // Not found — create fresh
-                coupon = await stripe.coupons.create({
+                const couponData: any = {
                   id: promo.name,
-                  percent_off: promo.percent,
                   duration: 'forever',
-                  metadata: promo.days ? { days: String(promo.days) } : {},
-                });
+                  metadata: { type: promo.type, ...(promo.days ? { days: String(promo.days) } : {}) },
+                };
+                if (promo.type === 'percent') {
+                  couponData.percent_off = promo.value;
+                } else {
+                  couponData.amount_off = Math.round(promo.value * 100);
+                  couponData.currency = 'usd';
+                }
+                coupon = await stripe.coupons.create(couponData);
               }
             } catch (e: any) {
               console.error(`Error handling coupon ${promo.name}:`, e);
