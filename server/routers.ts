@@ -657,7 +657,7 @@ export const appRouter = router({
                   coupon = await stripe.coupons.create(couponData);
                 }
               } catch (err: any) {
-                if (err.status !== 404) throw err;
+                if (err.code !== 'resource_missing' && err.status !== 404) throw err;
                 // Not found — create fresh
                 const couponData: any = {
                   id: promo.name,
