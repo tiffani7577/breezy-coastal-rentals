@@ -66,7 +66,7 @@ export const bookings = mysqlTable("bookings", {
   dailyRate: decimal("dailyRate", { precision: 10, scale: 2 }).notNull(),
   deliveryFee: decimal("deliveryFee", { precision: 10, scale: 2 }).notNull().default("0.00"),
   totalAmount: decimal("totalAmount", { precision: 10, scale: 2 }).notNull(),
-  originalAmount: decimal("originalAmount", { precision: 10, scale: 2 }),
+  // originalAmount: decimal("originalAmount", { precision: 10, scale: 2 }),
   // Status
   bookingStatus: mysqlEnum("bookingStatus", [
     "pending_payment",
