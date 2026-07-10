@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation, Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
-import { Waves, Check, Clock, ChevronRight, Loader2, Calendar, User, Mail, Phone } from "lucide-react";
+import { Waves, Check, Clock, ChevronRight, Loader2, Calendar, User, Mail, Phone, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 
 export default function BookingConfirmation() {
@@ -11,6 +11,7 @@ export default function BookingConfirmation() {
   const ref = params.get("ref") ?? "";
   const sessionId = params.get("session_id") ?? "";
   const [confirmed, setConfirmed] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const confirmPayment = trpc.bookings.confirmPayment.useMutation();
   const { data, isLoading } = trpc.bookings.getByRef.useQuery(
@@ -22,7 +23,10 @@ export default function BookingConfirmation() {
     if (ref && sessionId && !confirmed) {
       confirmPayment.mutateAsync({ bookingRef: ref, sessionId }).then(() => {
         setConfirmed(true);
-      }).catch(console.error);
+      }).catch((err: any) => {
+        console.error(err);
+        setError(err.message || "Failed to confirm payment. Please contact support.");
+      });
     }
   }, [ref, sessionId]);
 
@@ -33,6 +37,26 @@ export default function BookingConfirmation() {
           <p className="text-muted-foreground">Invalid booking link.</p>
           <Link href="/">
             <Button className="mt-4">Go Home</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4">
+        <div className="text-center">
+          <div
+            className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
+            style={{ background: "#fee2e2" }}
+          >
+            <AlertCircle className="w-8 h-8 text-red-600" />
+          </div>
+          <p className="font-semibold text-foreground">Payment Confirmation Error</p>
+          <p className="text-sm text-muted-foreground mt-1">{error}</p>
+          <Link href={`/booking?step=5&ref=${ref}`}>
+            <Button className="mt-6">Try Again</Button>
           </Link>
         </div>
       </div>
@@ -56,7 +80,7 @@ export default function BookingConfirmation() {
     );
   }
 
-  const booking = data?.booking;
+  const booking = data?.booking as any;
 
   return (
     <div className="min-h-screen" style={{ background: "oklch(0.99 0.005 220)" }}>

@@ -66,7 +66,7 @@ async function startServer() {
           const { sendEmail } = await import("../email");
           const booking = await getBookingByRef(bookingRef);
           if (booking && booking.bookingStatus === "pending_payment") {
-            await updateBookingStripe(bookingRef, session.id, session.payment_intent);
+            await updateBookingStripe(bookingRef, session.id, session.payment_intent, session.amount_total);
             const updated = await getBookingByRef(bookingRef);
             if (updated) {
               await sendEmail({ type: "guest_confirmation", booking: updated }).catch(console.error);

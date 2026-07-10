@@ -69,37 +69,38 @@ export async function sendEmail(payload: EmailPayload) {
 </body>
 </html>`;
 
+  const b = booking as any;
   const bookingCard = `
 <table width="100%" style="background:#f0f9ff;border-radius:12px;padding:20px;margin:20px 0;border:1px solid #bae6fd;">
   <tr><td style="font-family:sans-serif;">
     <p style="margin:0 0 8px;font-size:12px;color:#0284c7;text-transform:uppercase;letter-spacing:1px;">Booking Reference</p>
-    <p style="margin:0 0 16px;font-size:20px;font-weight:700;color:#0c4a6e;letter-spacing:2px;">${booking.bookingRef}</p>
+    <p style="margin:0 0 16px;font-size:20px;font-weight:700;color:#0c4a6e;letter-spacing:2px;">${b.bookingRef}</p>
     <table width="100%">
       <tr>
         <td style="font-size:13px;color:#64748b;padding-bottom:6px;font-family:sans-serif;">Check-in</td>
-        <td style="font-size:13px;font-weight:600;color:#1e293b;padding-bottom:6px;text-align:right;font-family:sans-serif;">${formatDate(booking.startDate)}</td>
+        <td style="font-size:13px;font-weight:600;color:#1e293b;padding-bottom:6px;text-align:right;font-family:sans-serif;">${formatDate(b.startDate)}</td>
       </tr>
       <tr>
         <td style="font-size:13px;color:#64748b;padding-bottom:6px;font-family:sans-serif;">Check-out</td>
-        <td style="font-size:13px;font-weight:600;color:#1e293b;padding-bottom:6px;text-align:right;font-family:sans-serif;">${formatDate(booking.endDate)}</td>
+        <td style="font-size:13px;font-weight:600;color:#1e293b;padding-bottom:6px;text-align:right;font-family:sans-serif;">${formatDate(b.endDate)}</td>
       </tr>
-      ${booking.originalAmount && parseFloat(booking.originalAmount.toString()) !== parseFloat(booking.totalAmount.toString()) ? `
+      ${b.originalAmount && parseFloat(b.originalAmount.toString()) !== parseFloat(b.totalAmount.toString()) ? `
       <tr>
         <td style="font-size:13px;color:#64748b;padding-bottom:4px;font-family:sans-serif;">Original Price</td>
-        <td style="font-size:13px;color:#94a3b8;text-align:right;text-decoration:line-through;font-family:sans-serif;">$${parseFloat(booking.originalAmount.toString()).toFixed(2)}</td>
+        <td style="font-size:13px;color:#94a3b8;text-align:right;text-decoration:line-through;font-family:sans-serif;">$${parseFloat(b.originalAmount.toString()).toFixed(2)}</td>
       </tr>
       <tr>
         <td style="font-size:13px;color:#16a34a;padding-bottom:4px;font-family:sans-serif;">Discount Applied</td>
-        <td style="font-size:13px;color:#16a34a;text-align:right;font-family:sans-serif;">-$${(parseFloat(booking.originalAmount.toString()) - parseFloat(booking.totalAmount.toString())).toFixed(2)}</td>
+        <td style="font-size:13px;color:#16a34a;text-align:right;font-family:sans-serif;">-$${(parseFloat(b.originalAmount.toString()) - parseFloat(b.totalAmount.toString())).toFixed(2)}</td>
       </tr>
       <tr>
         <td style="font-size:13px;color:#64748b;font-family:sans-serif;font-weight:600;">Total Paid</td>
-        <td style="font-size:13px;font-weight:700;color:#0284c7;text-align:right;font-family:sans-serif;">$${booking.totalAmount}</td>
+        <td style="font-size:13px;font-weight:700;color:#0284c7;text-align:right;font-family:sans-serif;">$${b.totalAmount}</td>
       </tr>
       ` : `
       <tr>
         <td style="font-size:13px;color:#64748b;font-family:sans-serif;">Total Paid</td>
-        <td style="font-size:13px;font-weight:700;color:#0284c7;text-align:right;font-family:sans-serif;">$${booking.totalAmount}</td>
+        <td style="font-size:13px;font-weight:700;color:#0284c7;text-align:right;font-family:sans-serif;">$${b.totalAmount}</td>
       </tr>
       `}
     </table>

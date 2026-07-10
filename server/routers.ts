@@ -283,6 +283,12 @@ export const appRouter = router({
               session.payment_intent as string,
               session.amount_total ?? undefined
             );
+          } else {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: `Payment status is ${session.payment_status}. Please complete payment in the Stripe checkout window.`,
+            });
+          }
             // Send emails
             const updatedBooking = await getBookingByRef(input.bookingRef);
             if (updatedBooking) {
@@ -295,7 +301,6 @@ export const appRouter = router({
                 booking: updatedBooking,
               }).catch(console.error);
             }
-          }
         }
         const updated = await getBookingByRef(input.bookingRef);
         return { booking: updated };
