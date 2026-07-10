@@ -690,6 +690,7 @@ __export(db_exports, {
   createMessage: () => createMessage,
   createSmsNotification: () => createSmsNotification,
   createWaiverSignature: () => createWaiverSignature,
+  deleteBooking: () => deleteBooking,
   getAllBookings: () => getAllBookings,
   getApprovedBookingDates: () => getApprovedBookingDates,
   getBlockedDates: () => getBlockedDates,
@@ -835,6 +836,17 @@ async function updateBookingStatus(id, bookingStatus, opts) {
   const db = await getDb();
   if (!db) return;
   await db.update(bookings).set({ bookingStatus, ...opts }).where(eq(bookings.id, id));
+}
+async function deleteBooking(id) {
+  const db = await getDb();
+  if (!db) throw new Error("DB unavailable");
+  await db.delete(bookingMessages).where(eq(bookingMessages.bookingId, id));
+  await db.delete(documents).where(eq(documents.bookingId, id));
+  await db.delete(waiverSignatures).where(eq(waiverSignatures.bookingId, id));
+  await db.delete(inspectionChecklists).where(eq(inspectionChecklists.bookingId, id));
+  await db.delete(inspectionPhotos).where(eq(inspectionPhotos.bookingId, id));
+  await db.delete(smsNotifications).where(eq(smsNotifications.bookingId, id));
+  await db.delete(bookings).where(eq(bookings.id, id));
 }
 async function updateDocumentStatus(id, documentStatus) {
   const db = await getDb();
@@ -18060,6 +18072,9 @@ var init_sdk = __esm({
         const signedInAt = /* @__PURE__ */ new Date();
         let user = await getUserByOpenId(sessionUserId);
         if (!user) {
+          if (sessionUserId === "admin-local") {
+            throw ForbiddenError("Admin account not found in database");
+          }
           try {
             const userInfo = await this.getUserInfoWithJwt(sessionCookie ?? "");
             await upsertUser({
@@ -38153,37 +38168,38 @@ async function sendEmail(payload) {
   </table>
 </body>
 </html>`;
+  const b = booking;
   const bookingCard = `
 <table width="100%" style="background:#f0f9ff;border-radius:12px;padding:20px;margin:20px 0;border:1px solid #bae6fd;">
   <tr><td style="font-family:sans-serif;">
     <p style="margin:0 0 8px;font-size:12px;color:#0284c7;text-transform:uppercase;letter-spacing:1px;">Booking Reference</p>
-    <p style="margin:0 0 16px;font-size:20px;font-weight:700;color:#0c4a6e;letter-spacing:2px;">${booking.bookingRef}</p>
+    <p style="margin:0 0 16px;font-size:20px;font-weight:700;color:#0c4a6e;letter-spacing:2px;">${b.bookingRef}</p>
     <table width="100%">
       <tr>
         <td style="font-size:13px;color:#64748b;padding-bottom:6px;font-family:sans-serif;">Check-in</td>
-        <td style="font-size:13px;font-weight:600;color:#1e293b;padding-bottom:6px;text-align:right;font-family:sans-serif;">${formatDate(booking.startDate)}</td>
+        <td style="font-size:13px;font-weight:600;color:#1e293b;padding-bottom:6px;text-align:right;font-family:sans-serif;">${formatDate(b.startDate)}</td>
       </tr>
       <tr>
         <td style="font-size:13px;color:#64748b;padding-bottom:6px;font-family:sans-serif;">Check-out</td>
-        <td style="font-size:13px;font-weight:600;color:#1e293b;padding-bottom:6px;text-align:right;font-family:sans-serif;">${formatDate(booking.endDate)}</td>
+        <td style="font-size:13px;font-weight:600;color:#1e293b;padding-bottom:6px;text-align:right;font-family:sans-serif;">${formatDate(b.endDate)}</td>
       </tr>
-      ${booking.originalAmount && parseFloat(booking.originalAmount.toString()) !== parseFloat(booking.totalAmount.toString()) ? `
+      ${b.originalAmount && parseFloat(b.originalAmount.toString()) !== parseFloat(b.totalAmount.toString()) ? `
       <tr>
         <td style="font-size:13px;color:#64748b;padding-bottom:4px;font-family:sans-serif;">Original Price</td>
-        <td style="font-size:13px;color:#94a3b8;text-align:right;text-decoration:line-through;font-family:sans-serif;">$${parseFloat(booking.originalAmount.toString()).toFixed(2)}</td>
+        <td style="font-size:13px;color:#94a3b8;text-align:right;text-decoration:line-through;font-family:sans-serif;">$${parseFloat(b.originalAmount.toString()).toFixed(2)}</td>
       </tr>
       <tr>
         <td style="font-size:13px;color:#16a34a;padding-bottom:4px;font-family:sans-serif;">Discount Applied</td>
-        <td style="font-size:13px;color:#16a34a;text-align:right;font-family:sans-serif;">-$${(parseFloat(booking.originalAmount.toString()) - parseFloat(booking.totalAmount.toString())).toFixed(2)}</td>
+        <td style="font-size:13px;color:#16a34a;text-align:right;font-family:sans-serif;">-$${(parseFloat(b.originalAmount.toString()) - parseFloat(b.totalAmount.toString())).toFixed(2)}</td>
       </tr>
       <tr>
         <td style="font-size:13px;color:#64748b;font-family:sans-serif;font-weight:600;">Total Paid</td>
-        <td style="font-size:13px;font-weight:700;color:#0284c7;text-align:right;font-family:sans-serif;">$${booking.totalAmount}</td>
+        <td style="font-size:13px;font-weight:700;color:#0284c7;text-align:right;font-family:sans-serif;">$${b.totalAmount}</td>
       </tr>
       ` : `
       <tr>
         <td style="font-size:13px;color:#64748b;font-family:sans-serif;">Total Paid</td>
-        <td style="font-size:13px;font-weight:700;color:#0284c7;text-align:right;font-family:sans-serif;">$${booking.totalAmount}</td>
+        <td style="font-size:13px;font-weight:700;color:#0284c7;text-align:right;font-family:sans-serif;">$${b.totalAmount}</td>
       </tr>
       `}
     </table>
@@ -38320,11 +38336,14 @@ function isSecureRequest(req) {
   return protoList.some((proto) => proto.trim().toLowerCase() === "https");
 }
 function getSessionCookieOptions(req) {
+  const secure = isSecureRequest(req);
   return {
     httpOnly: true,
     path: "/",
-    sameSite: "none",
-    secure: isSecureRequest(req)
+    // Same-origin app: Lax works on localhost and production HTTPS.
+    // SameSite=None is not needed and can break cookie acceptance in some browsers.
+    sameSite: "lax",
+    secure
   };
 }
 
@@ -40202,7 +40221,7 @@ var adminProcedure2 = protectedProcedure.use(({ ctx, next }) => {
 function getStripe() {
   const key = process.env.STRIPE_SECRET_KEY;
   if (!key) throw new TRPCError3({ code: "INTERNAL_SERVER_ERROR", message: "Stripe not configured" });
-  return new Stripe(key, { apiVersion: "2026-03-25.dahlia" });
+  return new Stripe(key, { apiVersion: "2025-02-24.acacia" });
 }
 var appRouter = router({
   system: systemRouter,
@@ -40229,15 +40248,23 @@ var appRouter = router({
         role: "admin",
         lastSignedIn: /* @__PURE__ */ new Date()
       });
+      const adminUser = await getUserByOpenId(ADMIN_OPEN_ID);
+      if (!adminUser) {
+        throw new TRPCError3({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Could not connect to the database. Please try again in a moment."
+        });
+      }
       const { sdk: sdk2 } = await Promise.resolve().then(() => (init_sdk(), sdk_exports));
       const { ONE_YEAR_MS: ONE_YEAR_MS2 } = await Promise.resolve().then(() => (init_const(), const_exports));
+      const sessionAppId = ENV.appId || "breezy-coastal-rentals";
       const sessionToken = await sdk2.signSession(
-        { openId: ADMIN_OPEN_ID, appId: ENV.appId, name: "Admin" },
+        { openId: ADMIN_OPEN_ID, appId: sessionAppId, name: "Admin" },
         { expiresInMs: ONE_YEAR_MS2 }
       );
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS2 });
-      return { success: true };
+      return { success: true, user: adminUser };
     })
   }),
   // ─── Pricing ───────────────────────────────────────────────────────────────
@@ -40382,17 +40409,22 @@ var appRouter = router({
             session.payment_intent,
             session.amount_total ?? void 0
           );
-          const updatedBooking = await getBookingByRef(input.bookingRef);
-          if (updatedBooking) {
-            await sendEmail({
-              type: "guest_confirmation",
-              booking: updatedBooking
-            }).catch(console.error);
-            await sendEmail({
-              type: "admin_new_booking",
-              booking: updatedBooking
-            }).catch(console.error);
-          }
+        } else {
+          throw new TRPCError3({
+            code: "BAD_REQUEST",
+            message: `Payment status is ${session.payment_status}. Please complete payment in the Stripe checkout window.`
+          });
+        }
+        const updatedBooking = await getBookingByRef(input.bookingRef);
+        if (updatedBooking) {
+          await sendEmail({
+            type: "guest_confirmation",
+            booking: updatedBooking
+          }).catch(console.error);
+          await sendEmail({
+            type: "admin_new_booking",
+            booking: updatedBooking
+          }).catch(console.error);
         }
       }
       const updated = await getBookingByRef(input.bookingRef);
@@ -40447,6 +40479,20 @@ var appRouter = router({
       const docs = await getDocumentsByBookingId(booking.id);
       const waiver = await getWaiverByBookingId(booking.id);
       return { booking, documents: docs, waiver };
+    }),
+    removeBooking: adminProcedure2.input(z3.object({ id: z3.number() })).mutation(async ({ input }) => {
+      const booking = await getBookingById(input.id);
+      if (!booking) {
+        throw new TRPCError3({ code: "NOT_FOUND", message: "Booking not found" });
+      }
+      if (booking.bookingStatus === "approved" || booking.bookingStatus === "completed") {
+        throw new TRPCError3({
+          code: "BAD_REQUEST",
+          message: "This booking was already approved. You cannot remove it \u2014 use Reject or Mark as Completed instead."
+        });
+      }
+      await deleteBooking(input.id);
+      return { success: true };
     }),
     updateBookingStatus: adminProcedure2.input(
       z3.object({
@@ -40619,36 +40665,154 @@ var appRouter = router({
     }),
     // ─── Update Promo Codes ───────────────────────────────────────────────────────────
     updatePromos: adminProcedure2.input(z3.object({
-      promo7: z3.object({ name: z3.string(), price: z3.number() }),
-      promo6: z3.object({ name: z3.string(), price: z3.number() }),
-      promo5: z3.object({ name: z3.string(), price: z3.number() })
+      codes: z3.array(z3.object({
+        name: z3.string().min(1),
+        type: z3.enum(["percent", "fixed"]),
+        value: z3.number().min(0.01),
+        days: z3.number().int().min(1).optional()
+      }))
     })).mutation(async ({ input }) => {
-      const stripe = new Stripe(ENV.stripeSecretKey);
+      const stripe = getStripe();
       try {
         const results = [];
-        const promos = [
-          { name: input.promo7.name, price: input.promo7.price },
-          { name: input.promo6.name, price: input.promo6.price },
-          { name: input.promo5.name, price: input.promo5.price }
-        ];
-        for (const promo of promos) {
+        for (const promo of input.codes) {
+          if (!promo.name) continue;
+          let coupon;
           try {
-            const coupon = await stripe.coupons.create({
-              id: promo.name,
-              amount_off: promo.price * 100,
-              currency: "usd",
-              duration: "repeating",
-              duration_in_months: 1
-            });
-            results.push(coupon);
+            try {
+              coupon = await stripe.coupons.retrieve(promo.name);
+              const existingDays = coupon.metadata?.days ? parseInt(coupon.metadata.days) : void 0;
+              const existingType = coupon.metadata?.type || (coupon.percent_off != null ? "percent" : "fixed");
+              const daysChanged = promo.days !== existingDays;
+              const typeOrValueChanged = existingType !== promo.type || (promo.type === "percent" ? coupon.percent_off !== promo.value : coupon.amount_off !== Math.round(promo.value * 100));
+              if (typeOrValueChanged || daysChanged) {
+                const existingCodes = await stripe.promotionCodes.list({
+                  coupon: coupon.id,
+                  active: true,
+                  limit: 100
+                });
+                for (const pc of existingCodes.data) {
+                  await stripe.promotionCodes.update(pc.id, { active: false });
+                }
+                await stripe.coupons.del(coupon.id);
+                const couponData = {
+                  id: promo.name,
+                  duration: "forever",
+                  metadata: { type: promo.type, ...promo.days ? { days: String(promo.days) } : {} }
+                };
+                if (promo.type === "percent") {
+                  couponData.percent_off = promo.value;
+                } else {
+                  couponData.amount_off = Math.round(promo.value * 100);
+                  couponData.currency = "usd";
+                }
+                coupon = await stripe.coupons.create(couponData);
+              }
+            } catch (err) {
+              if (err.code !== "resource_missing" && err.status !== 404) throw err;
+              const couponData = {
+                id: promo.name,
+                duration: "forever",
+                metadata: { type: promo.type, ...promo.days ? { days: String(promo.days) } : {} }
+              };
+              if (promo.type === "percent") {
+                couponData.percent_off = promo.value;
+              } else {
+                couponData.amount_off = Math.round(promo.value * 100);
+                couponData.currency = "usd";
+              }
+              coupon = await stripe.coupons.create(couponData);
+            }
           } catch (e) {
-            if (e.code !== "resource_already_exists") throw e;
+            console.error(`Error handling coupon ${promo.name}:`, e);
+            throw new Error(`Stripe Coupon Error (${promo.name}): ${e.message}`);
+          }
+          if (coupon) {
+            try {
+              const promoCodes = await stripe.promotionCodes.list({
+                coupon: coupon.id,
+                code: promo.name,
+                active: true,
+                limit: 1
+              });
+              if (promoCodes.data.length === 0) {
+                await stripe.promotionCodes.create({
+                  promotion: { type: "coupon", coupon: coupon.id },
+                  code: promo.name
+                });
+              }
+            } catch (e) {
+              console.error(`Error handling promo code for ${promo.name}:`, e);
+            }
+            results.push(coupon);
           }
         }
         return { success: true, coupons: results };
       } catch (error) {
         console.error("Error updating promos:", error);
-        throw new TRPCError3({ code: "INTERNAL_SERVER_ERROR", message: "Failed to update promo codes" });
+        const message2 = error?.message || "Failed to update promo codes";
+        throw new TRPCError3({ code: "INTERNAL_SERVER_ERROR", message: message2 });
+      }
+    }),
+    // ─── List Active Promo Codes ──────────────────────────────────────────────────
+    getPromoCodes: adminProcedure2.query(async () => {
+      const stripe = getStripe();
+      try {
+        const promoCodes = await stripe.promotionCodes.list({
+          active: true,
+          limit: 100
+        });
+        const results = await Promise.all(
+          promoCodes.data.map(async (pc) => {
+            let percentOff = null;
+            let amountOff = null;
+            try {
+              const couponRef = pc.promotion?.coupon;
+              const couponId = typeof couponRef === "string" ? couponRef : couponRef?.id;
+              if (couponId) {
+                const coupon = await stripe.coupons.retrieve(couponId);
+                percentOff = coupon.percent_off ?? null;
+                amountOff = coupon.amount_off ?? null;
+              }
+            } catch {
+            }
+            let days = null;
+            try {
+              const couponRef2 = pc.promotion?.coupon;
+              const couponId2 = typeof couponRef2 === "string" ? couponRef2 : couponRef2?.id;
+              if (couponId2) {
+                const c2 = await stripe.coupons.retrieve(couponId2);
+                days = c2.metadata?.days ? parseInt(c2.metadata.days) : null;
+              }
+            } catch {
+            }
+            return {
+              id: pc.id,
+              code: pc.code,
+              active: pc.active,
+              percentOff,
+              amountOff,
+              days,
+              timesRedeemed: pc.times_redeemed,
+              expiresAt: pc.expires_at ?? null
+            };
+          })
+        );
+        return results;
+      } catch (error) {
+        console.error("Error fetching promo codes:", error);
+        throw new TRPCError3({ code: "INTERNAL_SERVER_ERROR", message: error?.message || "Failed to fetch promo codes" });
+      }
+    }),
+    // ─── Deactivate a Promo Code ──────────────────────────────────────────────────
+    deactivatePromoCode: adminProcedure2.input(z3.object({ promoCodeId: z3.string() })).mutation(async ({ input }) => {
+      const stripe = getStripe();
+      try {
+        await stripe.promotionCodes.update(input.promoCodeId, { active: false });
+        return { success: true };
+      } catch (error) {
+        console.error("Error deactivating promo code:", error);
+        throw new TRPCError3({ code: "INTERNAL_SERVER_ERROR", message: error?.message || "Failed to deactivate promo code" });
       }
     })
   }),
@@ -40730,7 +40894,7 @@ app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), async
         const { sendEmail: sendEmail2 } = await Promise.resolve().then(() => (init_email(), email_exports));
         const booking = await getBookingByRef2(bookingRef);
         if (booking && booking.bookingStatus === "pending_payment") {
-          await updateBookingStripe2(bookingRef, session.id, session.payment_intent);
+          await updateBookingStripe2(bookingRef, session.id, session.payment_intent, session.amount_total);
           const updated = await getBookingByRef2(bookingRef);
           if (updated) {
             await sendEmail2({ type: "guest_confirmation", booking: updated }).catch(console.error);
