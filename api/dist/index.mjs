@@ -10436,9 +10436,9 @@ var require_iterate = __commonJS({
     var async = require_async();
     var abort = require_abort();
     module.exports = iterate;
-    function iterate(list, iterator2, state, callback) {
+    function iterate(list2, iterator2, state, callback) {
       var key = state["keyedList"] ? state["keyedList"][state.index] : state.index;
-      state.jobs[key] = runJob(iterator2, key, list[key], function(error, output) {
+      state.jobs[key] = runJob(iterator2, key, list2[key], function(error, output) {
         if (!(key in state.jobs)) {
           return;
         }
@@ -10467,17 +10467,17 @@ var require_iterate = __commonJS({
 var require_state = __commonJS({
   "node_modules/.pnpm/asynckit@0.4.0/node_modules/asynckit/lib/state.js"(exports, module) {
     module.exports = state;
-    function state(list, sortMethod) {
-      var isNamedList = !Array.isArray(list), initState = {
+    function state(list2, sortMethod) {
+      var isNamedList = !Array.isArray(list2), initState = {
         index: 0,
-        keyedList: isNamedList || sortMethod ? Object.keys(list) : null,
+        keyedList: isNamedList || sortMethod ? Object.keys(list2) : null,
         jobs: {},
         results: isNamedList ? {} : [],
-        size: isNamedList ? Object.keys(list).length : list.length
+        size: isNamedList ? Object.keys(list2).length : list2.length
       };
       if (sortMethod) {
         initState.keyedList.sort(isNamedList ? sortMethod : function(a, b) {
-          return sortMethod(list[a], list[b]);
+          return sortMethod(list2[a], list2[b]);
         });
       }
       return initState;
@@ -10509,10 +10509,10 @@ var require_parallel = __commonJS({
     var initState = require_state();
     var terminator = require_terminator();
     module.exports = parallel;
-    function parallel(list, iterator2, callback) {
-      var state = initState(list);
-      while (state.index < (state["keyedList"] || list).length) {
-        iterate(list, iterator2, state, function(error, result) {
+    function parallel(list2, iterator2, callback) {
+      var state = initState(list2);
+      while (state.index < (state["keyedList"] || list2).length) {
+        iterate(list2, iterator2, state, function(error, result) {
           if (error) {
             callback(error, result);
             return;
@@ -10538,16 +10538,16 @@ var require_serialOrdered = __commonJS({
     module.exports = serialOrdered;
     module.exports.ascending = ascending;
     module.exports.descending = descending;
-    function serialOrdered(list, iterator2, sortMethod, callback) {
-      var state = initState(list, sortMethod);
-      iterate(list, iterator2, state, function iteratorHandler(error, result) {
+    function serialOrdered(list2, iterator2, sortMethod, callback) {
+      var state = initState(list2, sortMethod);
+      iterate(list2, iterator2, state, function iteratorHandler(error, result) {
         if (error) {
           callback(error, result);
           return;
         }
         state.index++;
-        if (state.index < (state["keyedList"] || list).length) {
-          iterate(list, iterator2, state, iteratorHandler);
+        if (state.index < (state["keyedList"] || list2).length) {
+          iterate(list2, iterator2, state, iteratorHandler);
           return;
         }
         callback(null, state.results);
@@ -10568,8 +10568,8 @@ var require_serial = __commonJS({
   "node_modules/.pnpm/asynckit@0.4.0/node_modules/asynckit/serial.js"(exports, module) {
     var serialOrdered = require_serialOrdered();
     module.exports = serial;
-    function serial(list, iterator2, callback) {
-      return serialOrdered(list, iterator2, null, callback);
+    function serial(list2, iterator2, callback) {
+      return serialOrdered(list2, iterator2, null, callback);
     }
   }
 });
@@ -14094,7 +14094,7 @@ function speedometer(samplesCount, min) {
   samplesCount = samplesCount || 10;
   const bytes2 = new Array(samplesCount);
   const timestamps = new Array(samplesCount);
-  let head = 0;
+  let head2 = 0;
   let tail = 0;
   let firstSampleTS;
   min = min !== void 0 ? min : 1e3;
@@ -14104,16 +14104,16 @@ function speedometer(samplesCount, min) {
     if (!firstSampleTS) {
       firstSampleTS = now;
     }
-    bytes2[head] = chunkLength;
-    timestamps[head] = now;
+    bytes2[head2] = chunkLength;
+    timestamps[head2] = now;
     let i = tail;
     let bytesCount = 0;
-    while (i !== head) {
+    while (i !== head2) {
       bytesCount += bytes2[i++];
       i = i % samplesCount;
     }
-    head = (head + 1) % samplesCount;
-    if (head === tail) {
+    head2 = (head2 + 1) % samplesCount;
+    if (head2 === tail) {
       tail = (tail + 1) % samplesCount;
     }
     if (now - firstSampleTS < min) {
@@ -24230,8 +24230,8 @@ var require_util3 = __commonJS({
       }
       return values;
     }
-    function getDecodeSplit(name, list) {
-      const value = list.get(name, true);
+    function getDecodeSplit(name, list2) {
+      const value = list2.get(name, true);
       if (value === null) {
         return null;
       }
@@ -25405,7 +25405,7 @@ var require_client_h1 = __commonJS({
           util3.destroy(this.socket, new HeadersOverflowError());
         }
       }
-      onUpgrade(head) {
+      onUpgrade(head2) {
         const { upgrade, client, socket, headers, statusCode } = this;
         assert(upgrade);
         assert(client[kSocket] === socket);
@@ -25420,7 +25420,7 @@ var require_client_h1 = __commonJS({
         this.shouldKeepAlive = null;
         this.headers = [];
         this.headersSize = 0;
-        socket.unshift(head);
+        socket.unshift(head2);
         socket[kParser].destroy();
         socket[kParser] = null;
         socket[kClient] = null;
@@ -31445,9 +31445,9 @@ var require_headers = __commonJS({
       // https://fetch.spec.whatwg.org/#dom-headers-getsetcookie
       getSetCookie() {
         webidl.brandCheck(this, _Headers);
-        const list = this.#headersList.cookies;
-        if (list) {
-          return [...list];
+        const list2 = this.#headersList.cookies;
+        if (list2) {
+          return [...list2];
         }
         return [];
       }
@@ -31487,8 +31487,8 @@ var require_headers = __commonJS({
       static getHeadersList(o) {
         return o.#headersList;
       }
-      static setHeadersList(o, list) {
-        o.#headersList = list;
+      static setHeadersList(o, list2) {
+        o.#headersList = list2;
       }
     };
     var { getHeadersGuard, setHeadersGuard, getHeadersList, setHeadersList } = Headers2;
@@ -32456,13 +32456,13 @@ var require_request2 = __commonJS({
         if (this.signal.aborted) {
           ac.abort(this.signal.reason);
         } else {
-          let list = dependentControllerMap.get(this.signal);
-          if (list === void 0) {
-            list = /* @__PURE__ */ new Set();
-            dependentControllerMap.set(this.signal, list);
+          let list2 = dependentControllerMap.get(this.signal);
+          if (list2 === void 0) {
+            list2 = /* @__PURE__ */ new Set();
+            dependentControllerMap.set(this.signal, list2);
           }
           const acRef = new WeakRef(ac);
-          list.add(acRef);
+          list2.add(acRef);
           util3.addAbortListener(
             ac.signal,
             buildAbort(acRef)
@@ -39887,7 +39887,7 @@ async function storagePut(relKey, data, contentType = "application/octet-stream"
     buffer = Buffer.from(data);
   }
   const blob = await put(key, buffer, {
-    access: "private",
+    access: "public",
     contentType,
     token: process.env.BLOB_READ_WRITE_TOKEN
   });
