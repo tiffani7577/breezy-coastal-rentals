@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const LOGO_URL =
   "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/breezy-logo-transparent_f177cea4.png";
+
+const MAX_STARTUP_WAIT_MS = 8_000;
 
 // Ping the health endpoint to detect when the server is ready
 async function pingServer(): Promise<boolean> {
@@ -24,6 +26,7 @@ export default function SplashScreen({ onReady }: SplashScreenProps) {
   const [dots, setDots] = useState(".");
   const [attempt, setAttempt] = useState(0);
   const [slow, setSlow] = useState(false);
+  const handedOff = useRef(false);
 
   // Animated dots
   useEffect(() => {
@@ -39,21 +42,37 @@ export default function SplashScreen({ onReady }: SplashScreenProps) {
     return () => clearTimeout(id);
   }, []);
 
-  // Retry loop — poll every 2s until server responds
+  // Retry briefly for a cold start, but never block the customer indefinitely.
+  // The app can render its public pages even when optional database-backed
+  // features are unavailable; those features should show their own errors.
   useEffect(() => {
     let cancelled = false;
+    let retryTimer: ReturnType<typeof setTimeout> | undefined;
+    const finish = () => {
+      if (cancelled || handedOff.current) return;
+      handedOff.current = true;
+      onReady();
+    };
+    const fallbackTimer = setTimeout(() => {
+      finish();
+    }, MAX_STARTUP_WAIT_MS);
+
     async function tryConnect() {
       const ok = await pingServer();
       if (cancelled) return;
       if (ok) {
-        onReady();
+        finish();
       } else {
         setAttempt((a) => a + 1);
-        setTimeout(tryConnect, 2000);
+        retryTimer = setTimeout(tryConnect, 2000);
       }
     }
     tryConnect();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+      clearTimeout(retryTimer);
+      clearTimeout(fallbackTimer);
+    };
   }, [onReady]);
 
   return (

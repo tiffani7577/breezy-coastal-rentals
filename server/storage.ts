@@ -1,4 +1,4 @@
-import { put, generateBlobPlaceholder, list, head } from "@vercel/blob";
+import { put } from "@vercel/blob";
 
 function normalizeKey(relKey: string): string {
   return relKey.replace(/^\/+/, "");
