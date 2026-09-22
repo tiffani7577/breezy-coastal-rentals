@@ -5,10 +5,11 @@ const LOGO_URL =
 
 const MAX_STARTUP_WAIT_MS = 8_000;
 
-// Ping the health endpoint to detect when the server is ready
+// Ping a dependency-free endpoint so a temporary database issue cannot leave
+// the customer on an indefinite loading screen.
 async function pingServer(): Promise<boolean> {
   try {
-    const res = await fetch("/api/trpc/availability.getBlockedDates?input=%7B%7D", {
+    const res = await fetch("/api/trpc/system.health", {
       method: "GET",
       signal: AbortSignal.timeout(5000),
     });

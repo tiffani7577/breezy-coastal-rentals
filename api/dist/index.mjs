@@ -684,6 +684,7 @@ var init_env = __esm({
 var db_exports = {};
 __export(db_exports, {
   addBlockedDate: () => addBlockedDate,
+  buildDatabaseConnectionOptions: () => buildDatabaseConnectionOptions,
   createBooking: () => createBooking,
   createDocument: () => createDocument,
   createInspectionPhoto: () => createInspectionPhoto,
@@ -707,6 +708,7 @@ __export(db_exports, {
   getUnreadCountForAdmin: () => getUnreadCountForAdmin,
   getUserByOpenId: () => getUserByOpenId,
   getWaiverByBookingId: () => getWaiverByBookingId,
+  isDatabaseReady: () => isDatabaseReady,
   markMessagesRead: () => markMessagesRead,
   removeBlockedDate: () => removeBlockedDate,
   updateBookingStatus: () => updateBookingStatus,
@@ -716,18 +718,78 @@ __export(db_exports, {
   upsertInspection: () => upsertInspection,
   upsertUser: () => upsertUser
 });
-import { and, eq, gte, lte } from "drizzle-orm";
+import { and, eq, gte, lte, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-async function getDb() {
-  if (!_db && process.env.DATABASE_URL) {
-    try {
-      _db = drizzle(process.env.DATABASE_URL);
-    } catch (error) {
-      console.warn("[Database] Failed to connect:", error);
-      _db = null;
-    }
+import { createPool } from "mysql2/promise";
+function buildDatabaseConnectionOptions(databaseUrl) {
+  const parsed = new URL(databaseUrl);
+  const isTiDBCloud = TIDB_HOST_PATTERN.test(parsed.hostname);
+  if (isTiDBCloud) {
+    parsed.searchParams.delete("ssl");
+    parsed.searchParams.delete("ssl-mode");
+    parsed.searchParams.delete("sslMode");
   }
-  return _db;
+  return {
+    uri: parsed.toString(),
+    waitForConnections: true,
+    connectionLimit: 5,
+    maxIdle: 2,
+    idleTimeout: 3e4,
+    queueLimit: 0,
+    connectTimeout: DATABASE_CONNECT_TIMEOUT_MS,
+    enableKeepAlive: true,
+    ...isTiDBCloud ? {
+      ssl: {
+        minVersion: "TLSv1.2",
+        rejectUnauthorized: true,
+        verifyIdentity: true
+      }
+    } : {}
+  };
+}
+async function connectDatabase(databaseUrl) {
+  const pool = createPool(buildDatabaseConnectionOptions(databaseUrl));
+  try {
+    await pool.query("SELECT 1");
+    return drizzle({ client: pool });
+  } catch (error) {
+    await pool.end().catch(() => void 0);
+    const message2 = error instanceof Error ? error.message : "Unknown connection error";
+    console.error("[Database] Connection health check failed:", message2);
+    return null;
+  }
+}
+async function getDb() {
+  if (_db) return _db;
+  const databaseUrl = process.env.DATABASE_URL;
+  if (!databaseUrl) {
+    console.error("[Database] DATABASE_URL is not configured");
+    return null;
+  }
+  if (!_connectionPromise) {
+    _connectionPromise = connectDatabase(databaseUrl).then((database) => {
+      _db = database;
+      return database;
+    });
+  }
+  try {
+    return await _connectionPromise;
+  } finally {
+    _connectionPromise = null;
+  }
+}
+async function isDatabaseReady() {
+  const db = await getDb();
+  if (!db) return false;
+  try {
+    await db.execute(sql`SELECT 1`);
+    return true;
+  } catch (error) {
+    const message2 = error instanceof Error ? error.message : "Unknown query error";
+    console.error("[Database] Readiness check failed:", message2);
+    _db = null;
+    return false;
+  }
 }
 async function upsertUser(user) {
   if (!user.openId) throw new Error("User openId is required for upsert");
@@ -978,13 +1040,16 @@ async function getMonthlyRevenue(year2, month) {
     bookings: result
   };
 }
-var _db;
+var TIDB_HOST_PATTERN, DATABASE_CONNECT_TIMEOUT_MS, _db, _connectionPromise;
 var init_db = __esm({
   "server/db.ts"() {
     "use strict";
     init_schema();
     init_env();
+    TIDB_HOST_PATTERN = /(^|\.)tidbcloud\.com$/i;
+    DATABASE_CONNECT_TIMEOUT_MS = 8e3;
     _db = null;
+    _connectionPromise = null;
   }
 });
 
@@ -10436,9 +10501,9 @@ var require_iterate = __commonJS({
     var async = require_async();
     var abort = require_abort();
     module.exports = iterate;
-    function iterate(list2, iterator2, state, callback) {
+    function iterate(list, iterator2, state, callback) {
       var key = state["keyedList"] ? state["keyedList"][state.index] : state.index;
-      state.jobs[key] = runJob(iterator2, key, list2[key], function(error, output) {
+      state.jobs[key] = runJob(iterator2, key, list[key], function(error, output) {
         if (!(key in state.jobs)) {
           return;
         }
@@ -10467,17 +10532,17 @@ var require_iterate = __commonJS({
 var require_state = __commonJS({
   "node_modules/.pnpm/asynckit@0.4.0/node_modules/asynckit/lib/state.js"(exports, module) {
     module.exports = state;
-    function state(list2, sortMethod) {
-      var isNamedList = !Array.isArray(list2), initState = {
+    function state(list, sortMethod) {
+      var isNamedList = !Array.isArray(list), initState = {
         index: 0,
-        keyedList: isNamedList || sortMethod ? Object.keys(list2) : null,
+        keyedList: isNamedList || sortMethod ? Object.keys(list) : null,
         jobs: {},
         results: isNamedList ? {} : [],
-        size: isNamedList ? Object.keys(list2).length : list2.length
+        size: isNamedList ? Object.keys(list).length : list.length
       };
       if (sortMethod) {
         initState.keyedList.sort(isNamedList ? sortMethod : function(a, b) {
-          return sortMethod(list2[a], list2[b]);
+          return sortMethod(list[a], list[b]);
         });
       }
       return initState;
@@ -10509,10 +10574,10 @@ var require_parallel = __commonJS({
     var initState = require_state();
     var terminator = require_terminator();
     module.exports = parallel;
-    function parallel(list2, iterator2, callback) {
-      var state = initState(list2);
-      while (state.index < (state["keyedList"] || list2).length) {
-        iterate(list2, iterator2, state, function(error, result) {
+    function parallel(list, iterator2, callback) {
+      var state = initState(list);
+      while (state.index < (state["keyedList"] || list).length) {
+        iterate(list, iterator2, state, function(error, result) {
           if (error) {
             callback(error, result);
             return;
@@ -10538,16 +10603,16 @@ var require_serialOrdered = __commonJS({
     module.exports = serialOrdered;
     module.exports.ascending = ascending;
     module.exports.descending = descending;
-    function serialOrdered(list2, iterator2, sortMethod, callback) {
-      var state = initState(list2, sortMethod);
-      iterate(list2, iterator2, state, function iteratorHandler(error, result) {
+    function serialOrdered(list, iterator2, sortMethod, callback) {
+      var state = initState(list, sortMethod);
+      iterate(list, iterator2, state, function iteratorHandler(error, result) {
         if (error) {
           callback(error, result);
           return;
         }
         state.index++;
-        if (state.index < (state["keyedList"] || list2).length) {
-          iterate(list2, iterator2, state, iteratorHandler);
+        if (state.index < (state["keyedList"] || list).length) {
+          iterate(list, iterator2, state, iteratorHandler);
           return;
         }
         callback(null, state.results);
@@ -10568,8 +10633,8 @@ var require_serial = __commonJS({
   "node_modules/.pnpm/asynckit@0.4.0/node_modules/asynckit/serial.js"(exports, module) {
     var serialOrdered = require_serialOrdered();
     module.exports = serial;
-    function serial(list2, iterator2, callback) {
-      return serialOrdered(list2, iterator2, null, callback);
+    function serial(list, iterator2, callback) {
+      return serialOrdered(list, iterator2, null, callback);
     }
   }
 });
@@ -14094,7 +14159,7 @@ function speedometer(samplesCount, min) {
   samplesCount = samplesCount || 10;
   const bytes2 = new Array(samplesCount);
   const timestamps = new Array(samplesCount);
-  let head2 = 0;
+  let head = 0;
   let tail = 0;
   let firstSampleTS;
   min = min !== void 0 ? min : 1e3;
@@ -14104,16 +14169,16 @@ function speedometer(samplesCount, min) {
     if (!firstSampleTS) {
       firstSampleTS = now;
     }
-    bytes2[head2] = chunkLength;
-    timestamps[head2] = now;
+    bytes2[head] = chunkLength;
+    timestamps[head] = now;
     let i = tail;
     let bytesCount = 0;
-    while (i !== head2) {
+    while (i !== head) {
       bytesCount += bytes2[i++];
       i = i % samplesCount;
     }
-    head2 = (head2 + 1) % samplesCount;
-    if (head2 === tail) {
+    head = (head + 1) % samplesCount;
+    if (head === tail) {
       tail = (tail + 1) % samplesCount;
     }
     if (now - firstSampleTS < min) {
@@ -24230,8 +24295,8 @@ var require_util3 = __commonJS({
       }
       return values;
     }
-    function getDecodeSplit(name, list2) {
-      const value = list2.get(name, true);
+    function getDecodeSplit(name, list) {
+      const value = list.get(name, true);
       if (value === null) {
         return null;
       }
@@ -25405,7 +25470,7 @@ var require_client_h1 = __commonJS({
           util3.destroy(this.socket, new HeadersOverflowError());
         }
       }
-      onUpgrade(head2) {
+      onUpgrade(head) {
         const { upgrade, client, socket, headers, statusCode } = this;
         assert(upgrade);
         assert(client[kSocket] === socket);
@@ -25420,7 +25485,7 @@ var require_client_h1 = __commonJS({
         this.shouldKeepAlive = null;
         this.headers = [];
         this.headersSize = 0;
-        socket.unshift(head2);
+        socket.unshift(head);
         socket[kParser].destroy();
         socket[kParser] = null;
         socket[kClient] = null;
@@ -31445,9 +31510,9 @@ var require_headers = __commonJS({
       // https://fetch.spec.whatwg.org/#dom-headers-getsetcookie
       getSetCookie() {
         webidl.brandCheck(this, _Headers);
-        const list2 = this.#headersList.cookies;
-        if (list2) {
-          return [...list2];
+        const list = this.#headersList.cookies;
+        if (list) {
+          return [...list];
         }
         return [];
       }
@@ -31487,8 +31552,8 @@ var require_headers = __commonJS({
       static getHeadersList(o) {
         return o.#headersList;
       }
-      static setHeadersList(o, list2) {
-        o.#headersList = list2;
+      static setHeadersList(o, list) {
+        o.#headersList = list;
       }
     };
     var { getHeadersGuard, setHeadersGuard, getHeadersList, setHeadersList } = Headers2;
@@ -32456,13 +32521,13 @@ var require_request2 = __commonJS({
         if (this.signal.aborted) {
           ac.abort(this.signal.reason);
         } else {
-          let list2 = dependentControllerMap.get(this.signal);
-          if (list2 === void 0) {
-            list2 = /* @__PURE__ */ new Set();
-            dependentControllerMap.set(this.signal, list2);
+          let list = dependentControllerMap.get(this.signal);
+          if (list === void 0) {
+            list = /* @__PURE__ */ new Set();
+            dependentControllerMap.set(this.signal, list);
           }
           const acRef = new WeakRef(ac);
-          list2.add(acRef);
+          list.add(acRef);
           util3.addAbortListener(
             ac.signal,
             buildAbort(acRef)
@@ -38392,12 +38457,14 @@ function registerOAuthRoutes(app2) {
 // server/routers.ts
 init_const();
 init_db();
-import { TRPCError as TRPCError3 } from "@trpc/server";
+import { TRPCError as TRPCError4 } from "@trpc/server";
 import { nanoid } from "nanoid";
 import { z as z3 } from "zod";
 
 // server/_core/systemRouter.ts
+init_db();
 import { z } from "zod";
+import { TRPCError as TRPCError3 } from "@trpc/server";
 
 // server/_core/notification.ts
 init_env();
@@ -38521,13 +38588,18 @@ var adminProcedure = t.procedure.use(
 
 // server/_core/systemRouter.ts
 var systemRouter = router({
-  health: publicProcedure.input(
-    z.object({
-      timestamp: z.number().min(0, "timestamp cannot be negative")
-    })
-  ).query(() => ({
+  health: publicProcedure.query(() => ({
     ok: true
   })),
+  readiness: publicProcedure.query(async () => {
+    if (!await isDatabaseReady()) {
+      throw new TRPCError3({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Database is temporarily unavailable"
+      });
+    }
+    return { ok: true, database: "ready" };
+  }),
   notifyOwner: adminProcedure.input(
     z.object({
       title: z.string().min(1, "title is required"),
@@ -40214,14 +40286,42 @@ async function deployPageContent(content) {
 // server/routers.ts
 var adminProcedure2 = protectedProcedure.use(({ ctx, next }) => {
   if (ctx.user.role !== "admin") {
-    throw new TRPCError3({ code: "FORBIDDEN", message: "Admin access required" });
+    throw new TRPCError4({ code: "FORBIDDEN", message: "Admin access required" });
   }
   return next({ ctx });
 });
 function getStripe() {
   const key = process.env.STRIPE_SECRET_KEY;
-  if (!key) throw new TRPCError3({ code: "INTERNAL_SERVER_ERROR", message: "Stripe not configured" });
+  if (!key) throw new TRPCError4({ code: "INTERNAL_SERVER_ERROR", message: "Stripe not configured" });
   return new Stripe(key, { apiVersion: "2025-02-24.acacia" });
+}
+var PUBLIC_SITE_URL = "https://www.breezycoastalrentals.com";
+var TAX_RATE = 0.07;
+var MIN_RENTAL_DAYS = 4;
+function parseDateOnly(value) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) return null;
+  const date2 = /* @__PURE__ */ new Date(`${value}T00:00:00Z`);
+  return Number.isNaN(date2.getTime()) ? null : date2;
+}
+function dateKey(value) {
+  return (value instanceof Date ? value : new Date(value)).toISOString().slice(0, 10);
+}
+function overlaps(start, end, existingStart, existingEnd) {
+  const requestedStart = parseDateOnly(start).getTime();
+  const requestedEnd = parseDateOnly(end).getTime();
+  const bookedStart = (/* @__PURE__ */ new Date(dateKey(existingStart) + "T00:00:00Z")).getTime();
+  const bookedEnd = (/* @__PURE__ */ new Date(dateKey(existingEnd) + "T00:00:00Z")).getTime();
+  return requestedStart <= bookedEnd && requestedEnd >= bookedStart;
+}
+function assertAllowedOrigin(origin2) {
+  try {
+    const url2 = new URL(origin2);
+    if (url2.origin !== PUBLIC_SITE_URL) throw new Error("unsupported origin");
+  } catch {
+    throw new TRPCError4({ code: "BAD_REQUEST", message: "Invalid checkout origin" });
+  }
+  return PUBLIC_SITE_URL;
 }
 var appRouter = router({
   system: systemRouter,
@@ -40235,10 +40335,10 @@ var appRouter = router({
     adminLogin: publicProcedure.input(z3.object({ email: z3.string(), password: z3.string() })).mutation(async ({ ctx, input }) => {
       const { adminEmail, adminPassword } = ENV;
       if (!adminEmail || !adminPassword) {
-        throw new TRPCError3({ code: "INTERNAL_SERVER_ERROR", message: "Admin credentials not configured" });
+        throw new TRPCError4({ code: "INTERNAL_SERVER_ERROR", message: "Admin credentials not configured" });
       }
       if (input.email !== adminEmail || input.password !== adminPassword) {
-        throw new TRPCError3({ code: "UNAUTHORIZED", message: "Invalid email or password" });
+        throw new TRPCError4({ code: "UNAUTHORIZED", message: "Invalid email or password" });
       }
       const ADMIN_OPEN_ID = "admin-local";
       await upsertUser({
@@ -40250,7 +40350,7 @@ var appRouter = router({
       });
       const adminUser = await getUserByOpenId(ADMIN_OPEN_ID);
       if (!adminUser) {
-        throw new TRPCError3({
+        throw new TRPCError4({
           code: "INTERNAL_SERVER_ERROR",
           message: "Could not connect to the database. Please try again in a moment."
         });
@@ -40309,18 +40409,48 @@ var appRouter = router({
         guestEmail: z3.string().email(),
         guestPhone: z3.string().min(10),
         airbnbBookingName: z3.string().optional().default(""),
-        startDate: z3.string(),
-        endDate: z3.string(),
-        totalDays: z3.number().min(1),
+        startDate: z3.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+        endDate: z3.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+        totalDays: z3.number().int().min(1),
         dailyRate: z3.string(),
         deliveryFee: z3.string(),
         totalAmount: z3.string(),
         waiverLegalName: z3.string().min(2),
-        waiverAgreed: z3.boolean(),
+        waiverAgreed: z3.literal(true),
         waiverIp: z3.string().optional(),
         waiverUserAgent: z3.string().optional()
       })
     ).mutation(async ({ input }) => {
+      const startDate = parseDateOnly(input.startDate);
+      const endDate = parseDateOnly(input.endDate);
+      if (!startDate || !endDate || endDate <= startDate) {
+        throw new TRPCError4({ code: "BAD_REQUEST", message: "Please select a valid rental date range." });
+      }
+      const calculatedDays = Math.round((endDate.getTime() - startDate.getTime()) / 864e5);
+      if (calculatedDays !== input.totalDays || calculatedDays < MIN_RENTAL_DAYS) {
+        throw new TRPCError4({ code: "BAD_REQUEST", message: `Minimum rental is ${MIN_RENTAL_DAYS} nights.` });
+      }
+      const [pricing2, blockedDates, approvedRanges] = await Promise.all([
+        getPricing(),
+        getBlockedDates(),
+        getApprovedBookingDates()
+      ]);
+      if (!pricing2) {
+        throw new TRPCError4({ code: "INTERNAL_SERVER_ERROR", message: "Pricing is temporarily unavailable. Please try again shortly." });
+      }
+      if (blockedDates.some((blocked) => dateKey(blocked.blockDate) >= input.startDate && dateKey(blocked.blockDate) <= input.endDate)) {
+        throw new TRPCError4({ code: "CONFLICT", message: "Those dates are no longer available. Please choose another range." });
+      }
+      if (approvedRanges.some((range) => overlaps(input.startDate, input.endDate, range.startDate, range.endDate))) {
+        throw new TRPCError4({ code: "CONFLICT", message: "Those dates are no longer available. Please choose another range." });
+      }
+      const dailyRate = Number(pricing2.dailyRate);
+      const deliveryFee = Number(pricing2.deliveryFee ?? 0);
+      const subtotal = calculatedDays * dailyRate;
+      const totalAmount = subtotal + subtotal * TAX_RATE + deliveryFee;
+      if (!Number.isFinite(dailyRate) || !Number.isFinite(deliveryFee) || !Number.isFinite(totalAmount)) {
+        throw new TRPCError4({ code: "INTERNAL_SERVER_ERROR", message: "Pricing is invalid. Please contact support." });
+      }
       const bookingRef = nanoid(10).toUpperCase();
       const booking = await createBooking({
         bookingRef,
@@ -40330,10 +40460,10 @@ var appRouter = router({
         airbnbBookingName: input.airbnbBookingName ?? "",
         startDate: /* @__PURE__ */ new Date(input.startDate + "T12:00:00Z"),
         endDate: /* @__PURE__ */ new Date(input.endDate + "T12:00:00Z"),
-        totalDays: input.totalDays,
-        dailyRate: input.dailyRate,
-        deliveryFee: input.deliveryFee,
-        totalAmount: input.totalAmount,
+        totalDays: calculatedDays,
+        dailyRate: dailyRate.toFixed(2),
+        deliveryFee: deliveryFee.toFixed(2),
+        totalAmount: totalAmount.toFixed(2),
         bookingStatus: "pending_payment",
         documentStatus: "pending"
       });
@@ -40348,7 +40478,7 @@ var appRouter = router({
     }),
     getByRef: publicProcedure.input(z3.object({ ref: z3.string() })).query(async ({ input }) => {
       const booking = await getBookingByRef(input.ref);
-      if (!booking) throw new TRPCError3({ code: "NOT_FOUND" });
+      if (!booking) throw new TRPCError4({ code: "NOT_FOUND" });
       const docs = await getDocumentsByBookingId(booking.id);
       const waiver = await getWaiverByBookingId(booking.id);
       return { booking, documents: docs, waiver };
@@ -40360,8 +40490,21 @@ var appRouter = router({
       })
     ).mutation(async ({ input }) => {
       const booking = await getBookingByRef(input.bookingRef);
-      if (!booking) throw new TRPCError3({ code: "NOT_FOUND" });
+      if (!booking) throw new TRPCError4({ code: "NOT_FOUND" });
+      if (booking.bookingStatus !== "pending_payment") {
+        throw new TRPCError4({ code: "CONFLICT", message: "This booking has already been submitted or paid." });
+      }
+      const [documents2, waiver] = await Promise.all([
+        getDocumentsByBookingId(booking.id),
+        getWaiverByBookingId(booking.id)
+      ]);
+      const hasLicense = documents2.some((doc) => doc.documentType === "drivers_license");
+      const hasInsurance = documents2.some((doc) => doc.documentType === "proof_of_insurance");
+      if (!hasLicense || !hasInsurance || !waiver?.agreedToTerms) {
+        throw new TRPCError4({ code: "BAD_REQUEST", message: "Required documents and waiver must be completed before payment." });
+      }
       const stripe = getStripe();
+      const checkoutOrigin = assertAllowedOrigin(input.origin);
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
         mode: "payment",
@@ -40382,7 +40525,7 @@ var appRouter = router({
               currency: "usd",
               product_data: {
                 name: "Refundable Security Deposit",
-                description: "$300 refundable deposit \u2014 returned after cart is inspected at end of rental. Admin releases hold via Stripe dashboard."
+                description: "$300 refundable security deposit \u2014 refunded after the cart is inspected at the end of the rental."
               },
               unit_amount: 3e4
             },
@@ -40391,18 +40534,21 @@ var appRouter = router({
         ],
         allow_promotion_codes: true,
         metadata: { bookingRef: input.bookingRef },
-        success_url: `${input.origin}/booking/confirmation?ref=${input.bookingRef}&session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${input.origin}/booking?step=5&ref=${input.bookingRef}`
+        success_url: `${checkoutOrigin}/booking/confirmation?ref=${input.bookingRef}&session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${checkoutOrigin}/booking?cancelled=1`
       });
       return { url: session.url, sessionId: session.id };
     }),
     confirmPayment: publicProcedure.input(z3.object({ bookingRef: z3.string(), sessionId: z3.string() })).mutation(async ({ input }) => {
       const booking = await getBookingByRef(input.bookingRef);
-      if (!booking) throw new TRPCError3({ code: "NOT_FOUND" });
+      if (!booking) throw new TRPCError4({ code: "NOT_FOUND" });
       if (booking.bookingStatus === "pending_payment") {
         const stripe = getStripe();
         const session = await stripe.checkout.sessions.retrieve(input.sessionId);
-        if (session.payment_status === "paid") {
+        if (session.metadata?.bookingRef !== input.bookingRef) {
+          throw new TRPCError4({ code: "BAD_REQUEST", message: "This payment does not match the booking." });
+        }
+        if (session.payment_status === "paid" && session.amount_total !== null) {
           await updateBookingStripe(
             input.bookingRef,
             input.sessionId,
@@ -40410,7 +40556,7 @@ var appRouter = router({
             session.amount_total ?? void 0
           );
         } else {
-          throw new TRPCError3({
+          throw new TRPCError4({
             code: "BAD_REQUEST",
             message: `Payment status is ${session.payment_status}. Please complete payment in the Stripe checkout window.`
           });
@@ -40445,11 +40591,11 @@ var appRouter = router({
     ).mutation(async ({ input }) => {
       const maxSize = 10 * 1024 * 1024;
       if (input.fileSize > maxSize) {
-        throw new TRPCError3({ code: "BAD_REQUEST", message: "File too large (max 10MB)" });
+        throw new TRPCError4({ code: "BAD_REQUEST", message: "File too large (max 10MB)" });
       }
       const allowed = ["image/jpeg", "image/png", "application/pdf"];
       if (!allowed.includes(input.mimeType)) {
-        throw new TRPCError3({ code: "BAD_REQUEST", message: "Invalid file type" });
+        throw new TRPCError4({ code: "BAD_REQUEST", message: "Invalid file type" });
       }
       const buffer = Buffer.from(input.fileBase64, "base64");
       const ext = input.fileName.split(".").pop() ?? "bin";
@@ -40475,7 +40621,7 @@ var appRouter = router({
     }),
     getBookingDetail: adminProcedure2.input(z3.object({ id: z3.number() })).query(async ({ input }) => {
       const booking = await getBookingById(input.id);
-      if (!booking) throw new TRPCError3({ code: "NOT_FOUND" });
+      if (!booking) throw new TRPCError4({ code: "NOT_FOUND" });
       const docs = await getDocumentsByBookingId(booking.id);
       const waiver = await getWaiverByBookingId(booking.id);
       return { booking, documents: docs, waiver };
@@ -40483,10 +40629,10 @@ var appRouter = router({
     removeBooking: adminProcedure2.input(z3.object({ id: z3.number() })).mutation(async ({ input }) => {
       const booking = await getBookingById(input.id);
       if (!booking) {
-        throw new TRPCError3({ code: "NOT_FOUND", message: "Booking not found" });
+        throw new TRPCError4({ code: "NOT_FOUND", message: "Booking not found" });
       }
       if (booking.bookingStatus === "approved" || booking.bookingStatus === "completed") {
-        throw new TRPCError3({
+        throw new TRPCError4({
           code: "BAD_REQUEST",
           message: "This booking was already approved. You cannot remove it \u2014 use Reject or Mark as Completed instead."
         });
@@ -40502,6 +40648,15 @@ var appRouter = router({
         rejectionReason: z3.string().optional()
       })
     ).mutation(async ({ input }) => {
+      const existingBooking = await getBookingById(input.id);
+      if (!existingBooking) throw new TRPCError4({ code: "NOT_FOUND", message: "Booking not found" });
+      if (input.status === "rejected" && existingBooking.stripePaymentIntentId && existingBooking.bookingStatus !== "rejected" && existingBooking.bookingStatus !== "cancelled") {
+        const stripe = getStripe();
+        await stripe.refunds.create(
+          { payment_intent: existingBooking.stripePaymentIntentId },
+          { idempotencyKey: `booking-refund-${existingBooking.bookingRef}` }
+        );
+      }
       await updateBookingStatus(input.id, input.status, {
         adminNotes: input.adminNotes,
         rejectionReason: input.rejectionReason
@@ -40526,7 +40681,7 @@ var appRouter = router({
     }),
     getBookingDetailWithMessages: adminProcedure2.input(z3.object({ id: z3.number() })).query(async ({ input, ctx }) => {
       const booking = await getBookingById(input.id);
-      if (!booking) throw new TRPCError3({ code: "NOT_FOUND" });
+      if (!booking) throw new TRPCError4({ code: "NOT_FOUND" });
       const docs = await getDocumentsByBookingId(booking.id);
       const waiver = await getWaiverByBookingId(booking.id);
       const messages = await getMessagesByBookingId(booking.id);
@@ -40535,7 +40690,7 @@ var appRouter = router({
     }),
     sendMessage: adminProcedure2.input(z3.object({ bookingId: z3.number(), content: z3.string().min(1).max(2e3) })).mutation(async ({ input, ctx }) => {
       const booking = await getBookingById(input.bookingId);
-      if (!booking) throw new TRPCError3({ code: "NOT_FOUND" });
+      if (!booking) throw new TRPCError4({ code: "NOT_FOUND" });
       await createMessage({
         bookingId: input.bookingId,
         senderRole: "admin",
@@ -40751,7 +40906,7 @@ var appRouter = router({
       } catch (error) {
         console.error("Error updating promos:", error);
         const message2 = error?.message || "Failed to update promo codes";
-        throw new TRPCError3({ code: "INTERNAL_SERVER_ERROR", message: message2 });
+        throw new TRPCError4({ code: "INTERNAL_SERVER_ERROR", message: message2 });
       }
     }),
     // ─── List Active Promo Codes ──────────────────────────────────────────────────
@@ -40801,7 +40956,7 @@ var appRouter = router({
         return results;
       } catch (error) {
         console.error("Error fetching promo codes:", error);
-        throw new TRPCError3({ code: "INTERNAL_SERVER_ERROR", message: error?.message || "Failed to fetch promo codes" });
+        throw new TRPCError4({ code: "INTERNAL_SERVER_ERROR", message: error?.message || "Failed to fetch promo codes" });
       }
     }),
     // ─── Deactivate a Promo Code ──────────────────────────────────────────────────
@@ -40812,7 +40967,7 @@ var appRouter = router({
         return { success: true };
       } catch (error) {
         console.error("Error deactivating promo code:", error);
-        throw new TRPCError3({ code: "INTERNAL_SERVER_ERROR", message: error?.message || "Failed to deactivate promo code" });
+        throw new TRPCError4({ code: "INTERNAL_SERVER_ERROR", message: error?.message || "Failed to deactivate promo code" });
       }
     })
   }),
@@ -40820,14 +40975,14 @@ var appRouter = router({
   messages: router({
     getByRef: publicProcedure.input(z3.object({ ref: z3.string() })).query(async ({ input }) => {
       const booking = await getBookingByRef(input.ref);
-      if (!booking) throw new TRPCError3({ code: "NOT_FOUND" });
+      if (!booking) throw new TRPCError4({ code: "NOT_FOUND" });
       const messages = await getMessagesByBookingId(booking.id);
       await markMessagesRead(booking.id, "guest");
       return { messages, guestName: booking.guestName };
     }),
     sendByRef: publicProcedure.input(z3.object({ ref: z3.string(), content: z3.string().min(1).max(2e3) })).mutation(async ({ input }) => {
       const booking = await getBookingByRef(input.ref);
-      if (!booking) throw new TRPCError3({ code: "NOT_FOUND" });
+      if (!booking) throw new TRPCError4({ code: "NOT_FOUND" });
       await createMessage({
         bookingId: booking.id,
         senderRole: "guest",

@@ -23,7 +23,7 @@ git push origin main
 In Vercel → Settings → Environment Variables, add these:
 
 **Required:**
-- `DATABASE_URL` - Your TiDB/MySQL connection string
+- `DATABASE_URL` - Your TiDB/MySQL connection string. For a TiDB Cloud public endpoint, use the connection URL from TiDB Cloud; the application enforces TLS 1.2 and certificate verification for `*.tidbcloud.com` hosts.
 - `STRIPE_SECRET_KEY` - From Stripe Dashboard (Live)
 - `STRIPE_WEBHOOK_SECRET` - From Stripe Webhooks
 - `VITE_STRIPE_PUBLISHABLE_KEY` - From Stripe Dashboard (Live)
@@ -45,8 +45,9 @@ In Vercel → Settings → Environment Variables, add these:
 
 Click "Deploy" in Vercel. The build will:
 1. Install dependencies (`pnpm install`)
-2. Migrate database schema (`pnpm db:push`)
-3. Build the app (`pnpm build`)
+2. Build the app (`pnpm build`)
+
+> Database migrations are deliberately **not** run during a website build. Run `pnpm db:push` from a controlled environment with `DATABASE_URL` configured, verify the migration, and then deploy. This prevents a failed or concurrent schema change from taking the customer-facing site offline.
 
 ### 5. Configure Domain
 
@@ -61,7 +62,7 @@ Click "Deploy" in Vercel. The build will:
 3. Events: `charge.succeeded`, `charge.failed`, `payment_intent.succeeded`, `payment_intent.payment_failed`
 4. Copy signing secret and add to Vercel as `STRIPE_WEBHOOK_SECRET`
 
-## Automatic Redeployment
+## Automatic Redeployment and Health Checks
 
 Every push to `main` branch automatically triggers a Vercel redeploy (~2-3 minutes).
 
@@ -72,10 +73,12 @@ git push origin main
 # Vercel automatically deploys
 ```
 
+The repository also runs a production readiness check after each `main` push and every 15 minutes. It verifies both the deployed application and its database connection at `https://www.breezycoastalrentals.com/api/trpc/system.readiness`.
+
 ## Build Configuration
 
 Build settings are in `vercel.json`:
-- **Build Command:** `pnpm install && pnpm db:push && pnpm build`
+- **Build Command:** `pnpm build`
 - **Output Directory:** `client/dist`
 - **Node Version:** 22.x
 

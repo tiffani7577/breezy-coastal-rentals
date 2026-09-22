@@ -1,5 +1,6 @@
-import { and, desc, eq, gt, gte, lte, ne, or } from "drizzle-orm";
+import { and, desc, eq, gt, gte, lte, ne, or, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
+import { createPool, type Pool, type PoolOptions } from "mysql2/promise";
 import {
   availabilityBlocks,
   bookingMessages,
@@ -21,18 +22,106 @@ import {
   waiverSignatures,
 } from "../drizzle/schema";
 
-let _db: ReturnType<typeof drizzle> | null = null;
+type Database = ReturnType<typeof drizzle<Record<string, never>, Pool>>;
 
-export async function getDb() {
-  if (!_db && process.env.DATABASE_URL) {
-    try {
-      _db = drizzle(process.env.DATABASE_URL);
-    } catch (error) {
-      console.warn("[Database] Failed to connect:", error);
-      _db = null;
-    }
+const TIDB_HOST_PATTERN = /(^|\.)tidbcloud\.com$/i;
+const DATABASE_CONNECT_TIMEOUT_MS = 8_000;
+
+let _db: Database | null = null;
+let _connectionPromise: Promise<Database | null> | null = null;
+
+/**
+ * Builds a small, serverless-safe MySQL pool configuration. TiDB Cloud public
+ * endpoints require TLS; mysql2 does not reliably infer that requirement from
+ * a bare mysql:// URL, so it is enforced here instead of trusting a deployment
+ * dashboard setting or a URL query parameter.
+ */
+export function buildDatabaseConnectionOptions(databaseUrl: string): PoolOptions {
+  const parsed = new URL(databaseUrl);
+  const isTiDBCloud = TIDB_HOST_PATTERN.test(parsed.hostname);
+
+  if (isTiDBCloud) {
+    // Remove URL-level SSL flags before supplying the typed mysql2 option.
+    // mysql2 rejects values such as "ssl=true", while TiDB requires TLS.
+    parsed.searchParams.delete("ssl");
+    parsed.searchParams.delete("ssl-mode");
+    parsed.searchParams.delete("sslMode");
   }
-  return _db;
+
+  return {
+    uri: parsed.toString(),
+    waitForConnections: true,
+    connectionLimit: 5,
+    maxIdle: 2,
+    idleTimeout: 30_000,
+    queueLimit: 0,
+    connectTimeout: DATABASE_CONNECT_TIMEOUT_MS,
+    enableKeepAlive: true,
+    ...(isTiDBCloud
+      ? {
+          ssl: {
+            minVersion: "TLSv1.2",
+            rejectUnauthorized: true,
+            verifyIdentity: true,
+          },
+        }
+      : {}),
+  };
+}
+
+async function connectDatabase(databaseUrl: string): Promise<Database | null> {
+  const pool = createPool(buildDatabaseConnectionOptions(databaseUrl));
+
+  try {
+    // Establish the connection now, rather than letting the first customer
+    // request discover a malformed URL, expired password, or missing TLS.
+    await pool.query("SELECT 1");
+    return drizzle({ client: pool });
+  } catch (error) {
+    await pool.end().catch(() => undefined);
+    const message = error instanceof Error ? error.message : "Unknown connection error";
+    console.error("[Database] Connection health check failed:", message);
+    return null;
+  }
+}
+
+export async function getDb(): Promise<Database | null> {
+  if (_db) return _db;
+
+  const databaseUrl = process.env.DATABASE_URL;
+  if (!databaseUrl) {
+    console.error("[Database] DATABASE_URL is not configured");
+    return null;
+  }
+
+  if (!_connectionPromise) {
+    _connectionPromise = connectDatabase(databaseUrl).then((database) => {
+      _db = database;
+      return database;
+    });
+  }
+
+  try {
+    return await _connectionPromise;
+  } finally {
+    _connectionPromise = null;
+  }
+}
+
+/** Used by the production readiness endpoint and deployment smoke checks. */
+export async function isDatabaseReady(): Promise<boolean> {
+  const db = await getDb();
+  if (!db) return false;
+
+  try {
+    await db.execute(sql`SELECT 1`);
+    return true;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown query error";
+    console.error("[Database] Readiness check failed:", message);
+    _db = null;
+    return false;
+  }
 }
 
 // ─── Users ───────────────────────────────────────────────────────────────────

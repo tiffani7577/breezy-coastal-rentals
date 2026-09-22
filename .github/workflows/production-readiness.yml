@@ -1,0 +1,51 @@
+---
+name: Production readiness
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-readiness
+  cancel-in-progress: false
+
+jobs:
+  verify-production:
+    name: Verify app and database readiness
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      READINESS_URL: https://www.breezycoastalrentals.com/api/trpc/system.readiness
+    steps:
+      - name: Allow the production deployment to become available
+        if: github.event_name == 'push'
+        run: sleep 60
+
+      - name: Verify the deployed application and database
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          for attempt in $(seq 1 8); do
+            echo "Readiness attempt ${attempt}/8"
+            response="$(curl --fail --silent --show-error --max-time 20 "${READINESS_URL}" || true)"
+
+            if printf '%s' "${response}" | grep -q '"ok":true' && \
+               printf '%s' "${response}" | grep -q '"database":"ready"'; then
+              echo "Production application and database are ready."
+              exit 0
+            fi
+
+            if [ "${attempt}" -lt 8 ]; then
+              sleep 15
+            fi
+          done
+
+          echo "Production readiness check failed: the application or database did not return a healthy response."
+          exit 1
