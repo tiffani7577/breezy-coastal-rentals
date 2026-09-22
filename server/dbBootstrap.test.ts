@@ -24,5 +24,6 @@ describe("database schema bootstrap", () => {
 
     expect(statements).toHaveLength(getSchemaStatements().length + 1);
     expect(statements.at(-1)).toContain("INSERT INTO `pricing`");
+    expect(statements.at(-1)).toContain("ON DUPLICATE KEY UPDATE");
   });
 });

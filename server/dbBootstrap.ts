@@ -136,9 +136,9 @@ const SCHEMA_STATEMENTS = [
 ] as const;
 
 const PRICING_SEED_STATEMENT = `
-  INSERT INTO \`pricing\` (\`dailyRate\`, \`deliveryFee\`, \`cartName\`)
-  SELECT '160.00', '0.00', 'Breezy Golf Cart'
-  WHERE NOT EXISTS (SELECT 1 FROM \`pricing\` LIMIT 1)
+  INSERT INTO \`pricing\` (\`id\`, \`dailyRate\`, \`deliveryFee\`, \`cartName\`)
+  VALUES (1, '160.00', '0.00', 'Breezy Golf Cart')
+  ON DUPLICATE KEY UPDATE \`id\` = \`id\`
 `;
 
 let schemaBootstrapPromise: Promise<void> | null = null;
