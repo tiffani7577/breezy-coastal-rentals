@@ -1,5 +1,5 @@
 {
-  "buildCommand": "pnpm drizzle-kit migrate && pnpm build",
+  "buildCommand": "pnpm build",
   "outputDirectory": "client/dist",
   "installCommand": "pnpm install",
   "functions": {
