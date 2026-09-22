@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Breezy Coastal Rentals logo</title>
+  <desc id="desc">A coastal blue circular mark with a white golf cart and ocean waves.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b9fd4"/>
+      <stop offset="1" stop-color="#07517e"/>
+    </linearGradient>
+    <linearGradient id="sun" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffe9a8"/>
+      <stop offset="1" stop-color="#f5b95c"/>
+    </linearGradient>
+  </defs>
+  <circle cx="256" cy="256" r="244" fill="#06283d"/>
+  <circle cx="256" cy="256" r="226" fill="url(#sky)"/>
+  <circle cx="353" cy="145" r="54" fill="url(#sun)" opacity=".95"/>
+  <path d="M30 303c58-31 105-31 163 0s105 31 163 0 105-31 163 0v102H30Z" fill="#063f62" opacity=".92"/>
+  <path d="M30 346c58-31 105-31 163 0s105 31 163 0 105-31 163 0v59H30Z" fill="#eefaff"/>
+  <path d="M30 384c58-31 105-31 163 0s105 31 163 0 105-31 163 0v21H30Z" fill="#6ed3df"/>
+  <g fill="#fff" stroke="#06283d" stroke-width="10" stroke-linejoin="round">
+    <path d="M144 284h208l30 52H118Z"/>
+    <path d="M165 284 185 218h111l30 66Z" fill="#f8fbfd"/>
+    <path d="M206 228h80l18 56h-115Z" fill="#9bdde8"/>
+    <path d="M174 218h126" fill="none"/>
+    <path d="M224 208h30v10h-30Z"/>
+    <circle cx="172" cy="347" r="28" fill="#263b4a"/>
+    <circle cx="326" cy="347" r="28" fill="#263b4a"/>
+    <circle cx="172" cy="347" r="11" fill="#d8e5e8" stroke="none"/>
+    <circle cx="326" cy="347" r="11" fill="#d8e5e8" stroke="none"/>
+    <path d="M293 236v42" fill="none"/>
+  </g>
+  <path d="M218 258c13-14 31-14 44 0" fill="none" stroke="#0b6c91" stroke-width="8" stroke-linecap="round"/>
+</svg>

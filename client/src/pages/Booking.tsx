@@ -472,7 +472,7 @@ export default function Booking() {
             </button>
           </Link>
           <div className="flex items-center gap-2 flex-1">
-            <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/breezy-logo-transparent_f177cea4.png" alt="Breezy" className="h-8 w-8 object-contain" />
+            <img src="/breezy-logo.svg" alt="Breezy" className="h-8 w-8 object-contain" />
             <span style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "16px" }}>
               Breezy
             </span>

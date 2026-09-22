@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 const LOGO_URL =
-  "https://d2xsxph8kpxj0f.cloudfront.net/310519663413300520/7hUDh8nJHPTxQ2ComhxGSN/breezy-logo-transparent_f177cea4.png";
+  "/breezy-logo.svg";
 
 const MAX_STARTUP_WAIT_MS = 8_000;
 
