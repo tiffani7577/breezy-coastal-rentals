@@ -1,6 +1,7 @@
 import { and, desc, eq, gt, gte, lte, ne, or, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { createPool, type Pool, type PoolOptions } from "mysql2/promise";
+import { ensureDatabaseSchema } from "./dbBootstrap";
 import {
   availabilityBlocks,
   bookingMessages,
@@ -76,6 +77,7 @@ async function connectDatabase(databaseUrl: string): Promise<Database | null> {
     // Establish the connection now, rather than letting the first customer
     // request discover a malformed URL, expired password, or missing TLS.
     await pool.query("SELECT 1");
+    await ensureDatabaseSchema(pool);
     return drizzle({ client: pool });
   } catch (error) {
     await pool.end().catch(() => undefined);

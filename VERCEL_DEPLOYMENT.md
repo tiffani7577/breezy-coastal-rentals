@@ -47,7 +47,7 @@ Click "Deploy" in Vercel. The build will:
 1. Install dependencies (`pnpm install`)
 2. Build the app (`pnpm build`)
 
-> Database migrations are deliberately **not** run during a website build. Run `pnpm db:push` from a controlled environment with `DATABASE_URL` configured, verify the migration, and then deploy. This prevents a failed or concurrent schema change from taking the customer-facing site offline.
+> Database migrations are deliberately **not** run during a website build. Run `pnpm db:push` from a controlled environment with `DATABASE_URL` configured, verify the migration, and then deploy. The command is idempotent and seeds the required default pricing record if it is absent. This prevents a failed or concurrent schema change from taking the customer-facing site offline.
 
 ### 5. Configure Domain
 
