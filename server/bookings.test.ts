@@ -164,8 +164,8 @@ describe("bookings.create", () => {
       guestPhone: "(555) 000-0000",
       airbnbBookingName: "Jane Smith",
       startDate: "2026-04-01",
-      endDate: "2026-04-03",
-      totalDays: 3,
+      endDate: "2026-04-05",
+      totalDays: 4,
       dailyRate: "89.00",
       deliveryFee: "0.00",
       totalAmount: "267.00",
@@ -227,6 +227,13 @@ describe("admin.getAllBookings", () => {
 
 describe("admin.updateBookingStatus", () => {
   it("allows admin to update booking status", async () => {
+    const { getBookingById } = await import("./db");
+    (getBookingById as any).mockResolvedValueOnce({
+      id: 1,
+      bookingRef: "TESTREF001",
+      bookingStatus: "pending_payment",
+      stripePaymentIntentId: null,
+    });
     const caller = appRouter.createCaller(createAdminContext());
     const result = await caller.admin.updateBookingStatus({
       id: 1,

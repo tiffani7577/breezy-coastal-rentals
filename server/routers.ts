@@ -66,6 +66,39 @@ function getStripe() {
   return new Stripe(key, { apiVersion: "2025-02-24.acacia" as any });
 }
 
+const PUBLIC_SITE_URL = "https://www.breezycoastalrentals.com";
+const TAX_RATE = 0.07;
+const MIN_RENTAL_DAYS = 4;
+
+function parseDateOnly(value: string) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) return null;
+  const date = new Date(`${value}T00:00:00Z`);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function dateKey(value: Date | string) {
+  return (value instanceof Date ? value : new Date(value)).toISOString().slice(0, 10);
+}
+
+function overlaps(start: string, end: string, existingStart: Date | string, existingEnd: Date | string) {
+  const requestedStart = parseDateOnly(start)!.getTime();
+  const requestedEnd = parseDateOnly(end)!.getTime();
+  const bookedStart = new Date(dateKey(existingStart) + "T00:00:00Z").getTime();
+  const bookedEnd = new Date(dateKey(existingEnd) + "T00:00:00Z").getTime();
+  return requestedStart <= bookedEnd && requestedEnd >= bookedStart;
+}
+
+function assertAllowedOrigin(origin: string) {
+  try {
+    const url = new URL(origin);
+    if (url.origin !== PUBLIC_SITE_URL) throw new Error("unsupported origin");
+  } catch {
+    throw new TRPCError({ code: "BAD_REQUEST", message: "Invalid checkout origin" });
+  }
+  return PUBLIC_SITE_URL;
+}
+
 // ─── App Router ───────────────────────────────────────────────────────────────
 export const appRouter = router({
   system: systemRouter,
@@ -167,19 +200,51 @@ export const appRouter = router({
           guestEmail: z.string().email(),
           guestPhone: z.string().min(10),
           airbnbBookingName: z.string().optional().default(""),
-          startDate: z.string(),
-          endDate: z.string(),
-          totalDays: z.number().min(1),
+          startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+          endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+          totalDays: z.number().int().min(1),
           dailyRate: z.string(),
           deliveryFee: z.string(),
           totalAmount: z.string(),
           waiverLegalName: z.string().min(2),
-          waiverAgreed: z.boolean(),
+          waiverAgreed: z.literal(true),
           waiverIp: z.string().optional(),
           waiverUserAgent: z.string().optional(),
         })
       )
       .mutation(async ({ input }) => {
+        const startDate = parseDateOnly(input.startDate);
+        const endDate = parseDateOnly(input.endDate);
+        if (!startDate || !endDate || endDate <= startDate) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Please select a valid rental date range." });
+        }
+        const calculatedDays = Math.round((endDate.getTime() - startDate.getTime()) / 86_400_000);
+        if (calculatedDays !== input.totalDays || calculatedDays < MIN_RENTAL_DAYS) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: `Minimum rental is ${MIN_RENTAL_DAYS} nights.` });
+        }
+
+        const [pricing, blockedDates, approvedRanges] = await Promise.all([
+          getPricing(),
+          getBlockedDates(),
+          getApprovedBookingDates(),
+        ]);
+        if (!pricing) {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Pricing is temporarily unavailable. Please try again shortly." });
+        }
+        if (blockedDates.some((blocked) => dateKey(blocked.blockDate) >= input.startDate && dateKey(blocked.blockDate) <= input.endDate)) {
+          throw new TRPCError({ code: "CONFLICT", message: "Those dates are no longer available. Please choose another range." });
+        }
+        if (approvedRanges.some((range) => overlaps(input.startDate, input.endDate, range.startDate, range.endDate))) {
+          throw new TRPCError({ code: "CONFLICT", message: "Those dates are no longer available. Please choose another range." });
+        }
+
+        const dailyRate = Number(pricing.dailyRate);
+        const deliveryFee = Number(pricing.deliveryFee ?? 0);
+        const subtotal = calculatedDays * dailyRate;
+        const totalAmount = subtotal + subtotal * TAX_RATE + deliveryFee;
+        if (!Number.isFinite(dailyRate) || !Number.isFinite(deliveryFee) || !Number.isFinite(totalAmount)) {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Pricing is invalid. Please contact support." });
+        }
         const bookingRef = nanoid(10).toUpperCase();
         const booking = await createBooking({
           bookingRef,
@@ -189,10 +254,10 @@ export const appRouter = router({
           airbnbBookingName: input.airbnbBookingName ?? "",
           startDate: new Date(input.startDate + "T12:00:00Z") as any,
           endDate: new Date(input.endDate + "T12:00:00Z") as any,
-          totalDays: input.totalDays,
-          dailyRate: input.dailyRate,
-          deliveryFee: input.deliveryFee,
-          totalAmount: input.totalAmount,
+          totalDays: calculatedDays,
+          dailyRate: dailyRate.toFixed(2),
+          deliveryFee: deliveryFee.toFixed(2),
+          totalAmount: totalAmount.toFixed(2),
           bookingStatus: "pending_payment",
           documentStatus: "pending",
         });
@@ -229,8 +294,21 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         const booking = await getBookingByRef(input.bookingRef);
         if (!booking) throw new TRPCError({ code: "NOT_FOUND" });
+        if (booking.bookingStatus !== "pending_payment") {
+          throw new TRPCError({ code: "CONFLICT", message: "This booking has already been submitted or paid." });
+        }
+        const [documents, waiver] = await Promise.all([
+          getDocumentsByBookingId(booking.id),
+          getWaiverByBookingId(booking.id),
+        ]);
+        const hasLicense = documents.some((doc) => doc.documentType === "drivers_license");
+        const hasInsurance = documents.some((doc) => doc.documentType === "proof_of_insurance");
+        if (!hasLicense || !hasInsurance || !waiver?.agreedToTerms) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Required documents and waiver must be completed before payment." });
+        }
 
         const stripe = getStripe();
+        const checkoutOrigin = assertAllowedOrigin(input.origin);
         const session = await stripe.checkout.sessions.create({
           payment_method_types: ["card"],
           mode: "payment",
@@ -251,7 +329,7 @@ export const appRouter = router({
                 currency: "usd",
                 product_data: {
                   name: "Refundable Security Deposit",
-                  description: "$300 refundable deposit — returned after cart is inspected at end of rental. Admin releases hold via Stripe dashboard.",
+                  description: "$300 refundable security deposit — refunded after the cart is inspected at the end of the rental.",
                 },
                 unit_amount: 30000,
               },
@@ -260,8 +338,8 @@ export const appRouter = router({
           ],
           allow_promotion_codes: true,
           metadata: { bookingRef: input.bookingRef },
-          success_url: `${input.origin}/booking/confirmation?ref=${input.bookingRef}&session_id={CHECKOUT_SESSION_ID}`,
-          cancel_url: `${input.origin}/booking?step=5&ref=${input.bookingRef}`,
+          success_url: `${checkoutOrigin}/booking/confirmation?ref=${input.bookingRef}&session_id={CHECKOUT_SESSION_ID}`,
+          cancel_url: `${checkoutOrigin}/booking?cancelled=1`,
         });
 
         return { url: session.url, sessionId: session.id };
@@ -276,7 +354,10 @@ export const appRouter = router({
         if (booking.bookingStatus === "pending_payment") {
           const stripe = getStripe();
           const session = await stripe.checkout.sessions.retrieve(input.sessionId);
-          if (session.payment_status === "paid") {
+          if (session.metadata?.bookingRef !== input.bookingRef) {
+            throw new TRPCError({ code: "BAD_REQUEST", message: "This payment does not match the booking." });
+          }
+          if (session.payment_status === "paid" && session.amount_total !== null) {
             await updateBookingStripe(
               input.bookingRef,
               input.sessionId,
@@ -398,6 +479,22 @@ export const appRouter = router({
         })
       )
       .mutation(async ({ input }) => {
+        const existingBooking = await getBookingById(input.id);
+        if (!existingBooking) throw new TRPCError({ code: "NOT_FOUND", message: "Booking not found" });
+
+        if (
+          input.status === "rejected" &&
+          existingBooking.stripePaymentIntentId &&
+          existingBooking.bookingStatus !== "rejected" &&
+          existingBooking.bookingStatus !== "cancelled"
+        ) {
+          const stripe = getStripe();
+          await stripe.refunds.create(
+            { payment_intent: existingBooking.stripePaymentIntentId },
+            { idempotencyKey: `booking-refund-${existingBooking.bookingRef}` }
+          );
+        }
+
         await updateBookingStatus(input.id, input.status, {
           adminNotes: input.adminNotes,
           rejectionReason: input.rejectionReason,

@@ -194,8 +194,8 @@ export default function Booking() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Data
-  const { data: pricingData } = trpc.pricing.get.useQuery();
-  const { data: availData } = trpc.availability.getBlockedDates.useQuery();
+  const { data: pricingData, error: pricingError } = trpc.pricing.get.useQuery();
+  const { data: availData, error: availabilityError } = trpc.availability.getBlockedDates.useQuery();
   const createBooking = trpc.bookings.create.useMutation();
   const uploadDoc = trpc.documents.upload.useMutation();
   const createCheckout = trpc.bookings.createCheckout.useMutation();
@@ -211,7 +211,8 @@ export default function Booking() {
   const taxRate = 0.07;
   const taxAmount = parseFloat((subtotal * taxRate).toFixed(2));
   const depositAmount = 300;
-  const totalAmount = parseFloat((subtotal + taxAmount).toFixed(2));
+  const totalAmount = parseFloat((subtotal + taxAmount + deliveryFee).toFixed(2));
+  const totalChargedNow = parseFloat((totalAmount + depositAmount).toFixed(2));
 
   // Build disabled dates
   const disabledDates = useCallback(() => {
@@ -329,7 +330,7 @@ export default function Booking() {
         deliveryFee: deliveryFee.toFixed(2),
         totalAmount: totalAmount.toFixed(2),
         waiverLegalName: waiverName,
-        waiverAgreed,
+        waiverAgreed: true,
         waiverIp: undefined,
         waiverUserAgent: navigator.userAgent,
       });
@@ -339,23 +340,21 @@ export default function Booking() {
 
       // Upload documents
       if (licenseFile) {
-        const licenseMime = licenseFile.file.type === "application/pdf" ? "application/pdf" : "image/jpeg";
         await uploadDoc.mutateAsync({
           bookingId: id,
           documentType: "drivers_license",
           fileName: licenseFile.file.name,
-          mimeType: licenseMime,
+          mimeType: licenseFile.file.type,
           fileSize: licenseFile.base64.length,
           fileBase64: licenseFile.base64,
         });
       }
       if (insuranceFile) {
-        const insuranceMime = insuranceFile.file.type === "application/pdf" ? "application/pdf" : "image/jpeg";
         await uploadDoc.mutateAsync({
           bookingId: id,
           documentType: "proof_of_insurance",
           fileName: insuranceFile.file.name,
-          mimeType: insuranceMime,
+          mimeType: insuranceFile.file.type,
           fileSize: insuranceFile.base64.length,
           fileBase64: insuranceFile.base64,
         });
@@ -569,6 +568,16 @@ export default function Booking() {
                 }}
               />
             </div>
+
+            {(pricingError || availabilityError) && (
+              <div
+                className="rounded-2xl p-4 mb-4"
+                style={{ background: "#fef2f2", border: "1px solid #fecaca" }}
+              >
+                <p className="text-sm font-semibold text-red-800">Booking is temporarily unavailable</p>
+                <p className="text-xs text-red-700 mt-1">We’re unable to load live pricing or availability. Please try again shortly or contact us before submitting payment.</p>
+              </div>
+            )}
 
             {dateRange.from && dateRange.to && (
               <div
@@ -868,14 +877,25 @@ export default function Booking() {
                   <span className="text-muted-foreground">Florida sales tax (7%)</span>
                   <span className="font-medium text-foreground">${taxAmount.toFixed(2)}</span>
                 </div>
+                {deliveryFee > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Delivery fee</span>
+                    <span className="font-medium text-foreground">${deliveryFee.toFixed(2)}</span>
+                  </div>
+                )}
                 <div className="h-px" style={{ background: "oklch(0.93 0.01 220)" }} />
                 <div className="flex justify-between">
-                  <span className="font-bold text-foreground">Total Due Now</span>
+                  <span className="font-bold text-foreground">Rental total</span>
                   <span className="font-bold text-xl text-primary">${totalAmount.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Refundable security deposit (charged at checkout, returned after inspection)</span>
                   <span className="font-medium text-foreground">${depositAmount}</span>
+                </div>
+                <div className="h-px" style={{ background: "oklch(0.93 0.01 220)" }} />
+                <div className="flex justify-between">
+                  <span className="font-bold text-foreground">Total charged today</span>
+                  <span className="font-bold text-xl text-primary">${totalChargedNow.toFixed(2)}</span>
                 </div>
               </div>
             </div>
@@ -935,16 +955,16 @@ export default function Booking() {
               border: "none",
             }}
             onClick={handleNext}
-            disabled={isSubmitting}
+            disabled={isSubmitting || (step === 1 && (!pricingData || !availData || !!pricingError || !!availabilityError))}
           >
             {isSubmitting ? (
               <>
                 <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                 Processing...
               </>
-            ) : step === 5 ? (
+            ) : step === 6 ? (
               <>
-                Pay ${totalAmount.toFixed(2)}
+                Pay ${totalChargedNow.toFixed(2)}
                 <CreditCard className="w-5 h-5 ml-2" />
               </>
             ) : (
