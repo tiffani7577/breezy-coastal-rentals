@@ -24,6 +24,7 @@ In Vercel → Settings → Environment Variables, add these:
 
 **Required:**
 - `DATABASE_URL` - Your TiDB/MySQL connection string. For a TiDB Cloud public endpoint, use the connection URL from TiDB Cloud; the application enforces TLS 1.2 and certificate verification for `*.tidbcloud.com` hosts.
+- `BLOB_READ_WRITE_TOKEN` - Required for uploaded documents and the encrypted-by-access **private emergency datastore** used only when the primary database is unavailable. Keep this token configured for Production and Preview.
 - `STRIPE_SECRET_KEY` - From Stripe Dashboard (Live)
 - `STRIPE_WEBHOOK_SECRET` - From Stripe Webhooks
 - `VITE_STRIPE_PUBLISHABLE_KEY` - From Stripe Dashboard (Live)
@@ -74,6 +75,8 @@ git push origin main
 ```
 
 The repository also runs a production readiness check after each `main` push and every 15 minutes. It verifies both the deployed application and its database connection at `https://www.breezycoastalrentals.com/api/trpc/system.readiness`.
+
+If TiDB becomes unreachable or loses schema privileges, the application automatically uses a private Vercel Blob emergency datastore for bookings, availability, pricing, documents metadata, and administrator actions. It is designed as a continuity layer, not a replacement for the primary database; restore TiDB access and export/reconcile any emergency records promptly.
 
 ## Build Configuration
 
